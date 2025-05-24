@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Inequality Ladder</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans p-6">
+  <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-md p-6">
+    <h1 class="text-3xl font-bold text-purple-700 mb-4">🎮 The Inequality Ladder</h1>
+    <p class="text-gray-700 mb-4">Experience how identity and geography affect life opportunities. Your avatar will be randomly assigned a profile from the fictional world. At each life stage, you'll face challenges or opportunities. Reflect on how equality and equity shape real lives.</p>
+
+    <div id="step1" class="space-y-4">
+      <button onclick="assignIdentity()" class="bg-purple-600 text-white px-4 py-2 rounded">Start the Experience</button>
+    </div>
+
+    <div id="identityCard" class="hidden mt-6 p-4 bg-purple-50 border-l-4 border-purple-500">
+      <p class="font-semibold text-purple-800">Your assigned identity:</p>
+      <p id="identityText" class="text-gray-800 mt-2"></p>
+      <button onclick="startJourney()" class="mt-4 bg-green-600 text-white px-4 py-2 rounded">Continue</button>
+    </div>
+
+    <div id="journey" class="hidden mt-6 space-y-8">
+      <div id="stage"></div>
+      <p id="outcome" class="text-purple-700 font-semibold"></p>
+      <div class="flex justify-end" id="nextBtnWrapper"></div>
+    </div>
+
+    <div id="resultSection" class="hidden mt-6 p-4 bg-yellow-50 border-l-4 border-yellow-400">
+      <h2 class="text-xl font-bold text-yellow-700">🧾 Your Life Summary</h2>
+      <ul id="resultsList" class="list-disc pl-5 text-gray-800 mb-4"></ul>
+      <p id="finalSummary" class="text-gray-700 italic"></p>
+      <div class="mt-4">
+        <button onclick="restartActivity()" class="bg-blue-600 text-white px-4 py-2 rounded">🔁 Try Another Identity</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const identities = [
+      "Girl from rural Mardania, lower caste background",
+      "Disabled refugee woman from Xirelia",
+      "Indigenous boy from Lanovar",
+      "Young Black woman from urban Norfax",
+      "Male university student from Eldoria",
+      "Transgender youth from Viremont",
+      "Afro-Caribbean girl from Selvaria",
+      "Boy from nomadic community in Zorania"
+    ];
+
+    const stages = [
+      {
+        title: "🎓 Education Opportunity",
+        question: "What kind of education access do you have?",
+        options: [
+          { label: "I attend a well-funded public school", outcome: "✅ You benefit from inclusive policies and equitable funding. Your path to higher education is supported and encouraged.", impact: "High academic potential fulfilled.", score: 3 },
+          { label: "I walk 5km to a basic community school", outcome: "🟨 You face daily obstacles but have strong community support. You might succeed, but it's an uphill battle without systemic support.", impact: "Limited academic access delays success.", score: 2 },
+          { label: "I am not allowed to attend school", outcome: "🟥 Due to cultural, gender, or caste discrimination, your right to education is denied. Your life chances are limited from the start.", impact: "Lost access to basic education and future skills.", score: 1 }
+        ]
+      },
+      {
+        title: "💼 Economic Opportunity",
+        question: "How do you experience access to employment?",
+        options: [
+          { label: "I can freely choose and pursue a career path", outcome: "✅ Equal pay laws and anti-discrimination protections support your career goals.", impact: "Able to build a stable and respected career.", score: 3 },
+          { label: "I work in informal sectors with limited rights", outcome: "🟨 You earn income, but without contracts, healthcare, or retirement support.", impact: "Economic insecurity and long-term instability.", score: 2 },
+          { label: "I face consistent bias and unemployment", outcome: "🟥 Due to systemic bias or migration status, job offers are rare and often exploitative.", impact: "Chronic underemployment limits your livelihood.", score: 1 }
+        ]
+      },
+      {
+        title: "🏥 Health Equity",
+        question: "How accessible is healthcare for you?",
+        options: [
+          { label: "I access public healthcare services easily", outcome: "✅ You receive timely treatment and preventive care as a right.", impact: "Healthy life expectancy with minimal health risks.", score: 3 },
+          { label: "I rely on overcrowded clinics or travel far", outcome: "🟨 Limited infrastructure affects the quality and timeliness of care you receive.", impact: "Delayed treatment worsens common conditions.", score: 2 },
+          { label: "I cannot afford or reach health services", outcome: "🟥 Health problems go untreated due to cost or discrimination, worsening inequality.", impact: "Unaddressed illnesses limit quality of life.", score: 1 }
+        ]
+      },
+      {
+        title: "🗳️ Political Voice & Representation",
+        question: "Do you feel represented and heard in politics?",
+        options: [
+          { label: "I vote and engage in activism freely", outcome: "✅ Your voice shapes policies, and you feel a sense of agency.", impact: "You influence your community's future.", score: 3 },
+          { label: "I vote, but rarely see leaders like me", outcome: "🟨 You engage, but feel underrepresented and disillusioned.", impact: "Limited impact causes civic disengagement.", score: 2 },
+          { label: "I am not allowed or afraid to speak up", outcome: "🟥 Political suppression or marginalisation silences your perspective.", impact: "Systemic silence reinforces injustice.", score: 1 }
+        ]
+      }
+    ];
+
+    let currentStage = 0;
+    let impactResults = [];
+    let totalScore = 0;
+
+    function assignIdentity() {
+      const index = Math.floor(Math.random() * identities.length);
+      document.getElementById("identityText").innerText = identities[index];
+      document.getElementById("step1").classList.add("hidden");
+      document.getElementById("identityCard").classList.remove("hidden");
+    }
+
+    function startJourney() {
+      document.getElementById("identityCard").classList.add("hidden");
+      document.getElementById("journey").classList.remove("hidden");
+      loadStage();
+    }
+
+    function loadStage() {
+      const stage = stages[currentStage];
+      const stageDiv = document.getElementById("stage");
+      let buttonsHTML = '';
+      stage.options.forEach(opt => {
+        buttonsHTML += `<button onclick=\"showOutcome('${opt.outcome.replace(/'/g, "\\'")}', '${opt.impact.replace(/'/g, "\\'")}', ${opt.score})\" class=\"w-full bg-blue-100 hover:bg-blue-200 p-3 mb-2 rounded\">${opt.label}</button>`;
+      });
+      stageDiv.innerHTML = `<h2 class='text-xl font-bold text-gray-800'>${stage.title}</h2>
+        <p class='text-gray-700 mb-4'>${stage.question}</p>
+        ${buttonsHTML}`;
+      document.getElementById("outcome").innerText = "";
+      document.getElementById("nextBtnWrapper").innerHTML = "";
+    }
+
+    function showOutcome(message, impact, score) {
+      document.getElementById("outcome").innerText = message;
+      impactResults.push(impact);
+      totalScore += score;
+      document.getElementById("nextBtnWrapper").innerHTML = `<button onclick='nextStage()' class='mt-4 bg-green-600 text-white px-4 py-2 rounded'>Next</button>`;
+    }
+
+    function nextStage() {
+      currentStage++;
+      if (currentStage < stages.length) {
+        loadStage();
+      } else {
+        document.getElementById("journey").classList.add("hidden");
+        document.getElementById("resultsList").innerHTML = impactResults.map(item => `<li>${item}</li>`).join('');
+
+        let summary = "";
+        if (totalScore >= 11) {
+          summary = "🎉 You had access to opportunities that placed you ahead of most people in the world. You lived a secure, respected, and empowered life.";
+        } else if (totalScore >= 7) {
+          summary = "⚖️ Your journey was average. You had some opportunities but also faced barriers that prevented you from fully thriving.";
+        } else {
+          summary = "💔 Inequity held you back. In a more just world, your talents could have made you a renowned scientist, artist, or leader.";
+        }
+        document.getElementById("finalSummary").innerText = summary;
+        document.getElementById("resultSection").classList.remove("hidden");
+      }
+    }
+
+    function restartActivity() {
+      currentStage = 0;
+      impactResults = [];
+      totalScore = 0;
+      document.getElementById("resultSection").classList.add("hidden");
+      document.getElementById("step1").classList.remove("hidden");
+    }
+  </script>
+</body>
+</html>
