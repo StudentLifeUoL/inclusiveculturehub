@@ -6,13 +6,17 @@
   <title>Diversity Impact Builder</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    .draggable {
-      cursor: move;
+    .draggable { cursor: move; }
+    .dropzone { min-height: 150px; border: 2px dashed #cbd5e0; padding: 1rem; }
+    #overlay {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background-color: rgba(0, 0, 0, 0.8); color: white;
+      display: none; flex-direction: column; justify-content: center;
+      align-items: center; text-align: center; font-size: 2rem;
+      z-index: 9999; padding: 2rem;
     }
-    .dropzone {
-      min-height: 150px;
-      border: 2px dashed #cbd5e0;
-      padding: 1rem;
+    #overlay button {
+      margin-top: 1.5rem; font-size: 1rem;
     }
   </style>
 </head>
@@ -22,7 +26,6 @@
     <p class="mb-4 text-gray-700">Drag and drop diversity features onto the organisation to see how it affects success metrics like innovation, retention, and trust.</p>
 
     <div class="grid grid-cols-3 gap-6">
-      <!-- Feature list -->
       <div>
         <h2 class="text-xl font-semibold mb-2">Diversity Features</h2>
         <div id="featureList" class="space-y-2">
@@ -38,14 +41,12 @@
         </div>
       </div>
 
-      <!-- Drop zone -->
       <div>
         <h2 class="text-xl font-semibold mb-2">Your Organisation</h2>
         <div id="dropZone" class="dropzone bg-gray-50 rounded" ondragover="event.preventDefault()" ondrop="handleDrop(event)"></div>
         <p id="statusMessage" class="mt-4 text-sm text-gray-600"></p>
       </div>
 
-      <!-- Score board -->
       <div>
         <h2 class="text-xl font-semibold mb-2">Impact Score</h2>
         <div class="mb-2">Innovation: <span id="innovationScore">0</span></div>
@@ -54,6 +55,11 @@
         <button onclick="resetGame()" class="mt-4 bg-red-500 text-white px-4 py-2 rounded">Reset</button>
       </div>
     </div>
+  </div>
+
+  <div id="overlay">
+    💥 GAME OVER: Your organisation has collapsed due to poor diversity practices.
+    <button onclick="resetGame()" class="bg-white text-black px-4 py-2 mt-6 rounded">🔁 Restart</button>
   </div>
 
   <script>
@@ -103,48 +109,44 @@
     }
 
     function showStatusMessage() {
-      const total = innovation + retention + trust;
-      const positiveCommentary = [
-        "🏆 Your organisation received an international diversity award!",
-        "🥇 National recognition highlights your inclusive workplace.",
-        "✅ Team cohesion is strong and morale is rising.",
-        "📈 Your diversity strategy is driving success across departments."
-      ];
-
-      const earlyWarnings = [
-        "⚠️ An unresolved issue is causing concern despite your success.",
-        "🔍 Internal reviews are being launched regarding recent practices.",
-        "🕵️ Employees raised quiet concerns over recent actions."
-      ];
-
-      const seriousWarnings = [
-        "🚨 A legal case has been filed due to unresolved discrimination.",
-        "💥 Negative practices are harming team trust and well-being.",
-        "💣 Organisational instability is increasing—urgent change needed."
-      ];
-
-      let message = "";
-
-      if (total >= 12) {
-        message = positiveCommentary[0];
-      } else if (total >= 8) {
-        message = positiveCommentary[1];
-      } else if (total >= 4) {
-        message = positiveCommentary[2];
-      } else if (total >= 0) {
-        message = "⚠️ Consider reviewing your diversity policies.";
-      } else if (total >= -4) {
-        message = seriousWarnings[0];
-      } else {
-        message = seriousWarnings[2];
+      if (negativeCount >= 3) {
+        document.getElementById("overlay").style.display = "flex";
+        return;
       }
+
+      const total = innovation + retention + trust;
+      const messageEl = document.getElementById("statusMessage");
+
+      const messages = {
+        high: [
+          "🏆 Your organisation received an international diversity award!",
+          "🥇 National recognition highlights your inclusive workplace."
+        ],
+        mid: [
+          "✅ Team cohesion is strong and morale is rising.",
+          "📈 Your diversity strategy is driving success across departments."
+        ],
+        warn: [
+          "⚠️ Consider reviewing your diversity policies.",
+          "🔍 Minor gaps exist in your inclusion efforts."
+        ],
+        serious: [
+          "🚨 A legal case has been filed due to unresolved discrimination.",
+          "💥 Negative practices are harming team trust and well-being."
+        ]
+      };
+
+      let msg = "";
+      if (total >= 12) msg = messages.high[Math.floor(Math.random() * messages.high.length)];
+      else if (total >= 8) msg = messages.mid[Math.floor(Math.random() * messages.mid.length)];
+      else if (total >= 0) msg = messages.warn[Math.floor(Math.random() * messages.warn.length)];
+      else msg = messages.serious[Math.floor(Math.random() * messages.serious.length)];
 
       if (negativeCount > 0 && total >= 6) {
-        message += "\n" + earlyWarnings[Math.floor(Math.random() * earlyWarnings.length)] +
-          (lastNegative ? ` (Issue: ${lastNegative})` : "");
+        msg += `\n⚠️ Caution: ${lastNegative} is raising internal concern.`;
       }
 
-      document.getElementById("statusMessage").textContent = message;
+      messageEl.textContent = msg;
     }
 
     function resetGame() {
@@ -152,6 +154,7 @@
       updateScores();
       document.getElementById("dropZone").innerHTML = "";
       document.getElementById("statusMessage").textContent = "";
+      document.getElementById("overlay").style.display = "none";
     }
 
     document.querySelectorAll('.draggable').forEach(el => {
