@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UN SDGs Reflection Activity</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6 font-sans">
+  <div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-md">
+    <h1 class="text-3xl font-bold text-green-700 mb-4">🌍 Reflecting on the UN SDGs</h1>
+    <p class="text-gray-700 mb-4">
+      The Sustainable Development Goals (SDGs) aim to tackle the world's most urgent environmental, political, and economic challenges. In this reflective activity, we'd like you to consider:
+    </p>
+
+    <blockquote class="border-l-4 border-green-500 pl-4 italic text-gray-600 mb-6">
+      "What would achieving the UN SDGs look like in your part of the world?"
+    </blockquote>
+
+    <h2 class="text-xl font-semibold text-gray-800 mb-2">📝 Instructions:</h2>
+    <ul class="list-disc list-inside text-gray-700 mb-6">
+      <li>Take 5–10 minutes to reflect deeply on the changes you'd expect to see in your community or region.</li>
+      <li>Write your thoughts in the box below. Aim for 150–300 words.</li>
+      <li>Once done, you can download your response as a .txt file and optionally email it to your instructor for feedback.</li>
+    </ul>
+
+    <textarea id="reflectionInput" rows="10" class="w-full p-3 border border-gray-300 rounded mb-4" placeholder="Start typing your reflection here..."></textarea>
+
+    <div class="flex gap-4">
+      <button onclick="downloadReflection()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">📥 Download Response</button>
+      <button onclick="emailReflection()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">📤 Email Response</button>
+    </div>
+
+    <p class="text-sm text-gray-500 mt-4"> <code>sdg@london.ac.uk</code></p>
+  </div>
+
+  <script>
+    function downloadReflection() {
+      const text = document.getElementById('reflectionInput').value;
+      const blob = new Blob([text], { type: 'text/plain' });
+      const anchor = document.createElement('a');
+      anchor.href = URL.createObjectURL(blob);
+      anchor.download = 'UN_SDG_Reflection.txt';
+      anchor.click();
+    }
+
+    function emailReflection() {
+      const text = document.getElementById('reflectionInput').value;
+      const subject = encodeURIComponent("My UN SDGs Reflection");
+      const body = encodeURIComponent(text);
+      const mailtoLink = `mailto:sdg@london.ac.uk?subject=${subject}&body=${body}`;
+      window.location.href = mailtoLink;
+    }
+  </script>
+</body>
+</html>
