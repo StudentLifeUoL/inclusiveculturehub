@@ -1,0 +1,138 @@
+import React, { useState } from 'react';
+
+const scenes = [
+  {
+    id: 1,
+    title: 'Scene 1: The Invitation',
+    prompt: 'Does this scene represent diversity, inclusion or belonging?',
+    correct: 'Diversity',
+    narration: 'Diversity is being invited to the party. Here, you see multiple identities represented among those who receive invitations. Diversity alone means we are aware of who is here, but it does not guarantee participation beyond representation.',
+    reflectionQ: 'In your context, who receives the invitation? Are there identities missing?',
+    description: `
+      A pile of vibrant envelopes spills onto a long table. You watch as individuals of all ages, backgrounds and walks of life reach forward to collect one. 
+      A young person in a wheelchair beams as they open their card. Beside them, a middle‑aged professional adjusts their tie before reading the details. 
+      Nearby, two friends exchange smiles over their matching digital invites glowing on their phones. The room is alive with anticipation—everyone has been summoned to the same celebration.`
+  },
+  {
+    id: 2,
+    title: 'Scene 2: The Arrival',
+    prompt: 'Is this scene showing diversity, inclusion or belonging?',
+    correct: 'Inclusion',
+    narration: 'Inclusion is like being asked to dance. Here, people are present but uncertain. Inclusion happens when ideas are heard and valued, when power is shifted so individuals feel safe to join the main activity. Without that invitation to participate, mere presence can feel isolating.',
+    reflectionQ: 'Where do you see groups clustering in your institution? How might you invite them to join?',
+    description: `
+      The venue doorway opens onto a grand hall bathed in warm light. The guests wander in, pausing at the threshold. 
+      Some form small circles, voices hushed as if checking for familiar accents. Others glance up at the central stage, hesitation on their faces. 
+      Their bodies tilt towards the walls, seeking comfort among the known rather than stepping into the centre.`
+  },
+  {
+    id: 3,
+    title: 'Scene 3: The Dance Floor',
+    prompt: 'Does this scene illustrate diversity, inclusion or belonging?',
+    correct: 'Inclusion',
+    narration: 'Inclusion in action is having the power to ensure others are dancing. Equity is demonstrated when we constantly recognise and redistribute power so that every voice can shape the experience.',
+    reflectionQ: 'What systems or processes can you use to redistribute power in your setting?',
+    description: `
+      Suddenly, the host steps onto the platform and raises their hand. A hush falls. 
+      "Come, join me!" they call. Instantly, hesitant faces transform—one by one, they cross the floor. 
+      A person who lingered near the wall smiles as they step in. An older guest nods and reaches out to a shy newcomer. The energy shifts: now everyone moves to the rhythm.`
+  },
+  {
+    id: 4,
+    title: 'Scene 4: The Music',
+    prompt: 'Is this scene about diversity, inclusion or belonging?',
+    correct: 'Belonging',
+    narration: 'Belonging is having a range of music to dance to. This scene shows that thoughts and ideas matter; nothing is marked as ‘other’ or ‘ethnic’—every contribution is valued for what it offers.',
+    reflectionQ: 'How do you ensure that all perspectives are valued, rather than just tolerated?',
+    description: `
+      The DJ leans over their mixer and flips through records and playlists with intent. 
+      A Latin beat swells, and the dancers welcome it with raised arms. The track shifts into a soulful jazz riff, but the dancers remain, seamlessly flowing into each new rhythm. 
+      Laughter and conversation spill over the music as people call out requests, each track chosen with care, each style embraced without question.`
+  }
+];
+
+export default function DIBActivity() {
+  const [stage, setStage] = useState('welcome');
+  const [current, setCurrent] = useState(0);
+  const [selection, setSelection] = useState('');
+  const [answers, setAnswers] = useState([]);
+  const [reflections, setReflections] = useState({});
+
+  const start = () => setStage('scene');
+  const submitAnswer = () => {
+    setAnswers(prev => [...prev, selection]);
+    setStage('reveal');
+  };
+  const next = () => {
+    if (!reflections[current]) return;
+    if (current < scenes.length - 1) {
+      setCurrent(prev => prev + 1);
+      setSelection('');
+      setStage('scene');
+    } else setStage('summary');
+  };
+
+  if (stage === 'welcome') return (
+    <div className="p-8 flex flex-col items-center">
+      <h1 className="text-3xl font-bold mb-4">Diversity, Inclusion & Belonging</h1>
+      <p className="mb-4">Imagine you’re at a lively party where guests from all walks of life have gathered to celebrate together. Throughout this activity, you’ll step into the experience and discover how diversity, inclusion and belonging shape the atmosphere.</p>
+      <p className="mb-6">Observe each scene, choose a label, submit, then reflect.</p>
+      <button onClick={start} className="px-6 py-3 rounded bg-blue-600 text-white hover:bg-blue-700">Begin Activity</button>
+    </div>
+  );
+
+  if (stage === 'scene') {
+    const scene = scenes[current];
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-8">
+        <div className="prose">
+          <p>{scene.description}</p>
+        </div>
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold">{scene.prompt}</h2>
+          {['Diversity','Inclusion','Belonging'].map(opt => (
+            <button key={opt} onClick={() => setSelection(opt)} className={`block w-full py-2 rounded border ${selection===opt?'bg-blue-100 border-blue-600':'border-gray-300'}`}>{opt}</button>
+          ))}
+          <button disabled={!selection} onClick={submitAnswer} className="mt-4 px-4 py-2 rounded bg-green-600 text-white disabled:opacity-50">Submit</button>
+          <div className="mt-2">Scene {current+1} of {scenes.length}</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (stage === 'reveal') {
+    const scene = scenes[current];
+    return (
+      <div className="p-8 max-w-xl mx-auto">
+        <div className="bg-white p-6 rounded shadow space-y-4">
+          <p>{scene.narration}</p>
+          <label className="block font-medium">Reflection:</label>
+          <textarea rows={3} className="w-full border rounded p-2" onChange={e => setReflections({ ...reflections, [current]: e.target.value })} />
+          <button onClick={next} className="mt-4 px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">Next</button>
+        </div>
+      </div>
+    );
+  }
+
+  if (stage === 'summary') return (
+    <div className="p-8 space-y-6">
+      <h2 className="text-2xl font-bold">Summary</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {scenes.map((scene, idx) => (
+          <div key={scene.id} className="border p-4 rounded prose">
+            <p><strong>{scene.title}</strong></p>
+            <p><em>Label:</em> {scene.correct}</p>
+          </div>
+        ))}
+      </div>
+      <div className="mt-6 prose">
+        <p>When diversity, inclusion and belonging come together, everyone can truly celebrate. Research shows that diverse organisations outperform their non-diverse counterparts when equity in outcomes is achieved—whether in academic achievement, legal fairness or health services—leading to greater wellbeing for all.</p>
+        <label className="block font-medium mt-4">Final Reflection: Identify one concrete action you will take to move from diversity to belonging in your context.</label>
+        <textarea rows={3} className="w-full border rounded p-2" />
+      </div>
+      <button className="mt-4 px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700">Finish</button>
+    </div>
+  );
+
+  return null;
+}
