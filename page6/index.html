@@ -12,6 +12,7 @@
             font-family: 'Inter', sans-serif;
             margin: 0;
             background-color: #f0f4f8; /* Light background for the whole page */
+            overflow-y: auto; /* Allow scrolling only if content overflows */
         }
         /* Basic prose styling for descriptions, similar to Tailwind's @tailwindcss/typography */
         .prose {
@@ -27,9 +28,25 @@
         .prose p {
             margin-bottom: 1em;
         }
-        /* Ensure text areas are vertically resizable */
+        /* Ensure text areas are vertically resizable - though removed, keeping for general good practice */
         textarea {
             resize: vertical;
+        }
+
+        /* Custom scrollbar for a cleaner look (optional, browser-dependent) */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
         }
     </style>
 </head>
@@ -38,7 +55,7 @@
     <div id="app-root"></div>
 
     <script>
-        // Data for the activity scenes, unchanged from your React version
+        // Data for the activity scenes
         const scenes = [
             {
                 id: 1,
@@ -46,7 +63,6 @@
                 prompt: 'Does this scene represent diversity, inclusion or belonging?',
                 correct: 'Diversity',
                 narration: 'Diversity is being invited to the party. Here, you see multiple identities represented among those who receive invitations. Diversity alone means we are aware of who is here, but it does not guarantee participation beyond representation.',
-                reflectionQ: 'In your context, who receives the invitation? Are there identities missing?',
                 description: `
                     A pile of vibrant envelopes spills onto a long table. You watch as individuals of all ages, backgrounds and walks of life reach forward to collect one.
                     A young person in a wheelchair beams as they open their card. Beside them, a middle‑aged professional adjusts their tie before reading the details.
@@ -58,7 +74,6 @@
                 prompt: 'Is this scene showing diversity, inclusion or belonging?',
                 correct: 'Inclusion',
                 narration: 'Inclusion is like being asked to dance. Here, people are present but uncertain. Inclusion happens when ideas are heard and valued, when power is shifted so individuals feel safe to join the main activity. Without that invitation to participate, mere presence can feel isolating.',
-                reflectionQ: 'Where do you see groups clustering in your institution? How might you invite them to join?',
                 description: `
                     The venue doorway opens onto a grand hall bathed in warm light. The guests wander in, pausing at the threshold.
                     Some form small circles, voices hushed as if checking for familiar accents. Others glance up at the central stage, hesitation on their faces.
@@ -70,7 +85,6 @@
                 prompt: 'Does this scene illustrate diversity, inclusion or belonging?',
                 correct: 'Inclusion',
                 narration: 'Inclusion in action is having the power to ensure others are dancing. Equity is demonstrated when we constantly recognise and redistribute power so that every voice can shape the experience.',
-                reflectionQ: 'What systems or processes can you use to redistribute power in your setting?',
                 description: `
                     Suddenly, the host steps onto the platform and raises their hand. A hush falls.
                     "Come, join me!" they call. Instantly, hesitant faces transform—one by one, they cross the floor.
@@ -82,7 +96,6 @@
                 prompt: 'Is this scene about diversity, inclusion or belonging?',
                 correct: 'Belonging',
                 narration: 'Belonging is having a range of music to dance to. This scene shows that thoughts and ideas matter; nothing is marked as ‘other’ or ‘ethnic’—every contribution is valued for what it offers.',
-                reflectionQ: 'How do you ensure that all perspectives are valued, rather than just tolerated?',
                 description: `
                     The DJ leans over their mixer and flips through records and playlists with intent.
                     A Latin beat swells, and the dancers welcome it with raised arms. The track shifts into a soulful jazz riff, but the dancers remain, seamlessly flowing into each new rhythm.
@@ -95,7 +108,6 @@
         let currentSceneIndex = 0; // Index of the scene currently being displayed
         let selectedOption = ''; // Stores the user's selected answer for the current scene
         let userAnswers = []; // Array to store all user's answers (one per scene)
-        let userReflections = {}; // Object to store user's reflection text for each scene (key: sceneIndex, value: reflectionText)
 
         // Get the root element where the application will be rendered
         const appRoot = document.getElementById('app-root');
@@ -120,7 +132,7 @@
                                     Imagine you’re at a lively party where guests from all walks of life have gathered to celebrate together. Throughout this activity, you’ll step into the experience and discover how these vital concepts shape the atmosphere.
                                 </p>
                                 <p class="text-xl font-semibold text-gray-800 mb-10">
-                                    Observe each scene, choose a label, submit your answer, and then reflect on its meaning.
+                                    Observe each scene, choose a label, and submit your answer.
                                 </p>
                                 <button id="startButton" class="px-10 py-4 bg-blue-600 text-white text-xl font-bold rounded-full shadow-lg hover:bg-blue-700 transform hover:scale-105 transition duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-blue-300">
                                     Begin Activity
@@ -190,6 +202,12 @@
                     };
                     const specificTip = incorrectTips[revealScene.correct]?.[userChosenAnswer];
 
+                    let feedbackNarrative = revealScene.narration;
+                    if (!isCorrect && specificTip) {
+                        // Enrich the narrative directly if the answer was incorrect
+                        feedbackNarrative += `<p class="mt-4 text-md text-gray-700 bg-red-50 p-3 rounded-md border border-red-200">**Quick Tip:** ${specificTip}</p>`;
+                    }
+
                     htmlContent = `
                         <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4 font-inter">
                             <div class="bg-white p-8 md:p-12 rounded-2xl shadow-xl max-w-2xl w-full border border-gray-200 text-center">
@@ -198,32 +216,12 @@
                                 </h2>
                                 <p class="text-xl font-semibold text-gray-800 mb-6">Your answer was: <span class="${isCorrect ? 'text-green-600' : 'text-red-600'}">${userChosenAnswer}</span></p>
 
-                                <p class="text-lg leading-relaxed text-gray-700 mb-8">${revealScene.narration}</p>
-
-                                ${!isCorrect && specificTip ? `
-                                    <div class="bg-red-50 p-4 rounded-lg border border-red-200 text-red-800 mb-8">
-                                        <p class="font-semibold text-lg">Quick Tip:</p>
-                                        <p class="text-md">${specificTip}</p>
-                                    </div>
-                                ` : ''}
+                                <p class="text-lg leading-relaxed text-gray-700 mb-8">${feedbackNarrative}</p>
 
                                 <hr class="my-8 border-gray-200" />
 
-                                <div class="space-y-6 text-left">
-                                    <label for="reflection-${currentSceneIndex}" class="block text-xl font-semibold text-gray-800">
-                                        **Reflection:** ${revealScene.reflectionQ}
-                                    </label>
-                                    <textarea
-                                        id="reflection-${currentSceneIndex}"
-                                        rows="5"
-                                        class="w-full border border-gray-300 rounded-lg p-4 text-lg text-gray-800 resize-y focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out shadow-sm"
-                                        placeholder="Type your reflection here. What specific actions or observations come to mind in your own context?"
-                                    >${userReflections[currentSceneIndex] || ''}</textarea>
-                                </div>
-
-                                <button id="nextSceneButton" class="mt-10 px-10 py-4 bg-blue-600 text-white text-2xl font-bold rounded-full shadow-lg disabled:opacity-50 disabled:cursor-not-allowed
-                                    hover:bg-blue-700 transform hover:scale-105 transition duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-blue-300 w-full"
-                                    ${!userReflections[currentSceneIndex] || userReflections[currentSceneIndex].trim() === '' ? 'disabled' : ''}>
+                                <button id="nextSceneButton" class="mt-10 px-10 py-4 bg-blue-600 text-white text-2xl font-bold rounded-full shadow-lg
+                                    hover:bg-blue-700 transform hover:scale-105 transition duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-blue-300 w-full">
                                     ${currentSceneIndex < scenes.length - 1 ? 'Next Scene' : 'View Summary'}
                                 </button>
                             </div>
@@ -247,12 +245,6 @@
                                             <p class="text-lg text-gray-700">
                                                 <em>Correct Label:</em> <span class="font-bold text-blue-700">${scene.correct}</span>
                                             </p>
-                                            ${userReflections[idx] ? `
-                                                <div class="mt-4 p-3 bg-gray-100 rounded-lg border border-gray-200">
-                                                    <p class="text-sm font-medium text-gray-800">Your Reflection:</p>
-                                                    <p class="text-sm text-gray-700 italic">${userReflections[idx]}</p>
-                                                </div>
-                                            ` : ''}
                                         </div>
                                     `).join('')}
                                 </div>
@@ -261,15 +253,6 @@
                                     <p class="text-lg leading-relaxed">
                                         When **diversity**, **inclusion**, and **belonging** truly come together, everyone can genuinely celebrate and thrive. Research consistently shows that diverse organisations outperform their non-diverse counterparts, especially when **equity** in outcomes is achieved—whether in academic achievement, legal fairness, or health services—leading to greater wellbeing for all.
                                     </p>
-                                    <label for="final-reflection" class="block font-semibold mt-6 text-xl text-gray-800">
-                                        **Final Reflection:** Identify one concrete action you will take to move from diversity to belonging in your context.
-                                    </label>
-                                    <textarea
-                                        id="final-reflection"
-                                        rows="6"
-                                        class="w-full border border-gray-300 rounded-lg p-4 mt-3 text-lg text-gray-800 resize-y focus:ring-green-500 focus:border-green-500 transition duration-150 ease-in-out shadow-sm"
-                                        placeholder="For example: 'I will propose a new system for gathering feedback from all team members to ensure every voice is heard.' or 'I will actively seek out and amplify perspectives from underrepresented groups in our discussions.'"
-                                    >${userReflections['final'] || ''}</textarea>
                                 </div>
 
                                 <div class="flex flex-col sm:flex-row justify-center gap-4 mt-6">
@@ -303,27 +286,6 @@
             appRoot.removeEventListener('click', handleGlobalClick);
             // Add a single global click listener to the appRoot element
             appRoot.addEventListener('click', handleGlobalClick);
-
-            // Specific listener for the reflection textarea on the reveal stage
-            const reflectionTextarea = document.getElementById(`reflection-${currentSceneIndex}`);
-            if (reflectionTextarea) {
-                reflectionTextarea.oninput = (e) => {
-                    userReflections[currentSceneIndex] = e.target.value;
-                    // Dynamically enable/disable the next button based on reflection input
-                    const nextButton = document.getElementById('nextSceneButton');
-                    if (nextButton) {
-                        nextButton.disabled = !(userReflections[currentSceneIndex] && userReflections[currentSceneIndex].trim() !== '');
-                    }
-                };
-            }
-
-            // Listener for the final reflection textarea on the summary stage
-            const finalReflectionTextarea = document.getElementById('final-reflection');
-            if (finalReflectionTextarea) {
-                finalReflectionTextarea.oninput = (e) => {
-                    userReflections['final'] = e.target.value; // Store final reflection with a special key
-                };
-            }
         }
 
         /**
@@ -361,32 +323,25 @@
                 }
             } else if (target.id === 'nextSceneButton') {
                 // If 'Next Scene' or 'View Summary' button is clicked on the reveal stage
-                // Check if the reflection for the current scene has been entered
-                if (userReflections[currentSceneIndex] && userReflections[currentSceneIndex].trim() !== '') {
-                    if (currentSceneIndex < scenes.length - 1) {
-                        currentSceneIndex++; // Move to the next scene
-                        selectedOption = ''; // Reset selected option for the new scene
-                        currentStage = 'scene'; // Go back to the scene display
-                    } else {
-                        currentStage = 'summary'; // All scenes done, go to summary
-                    }
-                    render(); // Re-render the appropriate stage
+                if (currentSceneIndex < scenes.length - 1) {
+                    currentSceneIndex++; // Move to the next scene
+                    selectedOption = ''; // Reset selected option for the new scene
+                    currentStage = 'scene'; // Go back to the scene display
                 } else {
-                    // Log an error if reflection is missing (instead of alert for iframe compatibility)
-                    console.error('Please enter your reflection before proceeding.');
+                    currentStage = 'summary'; // All scenes done, go to summary
                 }
+                render(); // Re-render the appropriate stage
             } else if (target.id === 'finishButton') {
                 // If 'Finish Activity' button is clicked on the summary stage
                 console.log('Activity Finished!');
                 // --- Add your actual finish logic here ---
-                // e.g., save final reflection to a database, navigate to another page, etc.
+                // e.g., save data, navigate to another page, etc.
             } else if (target.id === 'restartButton') {
                 // If 'Restart Activity' button is clicked on the summary stage
                 currentStage = 'welcome'; // Reset to the welcome screen
                 currentSceneIndex = 0; // Reset to the first scene
                 selectedOption = ''; // Clear any selected options
                 userAnswers = []; // Clear all previous answers
-                userReflections = {}; // Clear all previous reflections
                 render(); // Re-render the welcome screen
             }
         }
