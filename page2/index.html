@@ -9,129 +9,77 @@
     .feature { cursor: pointer; background: #f0f0f0; }
     .feature:hover { background: #e2e8f0; }
     .dropzone {
-      min-height: 150px;
+      min-height: 120px;
       border: 2px dashed #cbd5e0;
-      padding: 1rem;
+      padding: 0.5rem;
       background: #fff;
     }
     .placed { background: #fff9c4; }
     #overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0,0,0,0.8);
-      color: #fff;
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      font-size: 1.5rem;
-      z-index: 50;
-      padding: 2rem;
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.8); color: #fff;
+      display: none; flex-direction: column; justify-content: center;
+      align-items: center; text-align: center; font-size: 1.5rem;
+      z-index: 50; padding: 2rem;
     }
   </style>
 </head>
-<body class="bg-gray-50 p-6 font-sans">
-  <div class="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-md flex flex-col space-y-6">
-    <h1 class="text-3xl font-bold text-purple-700">🏗️ Diversity Impact Builder</h1>
-    <p class="text-gray-700">Select exactly five diversity features to add to your organisation. Each choice will affect three key metrics:</p>
-    <ul class="list-disc list-inside text-gray-700">
-      <li><strong>Innovation</strong>: Diverse teams bring varied perspectives and ideas, leading to more creative solutions.</li>
-      <li><strong>Retention</strong>: Inclusive practices ensure all employees feel supported, leading to higher job satisfaction and lower turnover.</li>
-      <li><strong>Trust</strong>: A commitment to inclusion builds a culture where employees feel respected and valued.</li>
+<body class="bg-gray-50 p-4 font-sans">
+  <div class="max-w-4xl mx-auto bg-white p-4 rounded-lg shadow-md">
+    <h1 class="text-2xl font-bold text-purple-700 mb-2">Diversity Impact Builder</h1>
+    <p class="text-gray-700 text-sm mb-2">Select exactly five features. Each impacts three metrics:</p>
+    <ul class="list-disc list-inside text-gray-700 text-sm mb-2">
+      <li><strong>Innovation</strong>: Diverse perspectives drive creativity.</li>
+      <li><strong>Retention</strong>: Inclusion boosts satisfaction and reduces turnover.</li>
+      <li><strong>Trust</strong>: Respectful culture builds trust.</li>
     </ul>
-    <p class="text-gray-600">Click on a feature below to add it to your organisation.</p>
-    <div id="featureList" class="grid grid-cols-2 gap-4">
-      <div class="feature p-2 rounded" data-key="Comm_Pos">Encouraging all team members to share ideas</div>
-      <div class="feature p-2 rounded" data-key="Comm_Neg">Only a few voices heard in meetings</div>
-      <div class="feature p-2 rounded" data-key="Work_Pos">Flexible hours and remote-work options</div>
-      <div class="feature p-2 rounded" data-key="Work_Neg">Strict hours with no flexibility</div>
-      <div class="feature p-2 rounded" data-key="Hire_Pos">Actively seeking candidates from varied backgrounds</div>
-      <div class="feature p-2 rounded" data-key="Hire_Neg">Recruiting from a narrow talent pool</div>
-      <div class="feature p-2 rounded" data-key="Cult_Pos">Training on cultural awareness and sensitivity</div>
-      <div class="feature p-2 rounded" data-key="Cult_Neg">No cultural-competence training</div>
-      <div class="feature p-2 rounded" data-key="ERG_Pos">Resources for employee resource groups</div>
-      <div class="feature p-2 rounded" data-key="ERG_Neg">No support for employee communities</div>
-      <div class="feature p-2 rounded" data-key="Lead_Pos">Leaders model inclusive behaviour</div>
-      <div class="feature p-2 rounded" data-key="Lead_Neg">Leaders dismiss inclusion efforts</div>
-      <div class="feature p-2 rounded" data-key="Acc_Pos">Ensuring physical and digital accessibility</div>
-      <div class="feature p-2 rounded" data-key="Acc_Neg">No accommodations for diverse needs</div>
-      <div class="feature p-2 rounded" data-key="Rec_Pos">Celebrating diverse holidays and achievements</div>
-      <div class="feature p-2 rounded" data-key="Rec_Neg">Ignoring cultural events and contributions</div>
+    <p class="text-gray-600 text-xs mb-4">Click a feature to add it.</p>
+    <div id="featureList" class="grid grid-cols-3 gap-2 mb-4">
+      <div class="feature p-1 rounded text-xs" data-key="Comm_Pos">Encourage sharing ideas</div>
+      <div class="feature p-1 rounded text-xs" data-key="Comm_Neg">Few voices heard</div>
+      <div class="feature p-1 rounded text-xs" data-key="Work_Pos">Flexible hours & remote work</div>
+      <div class="feature p-1 rounded text-xs" data-key="Work_Neg">Strict hours only</div>
+      <div class="feature p-1 rounded text-xs" data-key="Hire_Pos">Seek varied candidates</div>
+      <div class="feature p-1 rounded text-xs" data-key="Hire_Neg">Narrow recruitment</div>
+      <div class="feature p-1 rounded text-xs" data-key="Cult_Pos">Cultural awareness training</div>
+      <div class="feature p-1 rounded text-xs" data-key="Cult_Neg">No cultural training</div>
+      <div class="feature p-1 rounded text-xs" data-key="ERG_Pos">Support employee groups</div>
+      <div class="feature p-1 rounded text-xs" data-key="ERG_Neg">No community support</div>
+      <div class="feature p-1 rounded text-xs" data-key="Lead_Pos">Inclusive leadership</div>
+      <div class="feature p-1 rounded text-xs" data-key="Lead_Neg">Ignore inclusion</div>
+      <div class="feature p-1 rounded text-xs" data-key="Acc_Pos">Ensure accessibility</div>
+      <div class="feature p-1 rounded text-xs" data-key="Acc_Neg">No accommodations</div>
+      <div class="feature p-1 rounded text-xs" data-key="Rec_Pos">Celebrate diversity</div>
+      <div class="feature p-1 rounded text-xs" data-key="Rec_Neg">Ignore contributions</div>
     </div>
-    <div id="dropZone" class="dropzone"></div>
-    <p id="statusMessage" class="whitespace-pre-wrap text-sm text-gray-600"></p>
-    <div class="flex justify-around bg-gray-100 p-4 rounded">
-      <div>Innovation: <span id="innovationScore">0</span></div>
-      <div>Retention: <span id="retentionScore">0</span></div>
-      <div>Trust: <span id="trustScore">0</span></div>
-      <button onclick="resetGame()" class="bg-red-500 text-white px-4 py-2 rounded">Restart</button>
+    <div class="flex space-x-4">
+      <div id="dropZone" class="dropzone flex-1"></div>
+      <div class="bg-gray-100 p-2 rounded text-sm">
+        <div>Innovation: <span id="innovationScore">0</span></div>
+        <div>Retention: <span id="retentionScore">0</span></div>
+        <div>Trust: <span id="trustScore">0</span></div>
+        <button onclick="resetGame()" class="mt-2 bg-red-500 text-white px-2 py-1 text-xs rounded">Reset</button>
+      </div>
     </div>
+    <p id="statusMessage" class="whitespace-pre-wrap text-xs text-gray-600 mt-2"></p>
   </div>
   <div id="overlay">
-    💥 You’ve selected too many harmful features. Organisation has collapsed.
-    <button onclick="resetGame()" class="mt-6 bg-white text-black px-4 py-2 rounded">🔁 Try Again</button>
+    💥 Too many harmful features. Organisation collapsed.
+    <button onclick="resetGame()" class="mt-4 bg-white text-black px-4 py-2 rounded">Try Again</button>
   </div>
   <script>
-    const scoreMap = {
-      Comm_Pos: {i:2,r:1,t:1,explain:''},
-      Comm_Neg: {i:-1,r:-2,t:-1,explain:'Few voices can stifle innovation and trust.'},
-      Work_Pos: {i:1,r:2,t:1,explain:''},
-      Work_Neg: {i:-1,r:-2,t:-1,explain:'Rigid hours harm retention and morale.'},
-      Hire_Pos: {i:2,r:1,t:1,explain:''},
-      Hire_Neg: {i:-2,r:-1,t:-2,explain:'Narrow hiring reduces diversity and trust.'},
-      Cult_Pos: {i:1,r:1,t:2,explain:''},
-      Cult_Neg: {i:-1,r:-1,t:-2,explain:'Lack of awareness undermines inclusion.'},
-      ERG_Pos: {i:1,r:2,t:2,explain:''},
-      ERG_Neg: {i:-1,r:-1,t:-2,explain:'No ERGs means less belonging and trust.'},
-      Lead_Pos: {i:1,r:1,t:2,explain:''},
-      Lead_Neg: {i:-2,r:-1,t:-2,explain:'Ignoring inclusion from the top erodes trust.'},
-      Acc_Pos: {i:1,r:2,t:2,explain:''},
-      Acc_Neg: {i:-2,r:-2,t:-3,explain:'Barriers block participation and morale.'},
-      Rec_Pos: {i:1,r:1,t:2,explain:''},
-      Rec_Neg: {i:-1,r:-1,t:-2,explain:'Ignoring contributions hurts belonging.'}
-    };
+    const scoreMap={Comm_Pos:{i:2,r:1,t:1,explain:''},Comm_Neg:{i:-1,r:-2,t:-1,explain:'Few voices can stifle innovation and trust.'},Work_Pos:{i:1,r:2,t:1,explain:''},Work_Neg:{i:-1,r:-2,t:-1,explain:'Rigid hours harm retention and morale.'},Hire_Pos:{i:2,r:1,t:1,explain:''},Hire_Neg:{i:-2,r:-1,t:-2,explain:'Narrow hiring reduces diversity and trust.'},Cult_Pos:{i:1,r:1,t:2,explain:''},Cult_Neg:{i:-1,r:-1,t:-2,explain:'Lack of awareness undermines inclusion.'},ERG_Pos:{i:1,r:2,t:2,explain:''},ERG_Neg:{i:-1,r:-1,t:-2,explain:'No ERGs means less belonging and trust.'},Lead_Pos:{i:1,r:1,t:2,explain:''},Lead_Neg:{i:-2,r:-1,t:-2,explain:'Ignoring inclusion from the top erodes trust.'},Acc_Pos:{i:1,r:2,t:2,explain:''},Acc_Neg:{i:-2,r:-2,t:-3,explain:'Barriers block participation and morale.'},Rec_Pos:{i:1,r:1,t:2,explain:''},Rec_Neg:{i:-1,r:-1,t:-2,explain:'Ignoring contributions hurts belonging.'}};
     let innovation=0,retention=0,trust=0;
     document.getElementById('featureList').addEventListener('click',e=>{
-      const key=e.target.dataset.key;
-      if(!key||!scoreMap[key]) return;
-      const dz=document.getElementById('dropZone');
-      if(dz.querySelector(`[data-key="${key}"]`)) return alert('You’ve already added this feature');
-      if(dz.children.length>=5) return alert('You can only choose five features');
-      const cfg=scoreMap[key];
-      innovation+=cfg.i;
-      retention+=cfg.r;
-      trust+=cfg.t;
-      updateScores();
-      const card=document.createElement('div');
-      card.textContent=e.target.textContent;
-      card.dataset.key=key;
-      card.className='placed p-2 rounded mb-2';
-      dz.appendChild(card);
-      if(cfg.explain){
-        const status=document.getElementById('statusMessage');
-        status.innerText=(status.innerText?status.innerText+'\n':'')+`ℹ️ ${cfg.explain}`;
-      }
-      if([...dz.children].filter(c=>scoreMap[c.dataset.key].i<0).length>=3)
-        document.getElementById('overlay').style.display='flex';
+      const key=e.target.dataset.key; if(!key||!scoreMap[key]) return; const dz=document.getElementById('dropZone');
+      if(dz.querySelector(`[data-key="${key}"]`)) return alert('Already added'); if(dz.children.length>=5) return alert('Only five allowed');
+      const cfg=scoreMap[key]; innovation+=cfg.i; retention+=cfg.r; trust+=cfg.t; updateScores();
+      const card=document.createElement('div'); card.textContent=e.target.textContent; card.dataset.key=key; card.className='placed p-1 text-xs rounded mb-1'; dz.appendChild(card);
+      if(cfg.explain){ const status=document.getElementById('statusMessage'); status.innerText=(status.innerText?status.innerText+'\n':'')+`ℹ️ ${cfg.explain}`; }
+      if([...dz.children].filter(c=>scoreMap[c.dataset.key].i<0).length>=3) document.getElementById('overlay').style.display='flex';
     });
-    function updateScores(){
-      document.getElementById('innovationScore').innerText=innovation;
-      document.getElementById('retentionScore').innerText=retention;
-      document.getElementById('trustScore').innerText=trust;
-    }
-    function resetGame(){
-      innovation=0;
-      retention=0;
-      trust=0;
-      updateScores();
-      document.getElementById('dropZone').innerHTML='';
-      document.getElementById('statusMessage').innerText='';
-      document.getElementById('overlay').style.display='none';
-    }
+    function updateScores(){document.getElementById('innovationScore').innerText=innovation;document.getElementById('retentionScore').innerText=retention;document.getElementById('trustScore').innerText=trust;}
+    function resetGame(){innovation=0;retention=0;trust=0;updateScores();document.getElementById('dropZone').innerHTML='';document.getElementById('statusMessage').innerText='';document.getElementById('overlay').style.display='none';}
   </script>
 </body>
 </html>
