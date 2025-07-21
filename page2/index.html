@@ -2,166 +2,136 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Diversity Impact Builder</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    .draggable { cursor: move; }
-    .dropzone { min-height: 150px; border: 2px dashed #cbd5e0; padding: 1rem; }
-    #overlay {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background-color: rgba(0, 0, 0, 0.8); color: white;
-      display: none; flex-direction: column; justify-content: center;
-      align-items: center; text-align: center; font-size: 2rem;
-      z-index: 9999; padding: 2rem;
+    .feature { cursor: pointer; background: #f0f0f0; }
+    .feature:hover { background: #e2e8f0; }
+    .dropzone {
+      min-height: 150px;
+      border: 2px dashed #cbd5e0;
+      padding: 1rem;
+      background: #fff;
     }
-    #overlay button {
-      margin-top: 1.5rem; font-size: 1rem;
+    .placed { background: #fff9c4; }
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.8);
+      color: #fff;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      font-size: 1.5rem;
+      z-index: 50;
+      padding: 2rem;
     }
   </style>
 </head>
-<body class="bg-gray-100 p-6 font-sans">
-  <div class="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-md">
-    <h1 class="text-3xl font-bold text-purple-700 mb-4">🏗️ Diversity Impact Builder</h1>
-    <p class="mb-4 text-gray-700">Drag and drop diversity features onto the organisation to see how it affects success metrics like innovation, retention, and trust.</p>
-
-    <div class="grid grid-cols-3 gap-6">
-      <div>
-        <h2 class="text-xl font-semibold mb-2">Diversity Features</h2>
-        <div id="featureList" class="space-y-2">
-          <div class="bg-blue-100 p-2 rounded draggable" draggable="true">Welcoming environment</div>
-          <div class="bg-blue-100 p-2 rounded draggable" draggable="true">Leveraging talent</div>
-          <div class="bg-blue-100 p-2 rounded draggable" draggable="true">Stronger teams</div>
-          <div class="bg-blue-100 p-2 rounded draggable" draggable="true">Employees feel valued</div>
-          <div class="bg-blue-100 p-2 rounded draggable" draggable="true">Attracting excellence</div>
-          <div class="bg-red-100 p-2 rounded draggable" draggable="true">Biased hiring practices</div>
-          <div class="bg-red-100 p-2 rounded draggable" draggable="true">Lack of inclusion policies</div>
-          <div class="bg-red-100 p-2 rounded draggable" draggable="true">Unconscious bias training ignored</div>
-          <div class="bg-red-100 p-2 rounded draggable" draggable="true">Discrimination complaints unresolved</div>
-        </div>
-      </div>
-
-      <div>
-        <h2 class="text-xl font-semibold mb-2">Your Organisation</h2>
-        <div id="dropZone" class="dropzone bg-gray-50 rounded" ondragover="event.preventDefault()" ondrop="handleDrop(event)"></div>
-        <p id="statusMessage" class="mt-4 text-sm text-gray-600"></p>
-      </div>
-
-      <div>
-        <h2 class="text-xl font-semibold mb-2">Impact Score</h2>
-        <div class="mb-2">Innovation: <span id="innovationScore">0</span></div>
-        <div class="mb-2">Retention: <span id="retentionScore">0</span></div>
-        <div class="mb-2">Trust: <span id="trustScore">0</span></div>
-        <button onclick="resetGame()" class="mt-4 bg-red-500 text-white px-4 py-2 rounded">Reset</button>
-      </div>
+<body class="bg-gray-50 p-6 font-sans">
+  <div class="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-md flex flex-col space-y-6">
+    <h1 class="text-3xl font-bold text-purple-700">🏗️ Diversity Impact Builder</h1>
+    <p class="text-gray-700">Select exactly five diversity features to add to your organisation. Each choice will affect three key metrics:</p>
+    <ul class="list-disc list-inside text-gray-700">
+      <li><strong>Innovation</strong>: Diverse teams bring varied perspectives and ideas, leading to more creative solutions.</li>
+      <li><strong>Retention</strong>: Inclusive practices ensure all employees feel supported, leading to higher job satisfaction and lower turnover.</li>
+      <li><strong>Trust</strong>: A commitment to inclusion builds a culture where employees feel respected and valued.</li>
+    </ul>
+    <p class="text-gray-600">Click on a feature below to add it to your organisation.</p>
+    <div id="featureList" class="grid grid-cols-2 gap-4">
+      <div class="feature p-2 rounded" data-key="Comm_Pos">Encouraging all team members to share ideas</div>
+      <div class="feature p-2 rounded" data-key="Comm_Neg">Only a few voices heard in meetings</div>
+      <div class="feature p-2 rounded" data-key="Work_Pos">Flexible hours and remote-work options</div>
+      <div class="feature p-2 rounded" data-key="Work_Neg">Strict hours with no flexibility</div>
+      <div class="feature p-2 rounded" data-key="Hire_Pos">Actively seeking candidates from varied backgrounds</div>
+      <div class="feature p-2 rounded" data-key="Hire_Neg">Recruiting from a narrow talent pool</div>
+      <div class="feature p-2 rounded" data-key="Cult_Pos">Training on cultural awareness and sensitivity</div>
+      <div class="feature p-2 rounded" data-key="Cult_Neg">No cultural-competence training</div>
+      <div class="feature p-2 rounded" data-key="ERG_Pos">Resources for employee resource groups</div>
+      <div class="feature p-2 rounded" data-key="ERG_Neg">No support for employee communities</div>
+      <div class="feature p-2 rounded" data-key="Lead_Pos">Leaders model inclusive behaviour</div>
+      <div class="feature p-2 rounded" data-key="Lead_Neg">Leaders dismiss inclusion efforts</div>
+      <div class="feature p-2 rounded" data-key="Acc_Pos">Ensuring physical and digital accessibility</div>
+      <div class="feature p-2 rounded" data-key="Acc_Neg">No accommodations for diverse needs</div>
+      <div class="feature p-2 rounded" data-key="Rec_Pos">Celebrating diverse holidays and achievements</div>
+      <div class="feature p-2 rounded" data-key="Rec_Neg">Ignoring cultural events and contributions</div>
+    </div>
+    <div id="dropZone" class="dropzone"></div>
+    <p id="statusMessage" class="whitespace-pre-wrap text-sm text-gray-600"></p>
+    <div class="flex justify-around bg-gray-100 p-4 rounded">
+      <div>Innovation: <span id="innovationScore">0</span></div>
+      <div>Retention: <span id="retentionScore">0</span></div>
+      <div>Trust: <span id="trustScore">0</span></div>
+      <button onclick="resetGame()" class="bg-red-500 text-white px-4 py-2 rounded">Restart</button>
     </div>
   </div>
-
   <div id="overlay">
-    💥 GAME OVER: Your organisation has collapsed due to poor diversity practices.
-    <button onclick="resetGame()" class="bg-white text-black px-4 py-2 mt-6 rounded">🔁 Restart</button>
+    💥 You’ve selected too many harmful features. Organisation has collapsed.
+    <button onclick="resetGame()" class="mt-6 bg-white text-black px-4 py-2 rounded">🔁 Try Again</button>
   </div>
-
   <script>
     const scoreMap = {
-      "Welcoming environment": { innovation: 1, retention: 2, trust: 2 },
-      "Leveraging talent": { innovation: 2, retention: 1, trust: 1 },
-      "Stronger teams": { innovation: 1, retention: 2, trust: 2 },
-      "Employees feel valued": { innovation: 1, retention: 2, trust: 2 },
-      "Attracting excellence": { innovation: 2, retention: 2, trust: 1 },
-      "Biased hiring practices": { innovation: -2, retention: -1, trust: -2 },
-      "Lack of inclusion policies": { innovation: -1, retention: -2, trust: -2 },
-      "Unconscious bias training ignored": { innovation: -1, retention: -1, trust: -2 },
-      "Discrimination complaints unresolved": { innovation: -2, retention: -2, trust: -3 }
+      Comm_Pos: {i:2,r:1,t:1,explain:''},
+      Comm_Neg: {i:-1,r:-2,t:-1,explain:'Few voices can stifle innovation and trust.'},
+      Work_Pos: {i:1,r:2,t:1,explain:''},
+      Work_Neg: {i:-1,r:-2,t:-1,explain:'Rigid hours harm retention and morale.'},
+      Hire_Pos: {i:2,r:1,t:1,explain:''},
+      Hire_Neg: {i:-2,r:-1,t:-2,explain:'Narrow hiring reduces diversity and trust.'},
+      Cult_Pos: {i:1,r:1,t:2,explain:''},
+      Cult_Neg: {i:-1,r:-1,t:-2,explain:'Lack of awareness undermines inclusion.'},
+      ERG_Pos: {i:1,r:2,t:2,explain:''},
+      ERG_Neg: {i:-1,r:-1,t:-2,explain:'No ERGs means less belonging and trust.'},
+      Lead_Pos: {i:1,r:1,t:2,explain:''},
+      Lead_Neg: {i:-2,r:-1,t:-2,explain:'Ignoring inclusion from the top erodes trust.'},
+      Acc_Pos: {i:1,r:2,t:2,explain:''},
+      Acc_Neg: {i:-2,r:-2,t:-3,explain:'Barriers block participation and morale.'},
+      Rec_Pos: {i:1,r:1,t:2,explain:''},
+      Rec_Neg: {i:-1,r:-1,t:-2,explain:'Ignoring contributions hurts belonging.'}
     };
-
-    let innovation = 0, retention = 0, trust = 0;
-    let negativeCount = 0;
-    let lastNegative = null;
-
-    function handleDrop(event) {
-      const data = event.dataTransfer.getData("text/plain");
-      if (!scoreMap[data]) return;
-
-      const node = document.createElement("div");
-      const isNegative = scoreMap[data].innovation < 0 || scoreMap[data].retention < 0 || scoreMap[data].trust < 0;
-      node.textContent = data;
-      node.className = isNegative ? "bg-red-100 p-2 rounded mb-2" : "bg-green-100 p-2 rounded mb-2";
-      document.getElementById("dropZone").appendChild(node);
-
-      innovation += scoreMap[data].innovation;
-      retention += scoreMap[data].retention;
-      trust += scoreMap[data].trust;
-
-      if (isNegative) {
-        negativeCount++;
-        lastNegative = data;
-      }
-
+    let innovation=0,retention=0,trust=0;
+    document.getElementById('featureList').addEventListener('click',e=>{
+      const key=e.target.dataset.key;
+      if(!key||!scoreMap[key]) return;
+      const dz=document.getElementById('dropZone');
+      if(dz.querySelector(`[data-key="${key}"]`)) return alert('You’ve already added this feature');
+      if(dz.children.length>=5) return alert('You can only choose five features');
+      const cfg=scoreMap[key];
+      innovation+=cfg.i;
+      retention+=cfg.r;
+      trust+=cfg.t;
       updateScores();
-      showStatusMessage();
-    }
-
-    function updateScores() {
-      document.getElementById("innovationScore").innerText = innovation;
-      document.getElementById("retentionScore").innerText = retention;
-      document.getElementById("trustScore").innerText = trust;
-    }
-
-    function showStatusMessage() {
-      if (negativeCount >= 3) {
-        document.getElementById("overlay").style.display = "flex";
-        return;
+      const card=document.createElement('div');
+      card.textContent=e.target.textContent;
+      card.dataset.key=key;
+      card.className='placed p-2 rounded mb-2';
+      dz.appendChild(card);
+      if(cfg.explain){
+        const status=document.getElementById('statusMessage');
+        status.innerText=(status.innerText?status.innerText+'\n':'')+`ℹ️ ${cfg.explain}`;
       }
-
-      const total = innovation + retention + trust;
-      const messageEl = document.getElementById("statusMessage");
-
-      const messages = {
-        high: [
-          "🏆 Your organisation received an international diversity award!",
-          "🥇 National recognition highlights your inclusive workplace."
-        ],
-        mid: [
-          "✅ Team cohesion is strong and morale is rising.",
-          "📈 Your diversity strategy is driving success across departments."
-        ],
-        warn: [
-          "⚠️ Consider reviewing your diversity policies.",
-          "🔍 Minor gaps exist in your inclusion efforts."
-        ],
-        serious: [
-          "🚨 A legal case has been filed due to unresolved discrimination.",
-          "💥 Negative practices are harming team trust and well-being."
-        ]
-      };
-
-      let msg = "";
-      if (total >= 12) msg = messages.high[Math.floor(Math.random() * messages.high.length)];
-      else if (total >= 8) msg = messages.mid[Math.floor(Math.random() * messages.mid.length)];
-      else if (total >= 0) msg = messages.warn[Math.floor(Math.random() * messages.warn.length)];
-      else msg = messages.serious[Math.floor(Math.random() * messages.serious.length)];
-
-      if (negativeCount > 0 && total >= 6) {
-        msg += `\n⚠️ Caution: ${lastNegative} is raising internal concern.`;
-      }
-
-      messageEl.textContent = msg;
-    }
-
-    function resetGame() {
-      innovation = 0; retention = 0; trust = 0; negativeCount = 0; lastNegative = null;
-      updateScores();
-      document.getElementById("dropZone").innerHTML = "";
-      document.getElementById("statusMessage").textContent = "";
-      document.getElementById("overlay").style.display = "none";
-    }
-
-    document.querySelectorAll('.draggable').forEach(el => {
-      el.addEventListener('dragstart', (e) => {
-        e.dataTransfer.setData("text/plain", e.target.textContent);
-      });
+      if([...dz.children].filter(c=>scoreMap[c.dataset.key].i<0).length>=3)
+        document.getElementById('overlay').style.display='flex';
     });
+    function updateScores(){
+      document.getElementById('innovationScore').innerText=innovation;
+      document.getElementById('retentionScore').innerText=retention;
+      document.getElementById('trustScore').innerText=trust;
+    }
+    function resetGame(){
+      innovation=0;
+      retention=0;
+      trust=0;
+      updateScores();
+      document.getElementById('dropZone').innerHTML='';
+      document.getElementById('statusMessage').innerText='';
+      document.getElementById('overlay').style.display='none';
+    }
   </script>
 </body>
 </html>
