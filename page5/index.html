@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Cultural Intelligence Action Plan</title>
+  <style>
+    body { margin: 0; padding: 0; font-family: sans-serif; background: #f0f2f5; }
+    .container { max-width: 700px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    h2 { font-size: 1.5rem; text-align: center; margin-bottom: 0.5rem; }
+    .intro { font-size: 0.9rem; color: #666; text-align: center; margin-bottom: 1.5rem; }
+    .step { display: none; }
+    .step.active { display: block; }
+    .inputs { display: grid; gap: 12px; }
+    .inputs.two-cols { grid-template-columns: 1fr 1fr; }
+    .inputs input, .inputs textarea { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; }
+    .buttons { display: flex; justify-content: space-between; margin-top: 20px; }
+    .btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; }
+    .btn-primary { background: #4a90e2; color: #fff; }
+    .btn-secondary { background: #e0e0e0; color: #333; }
+    .btn-download { background: #2ecc71; color: #fff; width: 100%; }
+    label { font-weight: 600; margin-top: 8px; }
+  </style>
+  <script>
+    function showStep(n) {
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.getElementById('step' + n).classList.add('active');
+      window.scrollTo(0,0);
+    }
+    function nextStep(n) { showStep(n); }
+    function prevStep(n) { showStep(n); }
+    function downloadResponses() {
+      const form = document.getElementById('planForm');
+      const data = new FormData(form);
+      let out = 'MY CULTURAL INTELLIGENCE ACTION PLAN RESPONSES\n\n';
+      // Learnings
+      out += '1. Learnings - Cultural Intelligence:\n';
+      [1,2,3].forEach(i => { let v=data.get('ci'+i); if(v) out+=i+'. '+v+'\n'; });
+      out += '\n1. Learnings - EDI:\n';
+      [1,2].forEach(i => { let v=data.get('edi'+i); if(v) out+=i+'. '+v+'\n'; });
+      out += '\n1. SDG connection:\n1. '+(data.get('sdg1')||'')+'\n';
+      // Core & Flex
+      out += '\n2. Core & Flex Model:\nCore Values:\n';
+      [1,2].forEach(i => { let v=data.get('core'+i); if(v) out+=i+'. '+v+'\n'; });
+      out += 'Flexibility Areas:\n';
+      [1,2].forEach(i => { let v=data.get('flex'+i); if(v) out+=i+'. '+v+'\n'; });
+      out += '\nRelation to SDGs:\n'+(data.get('relation')||'')+'\n';
+      // Action Plan Part 1
+      out += '\n3. Action Plan - Part 1:\nMy Core Values:\n'+(data.get('planCore')||'')+'\n';
+      out += 'Where I Will Flex:\n'+(data.get('planFlex')||'')+'\n';
+      // Action Plan Part 2
+      out += '\n4. Action Plan - Part 2:\nActions to Support EDI:\n';
+      [1,2,3].forEach(i => { let v=data.get('action'+i); if(v) out+=i+'. '+v+'\n'; });
+      out += 'SDG I Will Contribute To:\n'+(data.get('planSdg')||'')+'\n';
+      out += 'Progress Measures:\n'+(data.get('progress')||'')+'\n';
+      const blob=new Blob([out],{type:'text/plain'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a'); a.href=url; a.download='action_plan_responses.txt'; a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h2>My Cultural Intelligence Action Plan</h2>
+    <p class="intro">Reflect on your learnings and design an action plan. Download your responses at the end.</p>
+    <form id="planForm">
+      <!-- Step 0: Intro -->
+      <div class="step active" id="step0">
+        <h3>Welcome!</h3>
+        <p>This activity guides you through articulating what you’ve learned about cultural intelligence, EDI, and SDGs, then helps you build a personal action plan.</p>
+        <div class="buttons">
+          <button type="button" class="btn btn-secondary" disabled>Back</button>
+          <button type="button" class="btn btn-primary" onclick="nextStep(1)">Start</button>
+        </div>
+      </div>
+      <!-- Step 1: Learnings -->
+      <div class="step" id="step1">
+        <h3>Step 1: Learnings</h3>
+        <div class="inputs">
+          <label>3 Things You Learned About Cultural Intelligence:</label>
+          <input type="text" name="ci1" placeholder="1.">
+          <input type="text" name="ci2" placeholder="2.">
+          <input type="text" name="ci3" placeholder="3.">
+          <label>2 Things You Learned About EDI:</label>
+          <input type="text" name="edi1" placeholder="1.">
+          <input type="text" name="edi2" placeholder="2.">
+          <label>1 SDG Connecting Both:</label>
+          <input type="text" name="sdg1" placeholder="e.g. SDG 4: Quality Education">
+        </div>
+        <div class="buttons">
+          <button type="button" class="btn btn-secondary" onclick="prevStep(0)">Back</button>
+          <button type="button" class="btn btn-primary" onclick="nextStep(2)">Next</button>
+        </div>
+      </div>
+      <!-- Step 2: Core & Flex -->
+      <div class="step" id="step2">
+        <h3>Step 2: Core & Flex Model</h3>
+        <div class="inputs two-cols">
+          <div>
+            <label>Core Values (2):</label>
+            <input type="text" name="core1" placeholder="1.">
+            <input type="text" name="core2" placeholder="2.">
+          </div>
+          <div>
+            <label>Flexibility Areas (2):</label>
+            <input type="text" name="flex1" placeholder="1.">
+            <input type="text" name="flex2" placeholder="2.">
+          </div>
+        </div>
+        <div class="inputs">
+          <label>Relation to SDGs (e.g. SDG 4 or 16):</label>
+          <textarea name="relation" rows="3" placeholder="Explain how these relate..."></textarea>
+        </div>
+        <div class="buttons">
+          <button type="button" class="btn btn-secondary" onclick="prevStep(1)">Back</button>
+          <button type="button" class="btn btn-primary" onclick="nextStep(3)">Next</button>
+        </div>
+      </div>
+      <!-- Step 3: Action Plan Part 1 -->
+      <div class="step" id="step3">
+        <h3>Step 3: Action Plan - Part 1</h3>
+        <div class="inputs">
+          <label>My Core Values:</label>
+          <textarea name="planCore" rows="2" placeholder="List your core values..."></textarea>
+          <label>Where I Will Flex:</label>
+          <textarea name="planFlex" rows="2" placeholder="List flexibility areas..."></textarea>
+        </div>
+        <div class="buttons">
+          <button type="button" class="btn btn-secondary" onclick="prevStep(2)">Back</button>
+          <button type="button" class="btn btn-primary" onclick="nextStep(4)">Next</button>
+        </div>
+      </div>
+      <!-- Step 4: Action Plan Part 2 -->
+      <div class="step" id="step4">
+        <h3>Step 4: Action Plan - Part 2</h3>
+        <div class="inputs">
+          <label>3 Actions I Will Take to Support EDI:</label>
+          <input type="text" name="action1" placeholder="1.">
+          <input type="text" name="action2" placeholder="2.">
+          <input type="text" name="action3" placeholder="3.">
+          <label>1 SDG I Will Contribute To:</label>
+          <input type="text" name="planSdg" placeholder="e.g. SDG 16">
+          <label>How I Will Measure My Progress:</label>
+          <textarea name="progress" rows="2" placeholder="Define your metrics..."></textarea>
+        </div>
+        <div class="buttons">
+          <button type="button" class="btn btn-secondary" onclick="prevStep(3)">Back</button>
+          <button type="button" class="btn btn-download" onclick="downloadResponses()">Download Responses</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
