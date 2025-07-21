@@ -8,41 +8,46 @@
 </head>
 <body class="bg-gray-100 font-sans p-6">
   <div class="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-md">
-    <h1 class="text-3xl font-bold text-purple-700 mb-4">🌍 Visions of 2030: Rethinking Your World through the SDGs</h1>
+    <h1 class="text-3xl font-bold text-purple-700 mb-2">🌍 Visions of 2030: Rethinking Your World through the SDGs</h1>
     <p class="mb-6 text-gray-700">In this activity, you'll explore local challenges and imagine a better future aligned with the UN Sustainable Development Goals (SDGs).</p>
 
     <!-- Step 1 -->
     <div id="step1" class="space-y-4">
       <h2 class="text-xl font-semibold text-gray-800">Step 1: What challenge is most urgent in your environment?</h2>
-      <button class="block w-full text-left p-4 bg-blue-100 hover:bg-blue-200 rounded-lg" onclick="chooseChallenge('climate')">🌿 Climate change & waste</button>
-      <button class="block w-full text-left p-4 bg-blue-100 hover:bg-blue-200 rounded-lg" onclick="chooseChallenge('education')">🧑‍🏫 Lack of quality education</button>
-      <button class="block w-full text-left p-4 bg-blue-100 hover:bg-blue-200 rounded-lg" onclick="chooseChallenge('health')">🏥 Access to health care</button>
-      <button class="block w-full text-left p-4 bg-blue-100 hover:bg-blue-200 rounded-lg" onclick="chooseChallenge('water')">🚰 Water shortages or pollution</button>
-      <button class="block w-full text-left p-4 bg-blue-100 hover:bg-blue-200 rounded-lg" onclick="chooseChallenge('poverty')">🏘️ Poverty and inequality</button>
+      <button class="block w-full text-left p-4 bg-blue-100 hover:bg-blue-200 rounded-lg" onclick="enableStep1Next('climate')">🌿 Climate change & waste</button>
+      <button class="block w-full text-left p-4 bg-blue-100 hover:bg-blue-200 rounded-lg" onclick="enableStep1Next('education')">🧑‍🏫 Lack of quality education</button>
+      <button class="block w-full text-left p-4 bg-blue-100 hover:bg-blue-200 rounded-lg" onclick="enableStep1Next('health')">🏥 Access to health care</button>
+      <button class="block w-full text-left p-4 bg-blue-100 hover:bg-blue-200 rounded-lg" onclick="enableStep1Next('water')">🚰 Water shortages or pollution</button>
+      <button class="block w-full text-left p-4 bg-blue-100 hover:bg-blue-200 rounded-lg" onclick="enableStep1Next('poverty')">🏘️ Poverty and inequality</button>
+      <div class="flex justify-end pt-4">
+        <button id="step1-next" class="bg-purple-600 text-white px-4 py-2 rounded hidden" onclick="chooseChallenge(selectedStep1)">Continue to Step 2</button>
+      </div>
     </div>
 
     <!-- Step 2 -->
     <div id="step2" class="hidden mt-6 space-y-4">
       <h2 class="text-xl font-semibold text-gray-800">Step 2: A Vision for 2030</h2>
+      <p id="selected-challenge-label" class="text-sm text-gray-600 italic"></p>
       <p id="scenario" class="text-gray-700"></p>
-      <p class="font-medium mt-2">What needs to change today for this to happen?</p>
+      <p class="font-medium mt-2">The UN has identified several important factors in achieving Vision 2030. Hover over each to learn more. Then, based on your context, choose the one you believe would make the most impact on this challenge.</p>
       <div class="space-y-2">
-        <button class="w-full bg-green-100 hover:bg-green-200 p-3 rounded" onclick="revealInsight('govt')">🏛️ Local government action</button>
-        <button class="w-full bg-green-100 hover:bg-green-200 p-3 rounded" onclick="revealInsight('public')">📢 Public awareness</button>
-        <button class="w-full bg-green-100 hover:bg-green-200 p-3 rounded" onclick="revealInsight('school')">🏫 University/school policy</button>
-        <button class="w-full bg-green-100 hover:bg-green-200 p-3 rounded" onclick="revealInsight('family')">👨‍👩‍👧‍👦 Family/community behaviour</button>
-        <button class="w-full bg-green-100 hover:bg-green-200 p-3 rounded" onclick="revealInsight('personal')">🧍 Personal lifestyle</button>
+        <button class="w-full bg-green-100 hover:bg-green-200 p-3 rounded" onmouseover="revealInsight('govt')" onclick="highlightInsight(this, 'govt')">🏛️ Local government action</button>
+        <button class="w-full bg-green-100 hover:bg-green-200 p-3 rounded" onmouseover="revealInsight('public')" onclick="highlightInsight(this, 'public')">📢 Public awareness</button>
+        <button class="w-full bg-green-100 hover:bg-green-200 p-3 rounded" onmouseover="revealInsight('school')" onclick="highlightInsight(this, 'school')">🏫 University/school policy</button>
+        <button class="w-full bg-green-100 hover:bg-green-200 p-3 rounded" onmouseover="revealInsight('family')" onclick="highlightInsight(this, 'family')">👨‍👩‍👧‍👦 Family/community behaviour</button>
+        <button class="w-full bg-green-100 hover:bg-green-200 p-3 rounded" onmouseover="revealInsight('personal')" onclick="highlightInsight(this, 'personal')">🧍 Personal lifestyle</button>
       </div>
       <p id="insight" class="mt-4 text-purple-700 font-semibold"></p>
       <div class="flex justify-between mt-6">
         <button class="bg-gray-300 text-gray-800 px-4 py-2 rounded" onclick="backToStep1()">Previous</button>
-        <button class="bg-purple-600 text-white px-4 py-2 rounded" onclick="showComparison()">Next</button>
+        <button class="bg-purple-600 text-white px-4 py-2 rounded" onclick="showComparison()">Continue to Next Section</button>
       </div>
     </div>
 
     <!-- Step 3 -->
     <div id="step3" class="hidden mt-6 space-y-4">
-      <h2 class="text-xl font-semibold text-gray-800">Step 3: Local vs Global Progress</h2>
+      <h2 class="text-xl font-semibold text-gray-800">Step 3: What’s working elsewhere – and what could work here?</h2>
+      <p class="text-gray-700">Below are examples of progress from other areas. Think about which change could create the greatest impact in your community.</p>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="bg-gray-100 p-4 rounded">
           <h3 class="font-bold text-gray-800 mb-2">🌐 In a similar region…</h3>
@@ -64,14 +69,14 @@
       <p id="step3-feedback" class="text-purple-700 font-semibold"></p>
       <div class="flex justify-between mt-6">
         <button class="bg-gray-300 text-gray-800 px-4 py-2 rounded" onclick="backToStep2()">Previous</button>
-        <button class="bg-purple-600 text-white px-4 py-2 rounded" onclick="showFinal()">Next</button>
+        <button class="bg-purple-600 text-white px-4 py-2 rounded" onclick="showFinal()">Continue to Next Section</button>
       </div>
     </div>
 
     <!-- Step 4 -->
     <div id="step4" class="hidden mt-6 space-y-4">
       <h2 class="text-xl font-semibold text-gray-800">Step 4: Final Reflection</h2>
-      <p class="text-gray-700">How do you feel after exploring this activity?</p>
+      <p class="text-gray-700">How do you feel after completing this activity?</p>
       <ul class="space-y-2">
         <li><label><input type="checkbox" class="mr-2">✅ I feel <strong>more hopeful</strong> about reaching the SDGs.</label></li>
         <li><label><input type="checkbox" class="mr-2">✅ I feel <strong>more aware</strong> of the barriers and actions.</label></li>
@@ -79,14 +84,19 @@
         <li><label><input type="checkbox" class="mr-2">✅ I feel <strong>concerned</strong> about the lack of progress.</label></li>
         <li><label><input type="checkbox" class="mr-2">✅ I want to <strong>learn more</strong> and talk with others.</label></li>
       </ul>
-      <p class="mt-4 italic text-sm text-gray-600">“You are never too small to make a difference.” – Greta Thunberg</p>
-      <div class="mt-6">
+      <h3 class="mt-6 text-lg font-semibold text-gray-800">Final Thought</h3>
+      <p class="mt-2 italic text-sm text-gray-600">“Every one of us can make a contribution. And quite often we are looking for the big things and forget that, wherever we are, we can make a contribution.” – <a href="https://wangarimaathai.org/the-story" class="underline text-blue-700" target="_blank">Wangari Maathai</a></p>
+      <div class="mt-6 flex justify-between">
         <button class="bg-blue-600 text-white px-4 py-2 rounded" onclick="restartActivity()">🔁 Restart Activity</button>
+        <button class="bg-purple-600 text-white px-4 py-2 rounded">🏠 Return to Home</button>
       </div>
     </div>
   </div>
 
   <script>
+    let selectedStep1 = null;
+    let selectedInsight = null;
+
     const scenarios = {
       climate: "It’s 2030. Green rooftops cover buildings, recycling is the norm, and solar energy powers homes. Citizens use bikes and digital apps to monitor waste.",
       education: "It’s 2030. Every child attends school with modern tech and trained teachers. Lifelong learning is free and inclusive for all.",
@@ -95,22 +105,47 @@
       poverty: "It’s 2030. No one sleeps hungry, decent work is accessible, and communities flourish through equality and fairness."
     };
 
+    const challengeLabels = {
+      climate: "🌿 Climate change & waste",
+      education: "🧑‍🏫 Lack of quality education",
+      health: "🏥 Access to health care",
+      water: "🚰 Water shortages or pollution",
+      poverty: "🏘️ Poverty and inequality"
+    };
+
     const insights = {
-      govt: "📊 Governments play a key role by allocating budgets to sustainability, implementing policies, and enforcing regulations. Their leadership sets the tone for widespread action.",
+      govt: "📊 Governments play a pivotal role by allocating budgets to sustainability, implementing policies, and enforcing regulations. Their leadership sets the tone for widespread action.",
       public: "📢 Awareness campaigns inform and engage the public, shifting societal norms and behaviours. Informed citizens make better decisions that collectively shape a sustainable future.",
       school: "🏫 Education institutions shape future leaders. Green campus policies and sustainability education inspire action and responsibility among youth.",
       family: "👨‍👩‍👧‍👦 Families are the foundation of society. Eco-friendly habits at home teach the next generation the value of responsibility and stewardship.",
       personal: "🧍 Individual choices—like conserving energy, recycling, and reducing meat consumption—accumulate into significant environmental impact over time."
     };
 
+    function enableStep1Next(choice) {
+      selectedStep1 = choice;
+      document.getElementById("step1-next").classList.remove("hidden");
+      document.querySelectorAll("#step1 button").forEach(btn => btn.classList.remove("ring-2", "ring-blue-500"));
+      event.target.classList.add("ring-2", "ring-blue-500");
+    }
+
     function chooseChallenge(choice) {
       document.getElementById("step1").classList.add("hidden");
       document.getElementById("step2").classList.remove("hidden");
       document.getElementById("scenario").innerText = scenarios[choice];
+      document.getElementById("selected-challenge-label").innerText = "You selected: " + challengeLabels[choice];
     }
 
     function revealInsight(key) {
       document.getElementById("insight").innerText = insights[key];
+    }
+
+    function highlightInsight(button, key) {
+      revealInsight(key);
+      if (selectedInsight) {
+        selectedInsight.classList.remove("ring-2", "ring-purple-500");
+      }
+      button.classList.add("ring-2", "ring-purple-500");
+      selectedInsight = button;
     }
 
     function showComparison() {
@@ -136,6 +171,7 @@
     function restartActivity() {
       document.getElementById("step4").classList.add("hidden");
       document.getElementById("step1").classList.remove("hidden");
+      document.getElementById("step1-next").classList.add("hidden");
     }
 
     function showFeedback(message) {
