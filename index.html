@@ -11,16 +11,32 @@
     :root{ --accent: #e90606; }
     .font-head{ font-family: 'Playfair Display', serif; }
     .font-body{ font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji'; }
+    /* TIME-like refinements */
+    .sticky-header{position:sticky;top:0;z-index:50;background:#ffffffcc;backdrop-filter:saturate(180%) blur(2px);border-bottom:1px solid #eee}
+    .brand{letter-spacing:0.02em}
+    .kicker{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600}
+    .progress{height:3px;background:#eee}
+    .progress > div{height:3px;background:var(--accent);width:0%;transition:width .25s ease}
+    .dropcap:first-letter{float:left;font-family:'Playfair Display',serif;font-weight:700;font-size:3rem;line-height:1;padding-right:.35rem;padding-top:.2rem;color:#111}
   </style>
 </head>
 <body class="bg-[#fafafa] font-body p-6">
+  <header class="sticky-header">
+    <div class="max-w-3xl mx-auto flex items-center justify-between py-3 px-1">
+      <div class="brand font-head text-xl text-[#111]">VISIONS 2030</div>
+      <div class="text-xs text-gray-600">Progress <span id="progressPct">0%</span></div>
+    </div>
+    <div class="progress"><div id="progressBar"></div></div>
+  </header>
+
   <div class="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-lg ring-1 ring-gray-200 border-t-8 border-[#e90606]">
     <h1 class="font-head text-4xl md:text-5xl font-extrabold text-[#111] leading-tight mb-3">🌍 Visions of 2030: Rethinking Your World through the SDGs</h1>
     <div class="h-1 w-16 bg-[#e90606] mb-4"></div>
-    <p id="introText" class="mb-6 text-gray-700">In this activity, you'll explore local challenges and imagine a better future aligned with the UN Sustainable Development Goals (SDGs).</p>
+    <p id="introText" class="mb-6 text-gray-700 dropcap">In this activity, you'll explore local challenges and imagine a better future aligned with the UN Sustainable Development Goals (SDGs).</p>
 
     <!-- Step 1 -->
     <div id="step1" class="space-y-4">
+      <p class="kicker">Choose your focus</p>
       <h2 class="font-head text-2xl font-semibold text-gray-900">Step 1: What challenge is most urgent in your environment?</h2>
       <button class="block w-full text-left p-4 bg-white border border-gray-300 hover:border-[var(--accent)] hover:bg-[#fff5f5] rounded-lg" onclick="enableStep1Next('climate', this)">🌿 Climate change & waste</button>
       <button class="block w-full text-left p-4 bg-white border border-gray-300 hover:border-[var(--accent)] hover:bg-[#fff5f5] rounded-lg" onclick="enableStep1Next('education', this)">🧑‍🏫 Lack of quality education</button>
@@ -34,9 +50,10 @@
 
     <!-- Step 2 -->
     <div id="step2" class="hidden mt-6 space-y-4">
+      <p class="kicker">2030 vision</p>
       <h2 class="font-head text-2xl font-semibold text-gray-900">Step 2: A Vision for 2030</h2>
       <p id="selected-challenge-label" class="text-sm text-gray-600 italic"></p>
-      <p id="scenario" class="text-gray-700"></p>
+      <p id="scenario" class="text-gray-700 dropcap"></p>
       <p class="font-medium mt-2">The UN has identified several important factors in achieving Vision 2030. Hover over each to learn more. Then, based on your context, choose the one you believe would make the most impact on this challenge.</p>
       <div class="space-y-2">
         <button class="w-full bg-white border border-gray-300 hover:border-[var(--accent)] hover:bg-[#fff5f5] p-3 rounded" onmouseover="revealInsight('govt')" onclick="highlightInsight(this, 'govt')">🏛️ Local government action</button>
@@ -54,6 +71,7 @@
 
     <!-- Step 3 -->
     <div id="step3" class="hidden mt-6 space-y-4">
+      <p class="kicker">Ideas from elsewhere</p>
       <h2 class="font-head text-2xl font-semibold text-gray-900">Step 3: What’s working elsewhere – and what could work here?</h2>
       <p class="text-gray-700">Below are examples of progress from other areas. Think about which change could create the greatest impact in your community.</p>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -80,10 +98,12 @@
         <button class="bg-[var(--accent)] text-white px-4 py-2 rounded" onclick="showFinal()">Continue to Next Section</button>
       </div>
     </div>
+
     <!-- Step 4: Written Reflection -->
     <div id="step4" class="hidden mt-6 space-y-4">
+      <p class="kicker">Your reflection</p>
       <h2 class="font-head text-2xl font-semibold text-gray-900">Step 4: Written reflection</h2>
-      <p class="text-gray-700">The Sustainable Development Goals (SDGs) aim to tackle the world's most urgent environmental, political, and economic challenges. In this reflective activity, we'd like you to consider:</p>
+      <p class="text-gray-700 dropcap">The Sustainable Development Goals (SDGs) aim to tackle the world's most urgent environmental, political, and economic challenges. In this reflective activity, we'd like you to consider:</p>
       <blockquote class="border-l-4 border-[var(--accent)] pl-4 italic text-gray-700">“What would achieving the UN SDGs look like in your part of the world?”</blockquote>
       <div class="text-gray-700">
         <p class="font-medium">Instructions:</p>
@@ -92,7 +112,8 @@
           <li>Write your thoughts in the box below. Aim for 150–300 words.</li>
           <li>Once done, you can download your response as a .txt file.</li>
         </ul>
-            <label for="reflectInput" class="block text-sm font-medium text-gray-700">Your response</label>
+      </div>
+      <label for="reflectInput" class="block text-sm font-medium text-gray-700">Your response</label>
       <textarea id="reflectInput" class="w-full border border-gray-300 rounded p-3 h-40 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]" placeholder="Write your 150–300 word reflection here..."></textarea>
       <div class="flex justify-between items-center text-sm text-gray-600">
         <span id="charCount">0 characters</span>
@@ -106,10 +127,10 @@
         </div>
       </div>
     </div>
-    </div>
-  </div>
+
     <!-- Step 5: Final reflection -->
     <div id="step5" class="hidden mt-6 space-y-4">
+      <p class="kicker">How you feel</p>
       <h2 class="font-head text-2xl font-semibold text-gray-900">Step 5: Final reflection</h2>
       <p class="text-gray-700">How do you feel after completing this activity?</p>
       <ul class="space-y-2">
@@ -129,10 +150,14 @@
       </div>
     </div>
 
+  </div>
+
   <script>
+    // ---------- State ----------
     let selectedStep1 = null;
     let selectedInsight = null;
 
+    // ---------- Data ----------
     const scenarios = {
       climate: "It’s 2030. Green rooftops cover buildings, recycling is the norm, and solar energy powers homes. Citizens use bikes and digital apps to monitor waste.",
       education: "It’s 2030. Every child attends school with modern tech and trained teachers. Lifelong learning is free and inclusive for all.",
@@ -157,6 +182,7 @@
       personal: "🧍 Individual choices—like conserving energy, recycling, and reducing meat consumption—accumulate into significant environmental impact over time."
     };
 
+    // ---------- Navigation helpers ----------
     function enableStep1Next(choice, el) {
       selectedStep1 = choice;
       document.getElementById("step1-next").classList.remove("hidden");
@@ -172,6 +198,7 @@
       document.getElementById("step2").classList.remove("hidden");
       document.getElementById("scenario").innerText = scenarios[choice];
       document.getElementById("selected-challenge-label").innerText = "You selected: " + challengeLabels[choice];
+      setProgress(2);
     }
 
     function revealInsight(key) {
@@ -190,20 +217,37 @@
     function showComparison() {
       document.getElementById("step2").classList.add("hidden");
       document.getElementById("step3").classList.remove("hidden");
+      setProgress(3);
     }
 
-    function showFinal() { const s3 = document.getElementById('step3'); const s4 = document.getElementById('step4'); if (s3) s3.classList.add('hidden'); if (s4) { s4.classList.remove('hidden'); initReflectionStep(); } }
+    function showFinal() {
+      const s3 = document.getElementById('step3');
+      const s4 = document.getElementById('step4');
+      if (s3) s3.classList.add('hidden');
+      if (s4) { s4.classList.remove('hidden'); initReflectionStep(); }
+      setProgress(4);
+    }
 
     function backToStep1() {
       document.getElementById("step2").classList.add("hidden");
       document.getElementById("step1").classList.remove("hidden");
       const intro = document.getElementById("introText");
       if (intro) intro.classList.remove("hidden");
+      setProgress(1);
     }
 
     function backToStep2() {
       document.getElementById("step3").classList.add("hidden");
       document.getElementById("step2").classList.remove("hidden");
+      setProgress(2);
+    }
+
+    function backToStep3() {
+      const s3 = document.getElementById('step3');
+      const s4 = document.getElementById('step4');
+      if (s4) s4.classList.add('hidden');
+      if (s3) s3.classList.remove('hidden');
+      setProgress(3);
     }
 
     function restartActivity() {
@@ -215,21 +259,30 @@
       document.getElementById("step1-next").classList.add("hidden");
       const intro = document.getElementById("introText");
       if (intro) intro.classList.remove("hidden");
+      setProgress(1);
     }
 
     function showFeedback(message) {
       document.getElementById("step3-feedback").innerText = "💡 " + message;
     }
-  </script>  <script>
-    // New: go back from Step 4 to Step 3
-    function backToStep3() {
-      const s3 = document.getElementById('step3');
+
+    function goToStep5() {
       const s4 = document.getElementById('step4');
+      const s5 = document.getElementById('step5');
       if (s4) s4.classList.add('hidden');
-      if (s3) s3.classList.remove('hidden');
+      if (s5) s5.classList.remove('hidden');
+      setProgress(5);
     }
 
-    // Reflection initialiser and helpers (no regex in JS strings to avoid escaping issues)
+    function backToStep4() {
+      const s4 = document.getElementById('step4');
+      const s5 = document.getElementById('step5');
+      if (s5) s5.classList.add('hidden');
+      if (s4) s4.classList.remove('hidden');
+      setProgress(4);
+    }
+
+    // ---------- Reflection helpers ----------
     function initReflectionStep() {
       const textarea = document.getElementById('reflectInput');
       const charCount = document.getElementById('charCount');
@@ -269,35 +322,22 @@
       URL.revokeObjectURL(url);
     }
 
-    // Minimal self-tests to verify critical elements exist
+    // ---------- Progress bar ----------
+    const totalSteps = 5;
+    function setProgress(step) {
+      const pct = Math.max(0, Math.min(100, Math.round((step - 1) / (totalSteps - 1) * 100)));
+      const bar = document.getElementById('progressBar');
+      const pctEl = document.getElementById('progressPct');
+      if (bar) bar.style.width = pct + '%';
+      if (pctEl) pctEl.textContent = pct + '%';
+    }
+    document.addEventListener('DOMContentLoaded', function(){ setProgress(1); });
+
+    // ---------- Self-tests (single definition) ----------
     function runSelfTests() {
       const tests = [
         { name: 'enableStep1Next defined', pass: typeof enableStep1Next === 'function' },
-        { name: 'Step 1 next button present', pass: !!document.getElementById('step1-next') },
-        { name: 'Step 3 exists', pass: !!document.getElementById('step3') },
-        { name: 'Step 4 (reflection) exists', pass: !!document.getElementById('step4') },
-        { name: 'downloadReflection defined', pass: typeof downloadReflection === 'function' }
-      ];
-      try { console.table(tests); } catch (e) { /* no-op */ }
-    }
-  function goToStep5() {
-      const s4 = document.getElementById('step4');
-      const s5 = document.getElementById('step5');
-      if (s4) s4.classList.add('hidden');
-      if (s5) s5.classList.remove('hidden');
-    }
-
-    function backToStep4() {
-      const s4 = document.getElementById('step4');
-      const s5 = document.getElementById('step5');
-      if (s5) s5.classList.add('hidden');
-      if (s4) s4.classList.remove('hidden');
-    }
-
-    // Update self-tests to include Step 5
-    function runSelfTests() {
-      const tests = [
-        { name: 'enableStep1Next defined', pass: typeof enableStep1Next === 'function' },
+        { name: 'initReflectionStep defined', pass: typeof initReflectionStep === 'function' },
         { name: 'Step 1 next button present', pass: !!document.getElementById('step1-next') },
         { name: 'Step 3 exists', pass: !!document.getElementById('step3') },
         { name: 'Step 4 exists (reflection)', pass: !!document.getElementById('step4') },
