@@ -9,16 +9,16 @@
 <body class="bg-gray-100 font-sans p-6">
   <div class="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-md">
     <h1 class="text-3xl font-bold text-purple-700 mb-2">🌍 Visions of 2030: Rethinking Your World through the SDGs</h1>
-    <p class="mb-6 text-gray-700">In this activity, you'll explore local challenges and imagine a better future aligned with the UN Sustainable Development Goals (SDGs).</p>
+    <p id="introText" class="mb-6 text-gray-700">In this activity, you'll explore local challenges and imagine a better future aligned with the UN Sustainable Development Goals (SDGs).</p>
 
     <!-- Step 1 -->
     <div id="step1" class="space-y-4">
       <h2 class="text-xl font-semibold text-gray-800">Step 1: What challenge is most urgent in your environment?</h2>
-      <button class="block w-full text-left p-4 bg-blue-100 hover:bg-blue-200 rounded-lg" onclick="enableStep1Next('climate')">🌿 Climate change & waste</button>
-      <button class="block w-full text-left p-4 bg-blue-100 hover:bg-blue-200 rounded-lg" onclick="enableStep1Next('education')">🧑‍🏫 Lack of quality education</button>
-      <button class="block w-full text-left p-4 bg-blue-100 hover:bg-blue-200 rounded-lg" onclick="enableStep1Next('health')">🏥 Access to health care</button>
-      <button class="block w-full text-left p-4 bg-blue-100 hover:bg-blue-200 rounded-lg" onclick="enableStep1Next('water')">🚰 Water shortages or pollution</button>
-      <button class="block w-full text-left p-4 bg-blue-100 hover:bg-blue-200 rounded-lg" onclick="enableStep1Next('poverty')">🏘️ Poverty and inequality</button>
+      <button class="block w-full text-left p-4 bg-blue-100 hover:bg-blue-200 rounded-lg" onclick="enableStep1Next('climate', this)">🌿 Climate change & waste</button>
+      <button class="block w-full text-left p-4 bg-blue-100 hover:bg-blue-200 rounded-lg" onclick="enableStep1Next('education', this)">🧑‍🏫 Lack of quality education</button>
+      <button class="block w-full text-left p-4 bg-blue-100 hover:bg-blue-200 rounded-lg" onclick="enableStep1Next('health', this)">🏥 Access to health care</button>
+      <button class="block w-full text-left p-4 bg-blue-100 hover:bg-blue-200 rounded-lg" onclick="enableStep1Next('water', this)">🚰 Water shortages or pollution</button>
+      <button class="block w-full text-left p-4 bg-blue-100 hover:bg-blue-200 rounded-lg" onclick="enableStep1Next('poverty', this)">🏘️ Poverty and inequality</button>
       <div class="flex justify-end pt-4">
         <button id="step1-next" class="bg-purple-600 text-white px-4 py-2 rounded hidden" onclick="chooseChallenge(selectedStep1)">Continue to Step 2</button>
       </div>
@@ -72,10 +72,37 @@
         <button class="bg-purple-600 text-white px-4 py-2 rounded" onclick="showFinal()">Continue to Next Section</button>
       </div>
     </div>
-
-    <!-- Step 4 -->
+    <!-- Step 4: Written Reflection -->
     <div id="step4" class="hidden mt-6 space-y-4">
-      <h2 class="text-xl font-semibold text-gray-800">Step 4: Final Reflection</h2>
+      <h2 class="text-xl font-semibold text-gray-800">Step 4: Written reflection</h2>
+      <p class="text-gray-700">The Sustainable Development Goals (SDGs) aim to tackle the world's most urgent environmental, political, and economic challenges. In this reflective activity, we'd like you to consider:</p>
+      <blockquote class="border-l-4 border-purple-400 pl-4 italic text-gray-700">“What would achieving the UN SDGs look like in your part of the world?”</blockquote>
+      <div class="text-gray-700">
+        <p class="font-medium">Instructions:</p>
+        <ul class="list-disc list-inside space-y-1">
+          <li>Take 5–10 minutes to reflect deeply on the changes you'd expect to see in your community or region.</li>
+          <li>Write your thoughts in the box below. Aim for 150–300 words.</li>
+          <li>Once done, you can download your response as a .txt file.</li>
+        </ul>
+            <label for="reflectInput" class="block text-sm font-medium text-gray-700">Your response</label>
+      <textarea id="reflectInput" class="w-full border border-gray-300 rounded p-3 h-40 focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Write your 150–300 word reflection here..."></textarea>
+      <div class="flex justify-between items-center text-sm text-gray-600">
+        <span id="charCount">0 characters</span>
+        <span id="wordCount">0 words</span>
+      </div>
+      <div class="flex justify-between mt-4">
+        <button class="bg-gray-300 text-gray-800 px-4 py-2 rounded" onclick="backToStep3()">Previous</button>
+        <div class="space-x-2">
+          <button id="downloadBtn" class="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50" onclick="downloadReflection()">Download response (.txt)</button>
+          <button class="bg-purple-600 text-white px-4 py-2 rounded" onclick="goToStep5()">Continue to Step 5</button>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+    <!-- Step 5: Final reflection -->
+    <div id="step5" class="hidden mt-6 space-y-4">
+      <h2 class="text-xl font-semibold text-gray-800">Step 5: Final reflection</h2>
       <p class="text-gray-700">How do you feel after completing this activity?</p>
       <ul class="space-y-2">
         <li><label><input type="checkbox" class="mr-2">✅ I feel <strong>more hopeful</strong> about reaching the SDGs.</label></li>
@@ -84,14 +111,15 @@
         <li><label><input type="checkbox" class="mr-2">✅ I feel <strong>concerned</strong> about the lack of progress.</label></li>
         <li><label><input type="checkbox" class="mr-2">✅ I want to <strong>learn more</strong> and talk with others.</label></li>
       </ul>
-      <h3 class="mt-6 text-lg font-semibold text-gray-800">Final Thought</h3>
-      <p class="mt-2 italic text-sm text-gray-600">“Every one of us can make a contribution. And quite often we are looking for the big things and forget that, wherever we are, we can make a contribution.” – <a href="https://wangarimaathai.org/the-story" class="underline text-blue-700" target="_blank">Wangari Maathai</a></p>
+      <h3 class="mt-6 text-lg font-semibold text-gray-800">Final thought</h3>
+      <p class="mt-2 italic text-sm text-gray-600">“Every one of us can make a contribution. And quite often we are looking for the big things and forget that, wherever we are, we can make a contribution.” – <a href="https://wangarimaathai.org/the-story" class="underline text-blue-700" target="_blank" rel="noopener">Wangari Maathai</a></p>
       <div class="mt-6 flex justify-between">
-        <button class="bg-blue-600 text-white px-4 py-2 rounded" onclick="restartActivity()">🔁 Restart Activity</button>
-        <button class="bg-purple-600 text-white px-4 py-2 rounded">🏠 Return to Home</button>
+        <button class="bg-gray-300 text-gray-800 px-4 py-2 rounded" onclick="backToStep4()">Previous</button>
+        <div class="space-x-2">
+          <button class="bg-blue-600 text-white px-4 py-2 rounded" onclick="restartActivity()">🔁 Restart Activity</button>
+        </div>
       </div>
     </div>
-  </div>
 
   <script>
     let selectedStep1 = null;
@@ -121,14 +149,17 @@
       personal: "🧍 Individual choices—like conserving energy, recycling, and reducing meat consumption—accumulate into significant environmental impact over time."
     };
 
-    function enableStep1Next(choice) {
+    function enableStep1Next(choice, el) {
       selectedStep1 = choice;
       document.getElementById("step1-next").classList.remove("hidden");
       document.querySelectorAll("#step1 button").forEach(btn => btn.classList.remove("ring-2", "ring-blue-500"));
-      event.target.classList.add("ring-2", "ring-blue-500");
+      const target = el || (window.event && (window.event.currentTarget || window.event.target));
+      if (target) target.classList.add("ring-2", "ring-blue-500");
     }
 
     function chooseChallenge(choice) {
+      const intro = document.getElementById("introText");
+      if (intro) intro.classList.add("hidden");
       document.getElementById("step1").classList.add("hidden");
       document.getElementById("step2").classList.remove("hidden");
       document.getElementById("scenario").innerText = scenarios[choice];
@@ -153,14 +184,13 @@
       document.getElementById("step3").classList.remove("hidden");
     }
 
-    function showFinal() {
-      document.getElementById("step3").classList.add("hidden");
-      document.getElementById("step4").classList.remove("hidden");
-    }
+    function showFinal() { const s3 = document.getElementById('step3'); const s4 = document.getElementById('step4'); if (s3) s3.classList.add('hidden'); if (s4) { s4.classList.remove('hidden'); initReflectionStep(); } }
 
     function backToStep1() {
       document.getElementById("step2").classList.add("hidden");
       document.getElementById("step1").classList.remove("hidden");
+      const intro = document.getElementById("introText");
+      if (intro) intro.classList.remove("hidden");
     }
 
     function backToStep2() {
@@ -169,13 +199,104 @@
     }
 
     function restartActivity() {
-      document.getElementById("step4").classList.add("hidden");
+      const s4 = document.getElementById("step4");
+      const s5 = document.getElementById("step5");
+      if (s4) s4.classList.add("hidden");
+      if (s5) s5.classList.add("hidden");
       document.getElementById("step1").classList.remove("hidden");
       document.getElementById("step1-next").classList.add("hidden");
+      const intro = document.getElementById("introText");
+      if (intro) intro.classList.remove("hidden");
     }
 
     function showFeedback(message) {
       document.getElementById("step3-feedback").innerText = "💡 " + message;
+    }
+  </script>  <script>
+    // New: go back from Step 4 to Step 3
+    function backToStep3() {
+      const s3 = document.getElementById('step3');
+      const s4 = document.getElementById('step4');
+      if (s4) s4.classList.add('hidden');
+      if (s3) s3.classList.remove('hidden');
+    }
+
+    // Reflection initialiser and helpers (no regex in JS strings to avoid escaping issues)
+    function initReflectionStep() {
+      const textarea = document.getElementById('reflectInput');
+      const charCount = document.getElementById('charCount');
+      const wordCount = document.getElementById('wordCount');
+      const downloadBtn = document.getElementById('downloadBtn');
+      if (!textarea) return;
+
+      const updateCounts = () => {
+        const text = textarea.value;
+        charCount.textContent = text.length + ' characters';
+        const trimmed = text.trim();
+        const words = trimmed.length ? trimmed.split(' ').filter(function(s){ return s.length > 0; }).length : 0;
+        wordCount.textContent = words + ' words';
+        downloadBtn.disabled = trimmed.length === 0;
+      };
+
+      if (!textarea.dataset.listenerAttached) {
+        textarea.addEventListener('input', updateCounts);
+        textarea.dataset.listenerAttached = 'true';
+      }
+      updateCounts();
+    }
+
+    function downloadReflection() {
+      const textarea = document.getElementById('reflectInput');
+      if (!textarea) return;
+      const text = textarea.value.trim();
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const ts = new Date().toISOString().slice(0, 10);
+      a.href = url;
+      a.download = 'visions2030_reflection_' + ts + '.txt';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    // Minimal self-tests to verify critical elements exist
+    function runSelfTests() {
+      const tests = [
+        { name: 'enableStep1Next defined', pass: typeof enableStep1Next === 'function' },
+        { name: 'Step 1 next button present', pass: !!document.getElementById('step1-next') },
+        { name: 'Step 3 exists', pass: !!document.getElementById('step3') },
+        { name: 'Step 4 (reflection) exists', pass: !!document.getElementById('step4') },
+        { name: 'downloadReflection defined', pass: typeof downloadReflection === 'function' }
+      ];
+      try { console.table(tests); } catch (e) { /* no-op */ }
+    }
+  function goToStep5() {
+      const s4 = document.getElementById('step4');
+      const s5 = document.getElementById('step5');
+      if (s4) s4.classList.add('hidden');
+      if (s5) s5.classList.remove('hidden');
+    }
+
+    function backToStep4() {
+      const s4 = document.getElementById('step4');
+      const s5 = document.getElementById('step5');
+      if (s5) s5.classList.add('hidden');
+      if (s4) s4.classList.remove('hidden');
+    }
+
+    // Update self-tests to include Step 5
+    function runSelfTests() {
+      const tests = [
+        { name: 'enableStep1Next defined', pass: typeof enableStep1Next === 'function' },
+        { name: 'Step 1 next button present', pass: !!document.getElementById('step1-next') },
+        { name: 'Step 3 exists', pass: !!document.getElementById('step3') },
+        { name: 'Step 4 exists (reflection)', pass: !!document.getElementById('step4') },
+        { name: 'Step 5 exists (final reflection)', pass: !!document.getElementById('step5') },
+        { name: 'downloadReflection defined', pass: typeof downloadReflection === 'function' }
+      ];
+      try { console.table(tests); } catch (e) { /* no-op */ }
     }
   </script>
 </body>
