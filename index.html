@@ -5,143 +5,80 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Visions of 2030: Rethinking Your World</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Fonts for TIME-like aesthetic -->
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    :root{ --accent: #e90606; }
-    .font-head{ font-family: 'Playfair Display', serif; }
-    .font-body{ font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji'; }
-    /* TIME-like refinements */
-    .sticky-header{position:sticky;top:0;z-index:50;background:#ffffffcc;backdrop-filter:saturate(180%) blur(2px);border-bottom:1px solid #eee}
-    .brand{letter-spacing:0.02em}
-    .kicker{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600}
-    .progress{height:3px;background:#eee}
-    .progress > div{height:3px;background:var(--accent);width:0%;transition:width .25s ease}
-    .dropcap:first-letter{float:left;font-family:'Playfair Display',serif;font-weight:700;font-size:3rem;line-height:1;padding-right:.35rem;padding-top:.2rem;color:#111}
+    body { font-family: 'Times New Roman', serif; }
+    h1, h2, h3 { color: #e90606; }
+    .time-card { border-top: 4px solid #e90606; background: #fafafa; }
   </style>
 </head>
-<body class="bg-[#fafafa] font-body p-4 sm:p-6">
-  <header class="sticky-header">
-    <div class="max-w-3xl mx-auto flex items-center justify-between py-3 px-1">
-      <div class="brand font-head text-xl text-[#111]">VISIONS 2030</div>
-      <div class="hidden sm:block text-xs text-gray-600">Progress <span id="progressPct">0%</span></div>
-    </div>
-    <div class="progress"><div id="progressBar"></div></div>
-  </header>
-
-  <div class="max-w-3xl mx-auto bg-white p-6 sm:p-8 mt-16 rounded-2xl shadow-lg ring-1 ring-gray-200 border-t-8 border-[#e90606]">
-    <h1 class="font-head text-[clamp(1.75rem,4vw,2.75rem)] md:text-5xl font-extrabold text-[#111] leading-tight mb-3">🌍 Visions of 2030: Rethinking Your World through the SDGs</h1>
-    <div class="h-1 w-16 bg-[#e90606] mb-4"></div>
-    <p id="introText" class="mb-6 text-gray-700 dropcap">In this activity, you'll explore local challenges and imagine a better future aligned with the UN Sustainable Development Goals (SDGs).</p>
+<body class="bg-gray-100 p-6">
+  <div class="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-md">
+    <!-- Intro (only here) -->
+    <h1 class="text-3xl font-bold mb-2">🌍 Visions of 2030: Rethinking Your World through the SDGs</h1>
+    <p id="introText" class="mb-6 italic text-gray-700">In this activity, you'll explore local challenges and imagine a better future aligned with the UN Sustainable Development Goals (SDGs).</p>
 
     <!-- Step 1 -->
     <div id="step1" class="space-y-4">
-      <p class="kicker">Choose your focus</p>
-      <h2 class="font-head text-[clamp(1.125rem,2.5vw,1.5rem)] font-semibold text-gray-900">Step 1: What challenge is most urgent in your environment?</h2>
-      <button class="min-h-[48px] text-base sm:text-lg block w-full text-left p-4 bg-white border border-gray-300 hover:border-[var(--accent)] hover:bg-[#fff5f5] rounded-lg" onclick="enableStep1Next('climate', this)">🌿 Climate change & waste</button>
-      <button class="min-h-[48px] text-base sm:text-lg block w-full text-left p-4 bg-white border border-gray-300 hover:border-[var(--accent)] hover:bg-[#fff5f5] rounded-lg" onclick="enableStep1Next('education', this)">🧑‍🏫 Lack of quality education</button>
-      <button class="min-h-[48px] text-base sm:text-lg block w-full text-left p-4 bg-white border border-gray-300 hover:border-[var(--accent)] hover:bg-[#fff5f5] rounded-lg" onclick="enableStep1Next('health', this)">🏥 Access to health care</button>
-      <button class="min-h-[48px] text-base sm:text-lg block w-full text-left p-4 bg-white border border-gray-300 hover:border-[var(--accent)] hover:bg-[#fff5f5] rounded-lg" onclick="enableStep1Next('water', this)">🚰 Water shortages or pollution</button>
-      <button class="min-h-[48px] text-base sm:text-lg block w-full text-left p-4 bg-white border border-gray-300 hover:border-[var(--accent)] hover:bg-[#fff5f5] rounded-lg" onclick="enableStep1Next('poverty', this)">🏘️ Poverty and inequality</button>
+      <h2 class="text-xl font-bold">Step 1: Urgent Global Challenges</h2>
+      <p>Here are examples of key global challenges identified in international agendas; your community may face different or additional priorities.</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="time-card p-4 rounded"><span class="font-bold">🌿 Climate change & waste</span><br>Rising temperatures, extreme weather, and unsustainable waste practices threaten ecosystems and livelihoods.</div>
+        <div class="time-card p-4 rounded"><span class="font-bold">🧑‍🏫 Quality education</span><br>Many learners lack inclusive, equitable, and high‑quality opportunities.</div>
+        <div class="time-card p-4 rounded"><span class="font-bold">🏥 Access to health care</span><br>Gaps in access and affordability limit quality of life.</div>
+        <div class="time-card p-4 rounded"><span class="font-bold">🚰 Water shortages or pollution</span><br>Scarcity and contamination affect health, agriculture, and economies.</div>
+        <div class="time-card p-4 rounded"><span class="font-bold">🏘️ Poverty and inequality</span><br>Economic and social inequalities hinder opportunity and stability.</div>
+      </div>
       <div class="flex justify-end pt-4">
-        <button id="step1-next" class="bg-[var(--accent)] text-white px-4 py-2 rounded hidden" onclick="chooseChallenge(selectedStep1)">Continue to Step 2</button>
+        <button class="bg-red-700 text-white px-4 py-2 rounded" onclick="showStep(2)">Continue to Step 2</button>
       </div>
     </div>
 
     <!-- Step 2 -->
-    <div id="step2" class="hidden mt-6 space-y-4">
-      <p class="kicker">2030 vision</p>
-      <h2 class="font-head text-[clamp(1.125rem,2.5vw,1.5rem)] font-semibold text-gray-900">Step 2: A Vision for 2030</h2>
-      <p id="selected-challenge-label" class="text-sm text-gray-600 italic"></p>
-      <p id="scenario" class="text-gray-700 dropcap"></p>
-      <p class="font-medium mt-2">The UN has identified several important factors in achieving Vision 2030. Hover over each to learn more. Then, based on your context, choose the one you believe would make the most impact on this challenge.</p>
-      <div class="space-y-2">
-        <button class="min-h-[48px] text-base sm:text-lg w-full bg-white border border-gray-300 hover:border-[var(--accent)] hover:bg-[#fff5f5] p-3 rounded" onmouseover="revealInsight('govt')" onclick="highlightInsight(this, 'govt')">🏛️ Local government action</button>
-        <button class="min-h-[48px] text-base sm:text-lg w-full bg-white border border-gray-300 hover:border-[var(--accent)] hover:bg-[#fff5f5] p-3 rounded" onmouseover="revealInsight('public')" onclick="highlightInsight(this, 'public')">📢 Public awareness</button>
-        <button class="min-h-[48px] text-base sm:text-lg w-full bg-white border border-gray-300 hover:border-[var(--accent)] hover:bg-[#fff5f5] p-3 rounded" onmouseover="revealInsight('school')" onclick="highlightInsight(this, 'school')">🏫 University/school policy</button>
-        <button class="min-h-[48px] text-base sm:text-lg w-full bg-white border border-gray-300 hover:border-[var(--accent)] hover:bg-[#fff5f5] p-3 rounded" onmouseover="revealInsight('family')" onclick="highlightInsight(this, 'family')">👨‍👩‍👧‍👦 Family/community behaviour</button>
-        <button class="min-h-[48px] text-base sm:text-lg w-full bg-white border border-gray-300 hover:border-[var(--accent)] hover:bg-[#fff5f5] p-3 rounded" onmouseover="revealInsight('personal')" onclick="highlightInsight(this, 'personal')">🧍 Personal lifestyle</button>
+    <div id="step2" class="hidden space-y-4">
+      <h2 class="text-xl font-bold">Step 2: UN Vision 2030 Priority Areas</h2>
+      <p>These are some factors that can drive progress. Expand each section to read more.</p>
+      <div class="flex justify-end gap-2 text-sm">
+        <button class="bg-gray-200 px-3 py-1 rounded" onclick="step2ExpandAll(true)">Expand all</button>
+        <button class="bg-gray-200 px-3 py-1 rounded" onclick="step2ExpandAll(false)">Collapse all</button>
       </div>
-      <p id="insight" class="mt-4 text-[var(--accent)] font-semibold"></p>
-      <div class="flex justify-between mt-6">
-        <button class="min-h-[48px] text-base sm:text-lg bg-gray-300 text-gray-800 px-4 py-2 rounded" onclick="backToStep1()">Previous</button>
-        <button class="min-h-[48px] text-base sm:text-lg bg-[var(--accent)] text-white px-4 py-2 rounded" onclick="showComparison()">Continue to Next Section</button>
+      <div id="step2-accordion" class="space-y-2">
+        <details class="time-card p-3 rounded"><summary class="font-bold cursor-pointer">🏛️ Local government action</summary><p class="mt-2">Budgets, regulation, and public services can enable equitable and sustainable outcomes.</p></details>
+        <details class="time-card p-3 rounded"><summary class="font-bold cursor-pointer">📢 Public awareness</summary><p class="mt-2">Information and participation help shift norms and inspire collective action.</p></details>
+        <details class="time-card p-3 rounded"><summary class="font-bold cursor-pointer">🏫 Education policies</summary><p class="mt-2">Curriculum and campus practice embed sustainability thinking and leadership.</p></details>
+        <details class="time-card p-3 rounded"><summary class="font-bold cursor-pointer">👨‍👩‍👧‍👦 Community behaviour</summary><p class="mt-2">Household choices and neighbourhood initiatives build habits that scale.</p></details>
+        <details class="time-card p-3 rounded"><summary class="font-bold cursor-pointer">🧍 Personal lifestyle</summary><p class="mt-2">Energy, travel, food, and consumption patterns add up across a population.</p></details>
+      </div>
+      <div class="flex justify-between pt-4">
+        <button class="bg-gray-300 px-4 py-2 rounded" onclick="showStep(1)">Previous</button>
+        <button class="bg-red-700 text-white px-4 py-2 rounded" onclick="showStep(3)">Continue to Step 3</button>
       </div>
     </div>
 
     <!-- Step 3 -->
-    <div id="step3" class="hidden mt-6 space-y-4">
-      <p class="kicker">Ideas from elsewhere</p>
-      <h2 class="font-head text-[clamp(1.125rem,2.5vw,1.5rem)] font-semibold text-gray-900">Step 3: What’s working elsewhere – and what could work here?</h2>
-      <p class="text-gray-700">Below are examples of progress from other areas. Think about which change could create the greatest impact in your community.</p>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="bg-gray-100 p-4 rounded">
-          <h3 class="font-bold text-gray-800 mb-2">🌐 In a similar region…</h3>
-          <p id="globalExample">In Colombia, local youth councils are actively involved in sustainable city planning and waste management education.</p>
-        </div>
-        <div class="bg-gray-100 p-4 rounded">
-          <h3 class="font-bold text-gray-800 mb-2">🌍 In your country today…</h3>
-          <p id="localExample">Some urban areas are making strides in recycling and sustainability, while rural regions still face infrastructural and educational barriers.</p>
-        </div>
-      </div>
-      <p class="mt-4 font-medium">Which of the following would inspire positive change in your area?</p>
-      <div class="space-y-2" id="step3-buttons">
-        <button class="min-h-[48px] text-base sm:text-lg w-full bg-white border border-gray-300 hover:border-[var(--accent)] hover:bg-[#fff5f5] p-3 rounded" onclick="showFeedback('Education and awareness campaigns equip people to understand, care about, and contribute to change in their community.')">🎓 Education & awareness</button>
-        <button class="min-h-[48px] text-base sm:text-lg w-full bg-white border border-gray-300 hover:border-[var(--accent)] hover:bg-[#fff5f5] p-3 rounded" onclick="showFeedback('Leadership and participation encourage inclusive decision-making and policy transformation.')">🗳️ Leadership & participation</button>
-        <button class="min-h-[48px] text-base sm:text-lg w-full bg-white border border-gray-300 hover:border-[var(--accent)] hover:bg-[#fff5f5] p-3 rounded" onclick="showFeedback('Employment and a strong economy help reduce poverty and provide sustainable futures.')">💼 Employment & economy</button>
-        <button class="min-h-[48px] text-base sm:text-lg w-full bg-white border border-gray-300 hover:border-[var(--accent)] hover:bg-[#fff5f5] p-3 rounded" onclick="showFeedback('Youth innovation drives fresh ideas and action towards long-term sustainability.')">💬 Youth voice & innovation</button>
-        <button class="min-h-[48px] text-base sm:text-lg w-full bg-white border border-gray-300 hover:border-[var(--accent)] hover:bg-[#fff5f5] p-3 rounded" onclick="showFeedback('Cultural values support identity and cooperation for a just and inclusive society.')">🕊️ Cultural traditions & values</button>
-      </div>
-      <p id="step3-feedback" class="text-[var(--accent)] font-semibold"></p>
-      <div class="flex justify-between mt-6">
-        <button class="min-h-[48px] text-base sm:text-lg bg-gray-300 text-gray-800 px-4 py-2 rounded" onclick="backToStep2()">Previous</button>
-        <button class="min-h-[48px] text-base sm:text-lg bg-[var(--accent)] text-white px-4 py-2 rounded" onclick="showFinal()">Continue to Next Section</button>
-      </div>
-    </div>
-
-    <!-- Step 4: Written Reflection -->
-    <div id="step4" class="hidden mt-6 space-y-4">
-      <p class="kicker">Your reflection</p>
-      <h2 class="font-head text-[clamp(1.125rem,2.5vw,1.5rem)] font-semibold text-gray-900">Step 4: Written reflection</h2>
-      <p class="text-gray-700 dropcap">The Sustainable Development Goals (SDGs) aim to tackle the world's most urgent environmental, political, and economic challenges. In this reflective activity, we'd like you to consider:</p>
-      <blockquote class="border-l-4 border-[var(--accent)] pl-4 italic text-gray-700">“What would achieving the UN SDGs look like in your part of the world?”</blockquote>
-      <div class="text-gray-700">
-        <p class="font-medium">Instructions:</p>
-        <ul class="list-disc list-inside space-y-1">
-          <li>Take 5–10 minutes to reflect deeply on the changes you'd expect to see in your community or region.</li>
-          <li>Write your thoughts in the box below. Aim for 150–300 words.</li>
-          <li>Once done, you can download your response as a .txt file.</li>
-        </ul>
-      </div>
-      <div class="text-gray-700 mt-2">
-        <p class="font-medium">Guiding questions (optional):</p>
-        <ul class="list-disc list-inside space-y-1">
-          <li>Why does this goal matter to you?</li>
-          <li>How do your background, values, or experiences connect to it?</li>
-          <li>How does your field of study or future career intersect with the SDGs?</li>
-          <li>What can you do, starting now, to support the SDGs in your daily life, studies, or community?</li>
-        </ul>
-      </div>
-      <label for="reflectInput" class="block text-sm font-medium text-gray-700">Your response</label>
-      <textarea id="reflectInput" class="w-full border border-gray-300 rounded p-3 h-40 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]" placeholder="Write your 150–300 word reflection here..."></textarea>
-      <div class="flex justify-between items-center text-sm text-gray-600">
-        <span id="charCount">0 characters</span>
-        <span id="wordCount">0 words</span>
-      </div>
-      <div class="flex justify-between mt-4">
-        <button class="min-h-[48px] text-base sm:text-lg bg-gray-300 text-gray-800 px-4 py-2 rounded" onclick="backToStep3()">Previous</button>
-        <div class="space-x-2">
-          <button id="downloadBtn" class="bg-[var(--accent)] text-white px-4 py-2 rounded disabled:opacity-50" onclick="downloadReflection()">Download response (.txt)</button>
-          <button class="min-h-[48px] text-base sm:text-lg bg-[var(--accent)] text-white px-4 py-2 rounded" onclick="goToStep5()">Continue to Step 5</button>
+    <div id="step3" class="hidden space-y-4">
+      <h2 class="text-xl font-bold">Step 3: Reflect on Your Context</h2>
+      <p>Use the prompts below to guide a short reflection on your own context.</p>
+      <ul class="list-disc ml-6">
+        <li>What would achieving the UN SDGs look like in your part of the world?</li>
+        <li>Why does this goal matter to you?</li>
+        <li>How do your background, values, or experiences connect to it?</li>
+        <li>How does your field of study or future career intersect with the SDGs?</li>
+        <li>What can you do, starting now, to support the SDGs in your daily life, studies, or community?</li>
+      </ul>
+      <textarea id="reflectionText" class="w-full p-2 border rounded" rows="6" placeholder="Write your 150 to 300 word reflection here..."></textarea>
+      <div class="flex justify-between pt-4">
+        <button class="bg-gray-300 px-4 py-2 rounded" onclick="showStep(2)">Previous</button>
+        <div>
+          <button id="downloadBtn" class="bg-green-700 text-white px-4 py-2 rounded mr-2" onclick="downloadReflection()" disabled>Download response</button>
+          <button class="bg-red-700 text-white px-4 py-2 rounded" onclick="showStep(4)">Continue to Step 4</button>
         </div>
       </div>
     </div>
 
-    <!-- Step 5: Final reflection -->
-    <div id="step5" class="hidden mt-6 space-y-4">
-      <p class="kicker">How you feel</p>
-      <h2 class="font-head text-[clamp(1.125rem,2.5vw,1.5rem)] font-semibold text-gray-900">Step 5: Final reflection</h2>
-      <p class="text-gray-700">How do you feel after completing this activity?</p>
+    <!-- Step 4 -->
+    <div id="step4" class="hidden space-y-4">
+      <h2 class="text-xl font-bold">Step 4: Final thoughts</h2>
+      <p>How do you feel after completing this activity?</p>
       <ul class="space-y-2">
         <li><label><input type="checkbox" class="mr-2">✅ I feel <strong>more hopeful</strong> about reaching the SDGs.</label></li>
         <li><label><input type="checkbox" class="mr-2">✅ I feel <strong>more aware</strong> of the barriers and actions.</label></li>
@@ -149,174 +86,63 @@
         <li><label><input type="checkbox" class="mr-2">✅ I feel <strong>concerned</strong> about the lack of progress.</label></li>
         <li><label><input type="checkbox" class="mr-2">✅ I want to <strong>learn more</strong> and talk with others.</label></li>
       </ul>
-      <h3 class="mt-6 text-lg font-semibold text-gray-800">Final thought</h3>
-      <p class="mt-2 italic text-sm text-gray-600">“Every one of us can make a contribution. And quite often we are looking for the big things and forget that, wherever we are, we can make a contribution.” – <a href="https://wangarimaathai.org/the-story" class="underline text-blue-700" target="_blank" rel="noopener">Wangari Maathai</a></p>
-      <div class="mt-6 flex justify-between">
-        <button class="min-h-[48px] text-base sm:text-lg bg-gray-300 text-gray-800 px-4 py-2 rounded" onclick="backToStep4()">Previous</button>
-        <div class="space-x-2">
-          <button class="min-h-[48px] text-base sm:text-lg bg-[var(--accent)] text-white px-4 py-2 rounded" onclick="restartActivity()">🔁 Restart Activity</button>
-        </div>
+      <blockquote class="italic text-sm text-gray-600">“Every one of us can make a contribution. And quite often we are looking for the big things and forget that, wherever we are, we can make a contribution.” Wangari Maathai</blockquote>
+      <div class="flex justify-between pt-4">
+        <button class="bg-gray-300 px-4 py-2 rounded" onclick="showStep(3)">Previous</button>
+        <button class="bg-red-700 text-white px-4 py-2 rounded" onclick="restartActivity()">Restart activity</button>
       </div>
     </div>
-
   </div>
 
   <script>
-    // ---------- State ----------
-    let selectedStep1 = null;
-    let selectedInsight = null;
+    const TOTAL_STEPS = 4;
 
-    // ---------- Data ----------
-    const scenarios = {
-      climate: "It’s 2030. Green rooftops cover buildings, recycling is the norm, and solar energy powers homes. Citizens use bikes and digital apps to monitor waste.",
-      education: "It’s 2030. Every child attends school with modern tech and trained teachers. Lifelong learning is free and inclusive for all.",
-      health: "It’s 2030. Clinics are available in every neighbourhood, mental health is prioritised, and preventative care is universal.",
-      water: "It’s 2030. Rivers are clean, water is managed sustainably, and all homes have safe drinking water.",
-      poverty: "It’s 2030. No one sleeps hungry, decent work is accessible, and communities flourish through equality and fairness."
-    };
-
-    const challengeLabels = {
-      climate: "🌿 Climate change & waste",
-      education: "🧑‍🏫 Lack of quality education",
-      health: "🏥 Access to health care",
-      water: "🚰 Water shortages or pollution",
-      poverty: "🏘️ Poverty and inequality"
-    };
-
-    const insights = {
-      govt: "📊 Governments play a pivotal role by allocating budgets to sustainability, implementing policies, and enforcing regulations. Their leadership sets the tone for widespread action.",
-      public: "📢 Awareness campaigns inform and engage the public, shifting societal norms and behaviours. Informed citizens make better decisions that collectively shape a sustainable future.",
-      school: "🏫 Education institutions shape future leaders. Green campus policies and sustainability education inspire action and responsibility among youth.",
-      family: "👨‍👩‍👧‍👦 Families are the foundation of society. Eco-friendly habits at home teach the next generation the value of responsibility and stewardship.",
-      personal: "🧍 Individual choices—like conserving energy, recycling, and reducing meat consumption—accumulate into significant environmental impact over time."
-    };
-
-    // ---------- Navigation helpers ----------
-    function enableStep1Next(choice, el) {
-      selectedStep1 = choice;
-      document.getElementById("step1-next").classList.remove("hidden");
-      document.querySelectorAll("#step1 button").forEach(btn => btn.classList.remove("ring-2", "ring-[var(--accent)]"));
-      const target = el || (window.event && (window.event.currentTarget || window.event.target));
-      if (target) target.classList.add("ring-2", "ring-[var(--accent)]");
-    }
-
-    function chooseChallenge(choice) {
-      const intro = document.getElementById("introText");
-      if (intro) intro.classList.add("hidden");
-      document.getElementById("step1").classList.add("hidden");
-      document.getElementById("step2").classList.remove("hidden");
-      document.getElementById("scenario").innerText = scenarios[choice];
-      document.getElementById("selected-challenge-label").innerText = "You selected: " + challengeLabels[choice];
-      setProgress(2);
-    }
-
-    function revealInsight(key) {
-      document.getElementById("insight").innerText = insights[key];
-    }
-
-    function highlightInsight(button, key) {
-      revealInsight(key);
-      if (selectedInsight) {
-        selectedInsight.classList.remove("ring-2", "ring-[var(--accent)]");
+    function showStep(step) {
+      const target = document.getElementById(`step${step}`);
+      if (!target) {
+        console.error(`step${step} not found`);
+        return;
       }
-      button.classList.add("ring-2", "ring-[var(--accent)]");
-      selectedInsight = button;
+      for (let i = 1; i <= TOTAL_STEPS; i++) {
+        const el = document.getElementById(`step${i}`);
+        if (el) el.classList.add('hidden');
+      }
+      target.classList.remove('hidden');
+
+      // Intro text only on Step 1
+      const intro = document.getElementById('introText');
+      if (intro) intro.style.display = step === 1 ? 'block' : 'none';
+
+      // Enable download button when text present
+      if (step === 3) initReflectionHelpers();
+
+      // Scroll to top for mobile comfort
+      try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0,0); }
     }
 
-    function showComparison() {
-      document.getElementById("step2").classList.add("hidden");
-      document.getElementById("step3").classList.remove("hidden");
-      setProgress(3);
+    function step2ExpandAll(open) {
+      const container = document.getElementById('step2-accordion');
+      if (!container) return;
+      container.querySelectorAll('details').forEach(d => d.open = !!open);
     }
 
-    function showFinal() {
-      const s3 = document.getElementById('step3');
-      const s4 = document.getElementById('step4');
-      if (s3) s3.classList.add('hidden');
-      if (s4) { s4.classList.remove('hidden'); initReflectionStep(); }
-      setProgress(4);
-    }
-
-    function backToStep1() {
-      document.getElementById("step2").classList.add("hidden");
-      document.getElementById("step1").classList.remove("hidden");
-      const intro = document.getElementById("introText");
-      if (intro) intro.classList.remove("hidden");
-      setProgress(1);
-    }
-
-    function backToStep2() {
-      document.getElementById("step3").classList.add("hidden");
-      document.getElementById("step2").classList.remove("hidden");
-      setProgress(2);
-    }
-
-    function backToStep3() {
-      const s3 = document.getElementById('step3');
-      const s4 = document.getElementById('step4');
-      if (s4) s4.classList.add('hidden');
-      if (s3) s3.classList.remove('hidden');
-      setProgress(3);
-    }
-
-    function restartActivity() {
-      const s4 = document.getElementById("step4");
-      const s5 = document.getElementById("step5");
-      if (s4) s4.classList.add("hidden");
-      if (s5) s5.classList.add("hidden");
-      document.getElementById("step1").classList.remove("hidden");
-      document.getElementById("step1-next").classList.add("hidden");
-      const intro = document.getElementById("introText");
-      if (intro) intro.classList.remove("hidden");
-      setProgress(1);
-    }
-
-    function showFeedback(message) {
-      document.getElementById("step3-feedback").innerText = "💡 " + message;
-    }
-
-    function goToStep5() {
-      const s4 = document.getElementById('step4');
-      const s5 = document.getElementById('step5');
-      if (s4) s4.classList.add('hidden');
-      if (s5) s5.classList.remove('hidden');
-      setProgress(5);
-    }
-
-    function backToStep4() {
-      const s4 = document.getElementById('step4');
-      const s5 = document.getElementById('step5');
-      if (s5) s5.classList.add('hidden');
-      if (s4) s4.classList.remove('hidden');
-      setProgress(4);
-    }
-
-    // ---------- Reflection helpers ----------
-    function initReflectionStep() {
-      const textarea = document.getElementById('reflectInput');
-      const charCount = document.getElementById('charCount');
-      const wordCount = document.getElementById('wordCount');
+    function initReflectionHelpers() {
+      const textarea = document.getElementById('reflectionText');
       const downloadBtn = document.getElementById('downloadBtn');
-      if (!textarea) return;
-
-      const updateCounts = () => {
-        const text = textarea.value;
-        charCount.textContent = text.length + ' characters';
-        const trimmed = text.trim();
-        const words = trimmed.length ? trimmed.split(' ').filter(function(s){ return s.length > 0; }).length : 0;
-        wordCount.textContent = words + ' words';
-        downloadBtn.disabled = trimmed.length === 0;
+      if (!textarea || !downloadBtn) return;
+      const update = () => {
+        const hasText = textarea.value.trim().length > 0;
+        downloadBtn.disabled = !hasText;
       };
-
       if (!textarea.dataset.listenerAttached) {
-        textarea.addEventListener('input', updateCounts);
+        textarea.addEventListener('input', update);
         textarea.dataset.listenerAttached = 'true';
       }
-      updateCounts();
+      update();
     }
 
     function downloadReflection() {
-      const textarea = document.getElementById('reflectInput');
+      const textarea = document.getElementById('reflectionText');
       if (!textarea) return;
       const text = textarea.value.trim();
       const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
@@ -324,36 +150,37 @@
       const a = document.createElement('a');
       const ts = new Date().toISOString().slice(0, 10);
       a.href = url;
-      a.download = 'visions2030_reflection_' + ts + '.txt';
+      a.download = `visions2030_reflection_${ts}.txt`;
       document.body.appendChild(a);
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
     }
 
-    // ---------- Progress bar ----------
-    const totalSteps = 5;
-    function setProgress(step) {
-      const pct = Math.max(0, Math.min(100, Math.round((step - 1) / (totalSteps - 1) * 100)));
-      const bar = document.getElementById('progressBar');
-      const pctEl = document.getElementById('progressPct');
-      if (bar) bar.style.width = pct + '%';
-      if (pctEl) pctEl.textContent = pct + '%';
+    function restartActivity() {
+      const textarea = document.getElementById('reflectionText');
+      if (textarea) textarea.value = '';
+      showStep(1);
     }
-    document.addEventListener('DOMContentLoaded', function(){ setProgress(1); });
 
-    // ---------- Self-tests (single definition) ----------
+    // Initialise
+    document.addEventListener('DOMContentLoaded', () => {
+      showStep(1);
+      runSelfTests();
+    });
+
+    // Minimal self-tests (do not change existing tests; add where helpful)
     function runSelfTests() {
       const tests = [
-        { name: 'enableStep1Next defined', pass: typeof enableStep1Next === 'function' },
-        { name: 'initReflectionStep defined', pass: typeof initReflectionStep === 'function' },
-        { name: 'Step 1 next button present', pass: !!document.getElementById('step1-next') },
+        { name: 'Step 1 exists', pass: !!document.getElementById('step1') },
+        { name: 'Step 2 exists', pass: !!document.getElementById('step2') },
         { name: 'Step 3 exists', pass: !!document.getElementById('step3') },
-        { name: 'Step 4 exists (reflection)', pass: !!document.getElementById('step4') },
-        { name: 'Step 5 exists (final reflection)', pass: !!document.getElementById('step5') },
+        { name: 'Step 4 exists', pass: !!document.getElementById('step4') },
+        { name: 'showStep guards missing step', pass: (function(){ try { showStep(99); return true; } catch(e){ return false; } })() },
+        { name: 'step2ExpandAll defined', pass: typeof step2ExpandAll === 'function' },
         { name: 'downloadReflection defined', pass: typeof downloadReflection === 'function' }
       ];
-      try { console.table(tests); } catch (e) { /* no-op */ }
+      try { console.table(tests); } catch(e) {}
     }
   </script>
 </body>
