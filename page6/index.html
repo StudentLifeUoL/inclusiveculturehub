@@ -188,16 +188,16 @@
                     // Define specific tips for incorrect answers to provide targeted feedback
                     const incorrectTips = {
                         'Diversity': {
-                            'Inclusion': 'Remember, **Diversity** is about **representation** (who is present), while **Inclusion** is about **participation** (how they engage).',
-                            'Belonging': 'Diversity is about **representation**. **Belonging** is about feeling fully **valued and accepted**.',
+                            'Inclusion': 'Remember, Diversity is about representation (who is present), while Inclusion is about participation (how they engage).',
+                            'Belonging': 'Diversity is about representation. Belonging is about feeling fully valued and accepted.',
                         },
                         'Inclusion': {
-                            'Diversity': '**Inclusion** is about **active engagement** and being asked to participate, beyond just being present.',
-                            'Belonging': 'Inclusion is about **being invited to dance**. **Belonging** is about **shaping the music** and feeling truly at home.',
+                            'Diversity': 'Inclusion is about active engagement and being asked to participate, beyond just being present.',
+                            'Belonging': 'Inclusion is about being invited to dance. Belonging is about shaping the music and feeling truly at home.',
                         },
                         'Belonging': {
-                            'Diversity': '**Belonging** goes beyond just having people present. It\'s about deeply **valuing all contributions** and feeling truly accepted.',
-                            'Inclusion': 'Inclusion is about participation. **Belonging** is about feeling truly **accepted and influencing the shared experience**.',
+                            'Diversity': 'Belonging goes beyond just having people present. It\'s about deeply valuing all contributions and feeling truly accepted.',
+                            'Inclusion': 'Inclusion is about participation. Belonging is about feeling truly accepted and influencing the shared experience.',
                         }
                     };
                     const specificTip = incorrectTips[revealScene.correct]?.[userChosenAnswer];
@@ -205,7 +205,7 @@
                     let feedbackNarrative = revealScene.narration;
                     if (!isCorrect && specificTip) {
                         // Enrich the narrative directly if the answer was incorrect
-                        feedbackNarrative += `<p class="mt-4 text-md text-gray-700 bg-red-50 p-3 rounded-md border border-red-200">**Quick Tip:** ${specificTip}</p>`;
+                        feedbackNarrative += `<p class="mt-4 text-md text-gray-700 bg-red-50 p-3 rounded-md border border-red-200">Quick Tip: ${specificTip}</p>`;
                     }
 
                     htmlContent = `
