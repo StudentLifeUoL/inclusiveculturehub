@@ -32,7 +32,7 @@
     function downloadResponses() {
       const form = document.getElementById('planForm');
       const data = new FormData(form);
-      let out = 'MY CULTURAL INTELLIGENCE ACTION PLAN RESPONSES\n\n';
+      let out = 'MY ACTION PLAN RESPONSES\n\n';
       // Learnings
       out += '1. Learnings - Cultural Intelligence:\n';
       [1,2,3].forEach(i => { let v=data.get('ci'+i); if(v) out+=i+'. '+v+'\n'; });
@@ -62,7 +62,7 @@
 </head>
 <body>
   <div class="container">
-    <h2>My Cultural Intelligence Action Plan</h2>
+    <h2>My Action Plan</h2>
     <p class="intro">Reflect on your learnings and design an action plan. Download your responses at the end.</p>
     <form id="planForm">
       <!-- Step 0: Intro -->
