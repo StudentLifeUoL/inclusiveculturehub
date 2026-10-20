@@ -1,155 +1,543 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en-GB">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>My Action Plan</title>
+  <link rel="preload" href="../assets/fonts/bricolage-grotesque-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../assets/fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/ich.css">
   <style>
-    body { margin: 0; padding: 0; font-family: sans-serif; background: #f0f2f5; }
-    .container { max-width: 700px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    h2 { font-size: 1.5rem; text-align: center; margin-bottom: 0.5rem; }
-    .intro { font-size: 0.9rem; color: #666; text-align: center; margin-bottom: 1.5rem; }
-    .step { display: none; }
-    .step.active { display: block; }
-    .inputs { display: grid; gap: 12px; }
-    .inputs.two-cols { grid-template-columns: 1fr 1fr; }
-    .inputs input, .inputs textarea { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; }
-    .buttons { display: flex; justify-content: space-between; margin-top: 20px; }
-    .btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; }
-    .btn-primary { background: #4a90e2; color: #fff; }
-    .btn-secondary { background: #e0e0e0; color: #333; }
-    .btn-download { background: #2ecc71; color: #fff; width: 100%; }
-    label { font-weight: 600; margin-top: 8px; }
+    body { --accent: var(--brand); --accent-ink: var(--brand-ink); --accent-tint: var(--brand-tint); }
+
+    /* Welcome: the route */
+    .route { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; position: relative; }
+    .route li { position: relative; display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 4px 16px; align-items: start; align-content: start; padding-bottom: 22px; }
+    .route li:last-child { padding-bottom: 0; }
+    .route li::before { content: ""; position: absolute; left: 27px; top: 58px; bottom: 2px; border-left: 2px dashed var(--line-strong); }
+    .route li:last-child::before { display: none; }
+    .stop { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: var(--paper); border: 2px solid var(--ink); color: var(--ink); grid-row: span 2; }
+    .stop svg { width: 24px; height: 24px; }
+    .route li:nth-child(3) .stop { background: var(--brand); border-color: var(--brand); color: #fff; }
+    .stop-k { font-size: .74rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-3); padding-top: 6px; }
+    .stop-t { font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; letter-spacing: -.01em; line-height: 1.2; }
+    .stop-d { grid-column: 2; font-size: .95rem; color: var(--ink-2); }
+    @media (min-width: 640px) {
+      .route { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+      .route li { grid-template-columns: minmax(0, 1fr); padding-bottom: 0; }
+      .route li::before { left: 64px; right: -10px; top: 27px; bottom: auto; border-left: 0; border-top: 2px dashed var(--line-strong); }
+      .stop { grid-row: auto; margin-bottom: 6px; }
+      .stop-d { grid-column: 1; }
+    }
+    .finish-note { display: flex; gap: 10px; align-items: center; font-size: .95rem; color: var(--ink-2); }
+    .finish-note svg { width: 20px; height: 20px; color: var(--brand-ink); flex: none; }
+
+    /* Learnings: 3-2-1 pyramid */
+    .two-col { display: grid; gap: 22px; align-items: start; }
+    @media (min-width: 700px) { .two-col { grid-template-columns: 210px minmax(0, 1fr); gap: 30px; } }
+    .pyramid-wrap { display: grid; justify-items: center; gap: 10px; }
+    @media (min-width: 700px) { .pyramid-wrap { position: sticky; top: 16px; } }
+    .pyramid { display: grid; gap: 6px; justify-items: center; }
+    .tier { display: flex; gap: 6px; }
+    .blk {
+      width: 54px; height: 38px; border-radius: 7px; border: 1.5px dashed var(--line-strong); background: var(--paper);
+      display: grid; place-items: center; font-family: var(--font-display); font-weight: 750; font-size: 1rem; color: var(--ink-3);
+      transition: background .3s var(--ease), border-color .3s var(--ease), color .3s var(--ease), transform .3s var(--ease);
+    }
+    .blk.on { border-style: solid; border-color: transparent; background: var(--c); color: var(--t, #fff); transform: translateY(-2px); }
+    .blk[data-blk="sdg1"] { width: auto; min-width: 54px; padding: 0 10px; white-space: nowrap; }
+    .tier-keys { display: grid; gap: 4px; font-size: .82rem; color: var(--ink-2); }
+    .tier-keys span { display: flex; gap: 8px; align-items: center; }
+    .tier-keys i, .tier-keys b { width: 10px; height: 10px; border-radius: 3px; background: var(--c); display: inline-block; }
+    .done-count { font-size: .86rem; font-weight: 700; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+    .group { border: 0; margin: 0; padding: 0; display: grid; gap: 8px; min-width: 0; }
+    .group legend { font-weight: 700; padding: 0; margin-bottom: 8px; line-height: 1.35; }
+    .numbered { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; align-items: center; }
+    .num {
+      width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center;
+      font-family: var(--font-display); font-weight: 750; font-size: .95rem; background: var(--tint); color: var(--ink-2);
+    }
+    .fields { display: grid; gap: 22px; min-width: 0; }
+
+    /* SDG select with swatch */
+    .sdg-pick { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 10px; align-items: center; max-width: 520px; }
+    .swatch {
+      width: 46px; height: 46px; border-radius: 9px; display: grid; place-items: center;
+      font-family: var(--font-display); font-weight: 750; font-size: 1.15rem;
+      background: var(--c, transparent); color: var(--t, var(--ink-3));
+      border: 1.5px dashed var(--line-strong); transition: background .3s var(--ease);
+    }
+    .swatch.on { border: 0; }
+    .select {
+      appearance: none; -webkit-appearance: none; cursor: pointer; padding-right: 40px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%231c1530' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center;
+    }
+
+    /* Core and flex diagram */
+    .cf-diagram { position: relative; width: 210px; height: 210px; margin: 0 auto; }
+    .cf-ring {
+      position: absolute; inset: 0; border-radius: 50%; border: 2px dashed var(--ink-2); background: var(--paper);
+      display: grid; grid-template-rows: 1fr auto 1fr; justify-items: center; align-items: center;
+    }
+    .cf-flex { font-size: .78rem; font-weight: 700; line-height: 1.2; color: var(--ink); text-align: center; max-width: 130px; padding: 0 4px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
+    .cf-flex.empty, .cf-core-v.empty { opacity: .55; font-weight: 600; }
+    .cf-core {
+      width: 118px; height: 118px; border-radius: 50%; background: var(--brand); color: #fff;
+      display: grid; align-content: center; justify-items: center; gap: 4px; padding: 10px; text-align: center;
+    }
+    .cf-core-k, .cf-flex-k { font-size: .66rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+    .cf-core-k { opacity: .85; }
+    .cf-flex-k { color: var(--ink-3); }
+    .cf-top, .cf-bottom { display: grid; justify-items: center; gap: 2px; }
+    .cf-top { align-self: end; padding-bottom: 6px; }
+    .cf-bottom { align-self: start; padding-top: 6px; }
+    .cf-core-v { font-size: .78rem; font-weight: 700; line-height: 1.15; max-width: 98px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
+    .cf-caption { text-align: center; font-size: .82rem; color: var(--ink-3); margin-top: 10px; }
+
+    /* Values in action */
+    .va { display: grid; gap: 14px; }
+    @media (min-width: 640px) { .va { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .va-card { display: grid; gap: 8px; align-content: start; padding: 16px; border-radius: var(--radius); background: var(--paper); min-width: 0; }
+    .va-card.core { border: 2px solid var(--brand); }
+    .va-card.flex { border: 2px dashed var(--line-strong); }
+    .va-head { display: flex; gap: 10px; align-items: center; }
+    .va-card .textarea { min-height: 120px; }
+
+    /* Actions */
+    .actions { display: grid; gap: 10px; }
+    .act { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 10px 14px; align-items: start; padding: 14px; border-radius: var(--radius); background: var(--paper); border: 1px solid var(--line); }
+    .act-n { font-family: var(--font-display); font-size: 1.9rem; font-weight: 750; line-height: 1; color: var(--brand); text-align: center; padding-top: 4px; }
+    .act-body { display: grid; gap: 10px; min-width: 0; }
+    .act .seg legend { font-weight: 600; font-size: .86rem; color: var(--ink-3); margin-bottom: 6px; }
+    .act .seg-opts label { min-height: 38px; font-size: .86rem; }
+    @media (min-width: 720px) {
+      .act { padding: 12px 14px; }
+      .act-body { grid-template-columns: minmax(0, 1fr) 290px; gap: 14px; align-items: end; }
+      .act .seg legend { margin-bottom: 4px; }
+      .act .seg-opts label { min-height: 48px; }
+      .act .field .label { font-size: .86rem; font-weight: 600; color: var(--ink-3); }
+    }
+
+    /* Plan sheet */
+    .plan { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+    .plan-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 16px; padding: 18px 20px 14px; background: var(--ink); color: #fff; }
+    .plan-head h3 { margin: 0; font-family: var(--font-display); font-size: 1.35rem; letter-spacing: -.015em; }
+    .plan-head span { font-size: .86rem; opacity: .85; }
+    .plan-sec { padding: 16px 20px; border-top: 1px solid var(--line); display: grid; gap: 10px; }
+    .plan-sec:first-of-type { border-top: 0; }
+    .plan-k { font-size: .74rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-3); }
+    .plan-cols { display: grid; gap: 14px; }
+    @media (min-width: 640px) { .plan-cols { grid-template-columns: repeat(3, minmax(0, 1fr)); } .plan-cols.two { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .plan-cols > div { display: grid; gap: 6px; align-content: start; min-width: 0; }
+    .plan-sub { font-weight: 700; font-size: .92rem; }
+    .plan ol { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; font-size: .95rem; }
+    .plan p, .plan li { overflow-wrap: anywhere; white-space: pre-wrap; }
+    .plan .empty { color: var(--ink-3); font-style: italic; font-size: .92rem; }
+    .pchips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .pchip { justify-self: start; display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; border-radius: 999px; font-size: .86rem; font-weight: 700; overflow-wrap: anywhere; }
+    .pchip.core { background: var(--brand); color: #fff; }
+    .pchip.flex { border: 1.5px dashed var(--ink-2); color: var(--ink); }
+    .pchip.sdg { background: var(--c); color: var(--t); }
+    .timeline { display: grid; gap: 10px; }
+    @media (min-width: 640px) { .timeline { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    .tl-col { display: grid; gap: 6px; align-content: start; padding: 10px 12px; border-radius: 10px; background: var(--panel); min-width: 0; }
+    .tl-col h4 { margin: 0; font-size: .82rem; font-weight: 700; display: flex; gap: 6px; align-items: center; color: var(--ink-2); }
+    .tl-col h4 svg { width: 15px; height: 15px; }
+    .tl-col ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+    .tl-col li { font-size: .92rem; padding: 6px 9px; background: var(--paper); border-radius: 7px; border: 1px solid var(--line); }
   </style>
-  <script>
-    function showStep(n) {
-      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-      document.getElementById('step' + n).classList.add('active');
-      window.scrollTo(0,0);
-    }
-    function nextStep(n) { showStep(n); }
-    function prevStep(n) { showStep(n); }
-    function downloadResponses() {
-      const form = document.getElementById('planForm');
-      const data = new FormData(form);
-      let out = 'MY ACTION PLAN RESPONSES\n\n';
-      // Learnings
-      out += '1. Learnings - Cultural Intelligence:\n';
-      [1,2,3].forEach(i => { let v=data.get('ci'+i); if(v) out+=i+'. '+v+'\n'; });
-      out += '\n1. Learnings - EDI:\n';
-      [1,2].forEach(i => { let v=data.get('edi'+i); if(v) out+=i+'. '+v+'\n'; });
-      out += '\n1. SDG connection:\n1. '+(data.get('sdg1')||'')+'\n';
-      // Core & Flex
-      out += '\n2. Core & Flex Model:\nCore Values:\n';
-      [1,2].forEach(i => { let v=data.get('core'+i); if(v) out+=i+'. '+v+'\n'; });
-      out += 'Flexibility Areas:\n';
-      [1,2].forEach(i => { let v=data.get('flex'+i); if(v) out+=i+'. '+v+'\n'; });
-      out += '\nRelation to SDGs:\n'+(data.get('relation')||'')+'\n';
-      // Action Plan Part 1
-      out += '\n3. Action Plan - Part 1:\nMy Core Values:\n'+(data.get('planCore')||'')+'\n';
-      out += 'Where I Will Flex:\n'+(data.get('planFlex')||'')+'\n';
-      // Action Plan Part 2
-      out += '\n4. Action Plan - Part 2:\nActions to Support EDI:\n';
-      [1,2,3].forEach(i => { let v=data.get('action'+i); if(v) out+=i+'. '+v+'\n'; });
-      out += 'SDG I Will Contribute To:\n'+(data.get('planSdg')||'')+'\n';
-      out += 'Progress Measures:\n'+(data.get('progress')||'')+'\n';
-      const blob=new Blob([out],{type:'text/plain'});
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement('a'); a.href=url; a.download='action_plan_responses.txt'; a.click();
-      URL.revokeObjectURL(url);
-    }
-  </script>
 </head>
 <body>
-  <div class="container">
-    <h2>My Action Plan</h2>
-    <p class="intro">Reflect on your learnings and design an action plan. Download your responses at the end.</p>
-    <form id="planForm">
-      <!-- Step 0: Intro -->
-      <div class="step active" id="step0">
-        <h3>Welcome!</h3>
-        <p>This activity guides you through articulating what you’ve learned about cultural intelligence, EDI, and SDGs, then helps you build a personal action plan.</p>
-        <div class="buttons">
-          <button type="button" class="btn btn-secondary" disabled>Back</button>
-          <button type="button" class="btn btn-primary" onclick="nextStep(1)">Start</button>
-        </div>
+  <div class="app">
+    <header class="app-head">
+      <div>
+        <p class="eyebrow"><span>Planner</span><span class="dot" aria-hidden="true"></span><span>Bringing it together</span></p>
+        <h1 class="app-title">My Action Plan</h1>
       </div>
-      <!-- Step 1: Learnings -->
-      <div class="step" id="step1">
-        <h3>Step 1: Learnings</h3>
-        <div class="inputs">
-          <label>3 Things You Learned About Cultural Intelligence:</label>
-          <input type="text" name="ci1" placeholder="1.">
-          <input type="text" name="ci2" placeholder="2.">
-          <input type="text" name="ci3" placeholder="3.">
-          <label>2 Things You Learned About EDI:</label>
-          <input type="text" name="edi1" placeholder="1.">
-          <input type="text" name="edi2" placeholder="2.">
-          <label>1 SDG Connecting Both:</label>
-          <input type="text" name="sdg1" placeholder="e.g. SDG 4: Quality Education">
-        </div>
-        <div class="buttons">
-          <button type="button" class="btn btn-secondary" onclick="prevStep(0)">Back</button>
-          <button type="button" class="btn btn-primary" onclick="nextStep(2)">Next</button>
-        </div>
-      </div>
-      <!-- Step 2: Core & Flex -->
-      <div class="step" id="step2">
-        <h3>Step 2: Core & Flex Model</h3>
-        <div class="inputs two-cols">
-          <div>
-            <label>Core Values (2):</label>
-            <input type="text" name="core1" placeholder="1.">
-            <input type="text" name="core2" placeholder="2.">
+      <svg class="crowd" data-crowd aria-hidden="true"></svg>
+      <nav class="progress" aria-label="Activity progress"><ol></ol></nav>
+    </header>
+
+    <main class="app-body">
+      <!-- Welcome -->
+      <section class="step" data-step="welcome" data-label="Welcome" aria-labelledby="t0">
+        <h2 class="step-title" id="t0">From what you’ve learned to what you’ll do</h2>
+        <p class="lede">This activity guides you through articulating what you’ve learned about cultural intelligence, EDI and the SDGs, then helps you build a personal action plan.</p>
+        <ol class="route">
+          <li><span class="stop"><i data-icon="book-open"></i></span><span class="stop-k">Learn</span><span class="stop-t">A 3-2-1 of your learning</span><span class="stop-d">Three things about cultural intelligence, two about EDI and one SDG that connects them.</span></li>
+          <li><span class="stop"><i data-icon="compass"></i></span><span class="stop-k">Decide</span><span class="stop-t">Your core and flex</span><span class="stop-d">The values you hold onto and the areas where you will adapt.</span></li>
+          <li><span class="stop"><i data-icon="flag"></i></span><span class="stop-k">Act</span><span class="stop-t">Three actions</span><span class="stop-d">What you will do, when, the SDG you will contribute to and how you will measure progress.</span></li>
+        </ol>
+        <p class="finish-note"><i data-icon="file-text"></i><span>You will finish with a one-page plan you can download. Your answers are saved in this browser as you go.</span></p>
+      </section>
+
+      <!-- Learnings -->
+      <section class="step" data-step="learn" data-label="Learnings" aria-labelledby="t1" hidden>
+        <h2 class="step-title" id="t1">What have you learned?</h2>
+        <p class="prose">Capture a quick 3-2-1. Short phrases are fine.</p>
+        <div class="two-col">
+          <div class="pyramid-wrap" aria-hidden="true">
+            <div class="pyramid">
+              <div class="tier"><span class="blk" data-blk="sdg1">1</span></div>
+              <div class="tier"><span class="blk" data-blk="edi1" style="--c: var(--teal)">2</span><span class="blk" data-blk="edi2" style="--c: var(--teal)">2</span></div>
+              <div class="tier"><span class="blk" data-blk="ci1" style="--c: var(--blue)">3</span><span class="blk" data-blk="ci2" style="--c: var(--blue)">3</span><span class="blk" data-blk="ci3" style="--c: var(--blue)">3</span></div>
+            </div>
+            <div class="tier-keys">
+              <span><i style="--c: var(--blue)"></i>3 · Cultural intelligence</span>
+              <span><i style="--c: var(--teal)"></i>2 · EDI</span>
+              <span><i style="--c: var(--gold)"></i>1 · SDG that connects both</span>
+            </div>
+            <p class="done-count" id="doneCount"></p>
           </div>
-          <div>
-            <label>Flexibility Areas (2):</label>
-            <input type="text" name="flex1" placeholder="1.">
-            <input type="text" name="flex2" placeholder="2.">
+          <div class="fields">
+            <fieldset class="group">
+              <legend>3 things you learned about cultural intelligence</legend>
+              <div class="numbered"><span class="num" aria-hidden="true">1</span><input class="input" type="text" id="ci1" data-key="ci1" aria-label="Cultural intelligence, learning 1" maxlength="160"></div>
+              <div class="numbered"><span class="num" aria-hidden="true">2</span><input class="input" type="text" id="ci2" data-key="ci2" aria-label="Cultural intelligence, learning 2" maxlength="160"></div>
+              <div class="numbered"><span class="num" aria-hidden="true">3</span><input class="input" type="text" id="ci3" data-key="ci3" aria-label="Cultural intelligence, learning 3" maxlength="160"></div>
+            </fieldset>
+            <fieldset class="group">
+              <legend>2 things you learned about EDI</legend>
+              <div class="numbered"><span class="num" aria-hidden="true">1</span><input class="input" type="text" id="edi1" data-key="edi1" aria-label="EDI, learning 1" maxlength="160"></div>
+              <div class="numbered"><span class="num" aria-hidden="true">2</span><input class="input" type="text" id="edi2" data-key="edi2" aria-label="EDI, learning 2" maxlength="160"></div>
+            </fieldset>
+            <div class="field">
+              <label class="label" for="sdg1">1 SDG that connects both</label>
+              <div class="sdg-pick"><span class="swatch" data-swatch="sdg1" aria-hidden="true"></span><select class="input select" id="sdg1" data-key="sdg1" data-sdg></select></div>
+            </div>
           </div>
         </div>
-        <div class="inputs">
-          <label>Relation to SDGs (e.g. SDG 4 or 16):</label>
-          <textarea name="relation" rows="3" placeholder="Explain how these relate..."></textarea>
+      </section>
+
+      <!-- Core and flex -->
+      <section class="step" data-step="coreflex" data-label="Core and flex" aria-labelledby="t2" hidden>
+        <h2 class="step-title" id="t2">Your core and flex</h2>
+        <p class="prose">Core values are the non-negotiables you hold onto in any team or culture. Flexibility areas are where you adapt your style so others can contribute.</p>
+        <div class="two-col">
+          <div aria-hidden="true">
+            <div class="cf-diagram">
+              <div class="cf-ring">
+                <div class="cf-top"><span class="cf-flex-k">Flex</span><span class="cf-flex" data-show="flex1"></span></div>
+                <div class="cf-core">
+                  <span class="cf-core-k">Core</span>
+                  <span class="cf-core-v" data-show="core1"></span>
+                  <span class="cf-core-v" data-show="core2"></span>
+                </div>
+                <div class="cf-bottom"><span class="cf-flex" data-show="flex2"></span></div>
+              </div>
+            </div>
+            <p class="cf-caption">Solid at the centre, flexible at the edge</p>
+          </div>
+          <div class="fields">
+            <div class="grid-2">
+              <fieldset class="group">
+                <legend>2 core values</legend>
+                <div class="numbered"><span class="num" aria-hidden="true">1</span><input class="input" type="text" id="core1" data-key="core1" aria-label="Core value 1" placeholder="e.g. Respect" maxlength="60"></div>
+                <div class="numbered"><span class="num" aria-hidden="true">2</span><input class="input" type="text" id="core2" data-key="core2" aria-label="Core value 2" placeholder="e.g. Fairness" maxlength="60"></div>
+              </fieldset>
+              <fieldset class="group">
+                <legend>2 flexibility areas</legend>
+                <div class="numbered"><span class="num" aria-hidden="true">1</span><input class="input" type="text" id="flex1" data-key="flex1" aria-label="Flexibility area 1" placeholder="e.g. Pace of meetings" maxlength="60"></div>
+                <div class="numbered"><span class="num" aria-hidden="true">2</span><input class="input" type="text" id="flex2" data-key="flex2" aria-label="Flexibility area 2" placeholder="e.g. How I give feedback" maxlength="60"></div>
+              </fieldset>
+            </div>
+            <div class="field">
+              <label class="label" for="relation">How do these relate to the SDGs?</label>
+              <span class="hint" id="relHint">For example SDG 4 (Quality Education) or SDG 16 (Peace, Justice and Strong Institutions).</span>
+              <textarea class="textarea" id="relation" data-key="relation" rows="3" aria-describedby="relHint" placeholder="Explain how these relate..."></textarea>
+            </div>
+          </div>
         </div>
-        <div class="buttons">
-          <button type="button" class="btn btn-secondary" onclick="prevStep(1)">Back</button>
-          <button type="button" class="btn btn-primary" onclick="nextStep(3)">Next</button>
+      </section>
+
+      <!-- Values in action -->
+      <section class="step" data-step="values" data-label="Values in action" aria-labelledby="t3" hidden>
+        <h2 class="step-title" id="t3">Put your values into action</h2>
+        <p class="callout" id="carried" hidden><i data-icon="info"></i><span>We’ve carried over your answers from the previous step. Add how you’ll put them into practice.</span></p>
+        <div class="va">
+          <div class="va-card core">
+            <div class="va-head"><span class="ico sm"><i data-icon="shield-check"></i></span><label class="label" for="planCore">My core values</label></div>
+            <span class="hint" id="pcHint">What will you hold onto, whatever the setting?</span>
+            <textarea class="textarea" id="planCore" data-key="planCore" rows="4" aria-describedby="pcHint" placeholder="List your core values..."></textarea>
+          </div>
+          <div class="va-card flex">
+            <div class="va-head"><span class="ico sm"><i data-icon="repeat"></i></span><label class="label" for="planFlex">Where I will flex</label></div>
+            <span class="hint" id="pfHint">Where will you adapt, and how will you do it?</span>
+            <textarea class="textarea" id="planFlex" data-key="planFlex" rows="4" aria-describedby="pfHint" placeholder="List flexibility areas..."></textarea>
+          </div>
         </div>
-      </div>
-      <!-- Step 3: Action Plan Part 1 -->
-      <div class="step" id="step3">
-        <h3>Step 3: Action Plan - Part 1</h3>
-        <div class="inputs">
-          <label>My Core Values:</label>
-          <textarea name="planCore" rows="2" placeholder="List your core values..."></textarea>
-          <label>Where I Will Flex:</label>
-          <textarea name="planFlex" rows="2" placeholder="List flexibility areas..."></textarea>
+        <p class="status" id="saveStatus3" role="status"></p>
+      </section>
+
+      <!-- Actions -->
+      <section class="step" data-step="actions" data-label="Actions" aria-labelledby="t4" hidden>
+        <h2 class="step-title" id="t4">Three actions to support EDI</h2>
+        <div class="actions" id="actions"></div>
+        <div class="field">
+          <label class="label" for="planSdg">1 SDG I will contribute to</label>
+          <div class="sdg-pick"><span class="swatch" data-swatch="planSdg" aria-hidden="true"></span><select class="input select" id="planSdg" data-key="planSdg" data-sdg></select></div>
         </div>
-        <div class="buttons">
-          <button type="button" class="btn btn-secondary" onclick="prevStep(2)">Back</button>
-          <button type="button" class="btn btn-primary" onclick="nextStep(4)">Next</button>
+        <div class="field">
+          <label class="label" for="progress">How I will measure my progress</label>
+          <textarea class="textarea" id="progress" data-key="progress" rows="3" placeholder="e.g. By the end of term, I will have..."></textarea>
         </div>
-      </div>
-      <!-- Step 4: Action Plan Part 2 -->
-      <div class="step" id="step4">
-        <h3>Step 4: Action Plan - Part 2</h3>
-        <div class="inputs">
-          <label>3 Actions I Will Take to Support EDI:</label>
-          <input type="text" name="action1" placeholder="1.">
-          <input type="text" name="action2" placeholder="2.">
-          <input type="text" name="action3" placeholder="3.">
-          <label>1 SDG I Will Contribute To:</label>
-          <input type="text" name="planSdg" placeholder="e.g. SDG 16">
-          <label>How I Will Measure My Progress:</label>
-          <textarea name="progress" rows="2" placeholder="Define your metrics..."></textarea>
+        <p class="status" id="saveStatus4" role="status"></p>
+      </section>
+
+      <!-- Plan -->
+      <section class="step" data-step="plan" data-label="Your plan" aria-labelledby="t5" hidden>
+        <h2 class="step-title" id="t5">Your action plan</h2>
+        <div class="plan" id="plan"></div>
+        <div class="row">
+          <button class="btn btn-accent" type="button" id="download"><i data-icon="download"></i><span>Download my plan</span></button>
+          <button class="btn btn-secondary" type="button" id="copy"><i data-icon="copy"></i><span>Copy text</span></button>
+          <span class="status" id="outStatus" role="status"></span>
         </div>
-        <div class="buttons">
-          <button type="button" class="btn btn-secondary" onclick="prevStep(3)">Back</button>
-          <button type="button" class="btn btn-download" onclick="downloadResponses()">Download Responses</button>
+        <div class="confirm" id="clearArea">
+          <button class="btn btn-quiet btn-sm" type="button" id="clear">Clear my answers</button>
         </div>
-      </div>
-    </form>
+      </section>
+    </main>
+
+    <footer class="app-foot">
+      <button class="btn btn-quiet" type="button" data-nav="back"><i data-icon="arrow-left"></i><span>Back</span></button>
+      <span class="spacer"></span>
+      <span class="count" data-count></span>
+      <button class="btn btn-primary" type="button" data-nav="next"></button>
+      <p class="nudge" data-nudge role="status"></p>
+    </footer>
   </div>
+
+  <script src="../assets/ich.js"></script>
+  <script>
+  (function () {
+    var store = ICH.store("page5");
+
+    var SDGS = [
+      [1, "No Poverty", "#E5243B", "#fff"], [2, "Zero Hunger", "#DDA63A", "#1c1530"],
+      [3, "Good Health and Well-being", "#4C9F38", "#1c1530"], [4, "Quality Education", "#C5192D", "#fff"],
+      [5, "Gender Equality", "#FF3A21", "#1c1530"], [6, "Clean Water and Sanitation", "#26BDE2", "#1c1530"],
+      [7, "Affordable and Clean Energy", "#FCC30B", "#1c1530"], [8, "Decent Work and Economic Growth", "#A21942", "#fff"],
+      [9, "Industry, Innovation and Infrastructure", "#FD6925", "#1c1530"], [10, "Reduced Inequalities", "#DD1367", "#fff"],
+      [11, "Sustainable Cities and Communities", "#FD9D24", "#1c1530"], [12, "Responsible Consumption and Production", "#BF8B2E", "#1c1530"],
+      [13, "Climate Action", "#3F7E44", "#fff"], [14, "Life Below Water", "#0A97D9", "#1c1530"],
+      [15, "Life on Land", "#56C02B", "#1c1530"], [16, "Peace, Justice and Strong Institutions", "#00689D", "#fff"],
+      [17, "Partnerships for the Goals", "#19486A", "#fff"]
+    ];
+    var TIMEFRAMES = ["This week", "This term", "This year"];
+
+    var state = store.get("state", {}) || {};
+    function save() { store.set("state", state); }
+    function val(k) { return (state[k] || "").trim(); }
+
+    function sdgLabel(v) {
+      if (v === "unsure") return "Not sure yet";
+      var g = SDGS[+v - 1];
+      return g ? "SDG " + g[0] + ": " + g[1] : "";
+    }
+
+    // ---------- Build repeated controls ----------
+    var options = '<option value="">Choose a goal</option>' + SDGS.map(function (g) {
+      return '<option value="' + g[0] + '">SDG ' + g[0] + ": " + g[1] + "</option>";
+    }).join("") + '<option value="unsure">Not sure yet</option>';
+    document.querySelectorAll("select[data-sdg]").forEach(function (s) { s.innerHTML = options; });
+
+    document.getElementById("actions").innerHTML = [1, 2, 3].map(function (i) {
+      return '<div class="act"><span class="act-n" aria-hidden="true">' + i + '</span><div class="act-body">' +
+        '<div class="field"><label class="label" for="action' + i + '">Action ' + i + '</label>' +
+        '<input class="input" type="text" id="action' + i + '" data-key="action' + i + '" maxlength="200" placeholder="' +
+        ["e.g. Invite quieter teammates to share ideas first", "e.g. Learn how to pronounce everyone’s name", "e.g. Join a student network or EDI event"][i - 1] + '"></div>' +
+        '<fieldset class="seg"><legend>When will you do this?</legend><div class="seg-opts">' +
+        TIMEFRAMES.map(function (t) {
+          return '<label><input type="radio" name="tf' + i + '" data-key="tf' + i + '" value="' + t + '">' + t + "</label>";
+        }).join("") + "</div></fieldset></div></div>";
+    }).join("");
+
+    // ---------- Bind every field to state ----------
+    var saveTimer;
+    var statuses = [document.getElementById("saveStatus3"), document.getElementById("saveStatus4")];
+    function bind() {
+      document.querySelectorAll("[data-key]").forEach(function (el) {
+        var k = el.dataset.key;
+        if (el.type === "radio") {
+          el.checked = state[k] === el.value;
+          el.addEventListener("change", function () { if (el.checked) { state[k] = el.value; save(); } });
+          return;
+        }
+        el.value = state[k] || "";
+        var evt = el.tagName === "SELECT" ? "change" : "input";
+        el.addEventListener(evt, function () {
+          state[k] = el.value;
+          paint();
+          clearTimeout(saveTimer);
+          saveTimer = setTimeout(function () {
+            save();
+            statuses.forEach(function (s) { s.textContent = "Saved in this browser"; });
+          }, 400);
+        });
+      });
+    }
+
+    // ---------- Live visuals ----------
+    function paintSwatch(key) {
+      var sw = document.querySelector('[data-swatch="' + key + '"]');
+      var v = state[key];
+      var g = SDGS[+v - 1];
+      sw.classList.toggle("on", !!g);
+      if (g) { sw.style.setProperty("--c", g[2]); sw.style.setProperty("--t", g[3]); sw.textContent = g[0]; }
+      else { sw.style.removeProperty("--c"); sw.style.removeProperty("--t"); sw.textContent = v === "unsure" ? "?" : ""; }
+    }
+    function paint() {
+      var keys = ["ci1", "ci2", "ci3", "edi1", "edi2", "sdg1"];
+      var done = 0;
+      keys.forEach(function (k) {
+        var on = !!val(k);
+        if (on) done++;
+        var b = document.querySelector('[data-blk="' + k + '"]');
+        b.classList.toggle("on", on);
+      });
+      var top = document.querySelector('[data-blk="sdg1"]');
+      var g = SDGS[+state.sdg1 - 1];
+      top.style.setProperty("--c", g ? g[2] : "var(--gold)");
+      top.style.setProperty("--t", g ? g[3] : "var(--ink)");
+      top.textContent = g ? "SDG " + g[0] : "1";
+      document.getElementById("doneCount").textContent = done + " of 6 filled in";
+      paintSwatch("sdg1"); paintSwatch("planSdg");
+      document.querySelectorAll("[data-show]").forEach(function (el) {
+        var k = el.dataset.show, v = val(k);
+        el.textContent = v || (k.indexOf("core") === 0 ? "Core value" : "Flex area");
+        el.classList.toggle("empty", !v);
+      });
+    }
+
+    // ---------- Values in action: carry answers over ----------
+    function carryOver() {
+      var carried = false;
+      if (!val("planCore") && (val("core1") || val("core2"))) {
+        state.planCore = [val("core1"), val("core2")].filter(Boolean).join(", ");
+        document.getElementById("planCore").value = state.planCore; carried = true;
+      }
+      if (!val("planFlex") && (val("flex1") || val("flex2"))) {
+        state.planFlex = [val("flex1"), val("flex2")].filter(Boolean).join(", ");
+        document.getElementById("planFlex").value = state.planFlex; carried = true;
+      }
+      if (carried) save();
+      document.getElementById("carried").hidden = !carried;
+    }
+
+    // ---------- Plan sheet ----------
+    function txt(v, empty) { return v ? ICH.esc(v) : '<span class="empty">' + (empty || "Not answered yet") + "</span>"; }
+    function list(keys) {
+      var items = keys.map(val).filter(Boolean);
+      return items.length ? "<ol>" + items.map(function (v) { return "<li>" + ICH.esc(v) + "</li>"; }).join("") + "</ol>" : '<p class="empty">Not answered yet</p>';
+    }
+    function sdgChip(v) {
+      var g = SDGS[+v - 1];
+      if (g) return '<span class="pchip sdg" style="--c:' + g[2] + ";--t:" + g[3] + '">SDG ' + g[0] + ": " + ICH.esc(g[1]) + "</span>";
+      return v === "unsure" ? '<span class="pchip flex">Not sure yet</span>' : '<span class="empty">Not chosen yet</span>';
+    }
+    function chips(keys, cls) {
+      var items = keys.map(val).filter(Boolean);
+      return items.length ? '<div class="pchips">' + items.map(function (v) { return '<span class="pchip ' + cls + '">' + ICH.esc(v) + "</span>"; }).join("") + "</div>" : '<p class="empty">Not answered yet</p>';
+    }
+    function renderPlan() {
+      var cols = { "This week": [], "This term": [], "This year": [], "": [] };
+      [1, 2, 3].forEach(function (i) {
+        var a = val("action" + i);
+        if (a) (cols[state["tf" + i] || ""] || cols[""]).push(a);
+      });
+      function col(name, icon, items) {
+        return '<div class="tl-col"><h4>' + ICH.icon(icon) + name + "</h4>" +
+          (items.length ? "<ul>" + items.map(function (a) { return "<li>" + ICH.esc(a) + "</li>"; }).join("") + "</ul>" : '<p class="empty">Nothing yet</p>') + "</div>";
+      }
+      var undated = cols[""].length ? '<p class="small muted">No timeframe yet: ' + cols[""].map(ICH.esc).join("; ") + "</p>" : "";
+      document.getElementById("plan").innerHTML =
+        '<div class="plan-head"><h3>My action plan</h3><span>' + ICH.dateStamp() + "</span></div>" +
+        '<div class="plan-sec"><span class="plan-k">1. What I learned</span><div class="plan-cols">' +
+          '<div><span class="plan-sub">Cultural intelligence</span>' + list(["ci1", "ci2", "ci3"]) + "</div>" +
+          '<div><span class="plan-sub">EDI</span>' + list(["edi1", "edi2"]) + "</div>" +
+          '<div><span class="plan-sub">SDG connection</span>' + sdgChip(state.sdg1) + "</div></div></div>" +
+        '<div class="plan-sec"><span class="plan-k">2. Core and flex</span><div class="plan-cols">' +
+          '<div><span class="plan-sub">Core values</span>' + chips(["core1", "core2"], "core") + "</div>" +
+          '<div><span class="plan-sub">Flexibility areas</span>' + chips(["flex1", "flex2"], "flex") + "</div>" +
+          '<div><span class="plan-sub">Relation to the SDGs</span><p>' + txt(val("relation")) + "</p></div></div></div>" +
+        '<div class="plan-sec"><span class="plan-k">3. Values in action</span><div class="plan-cols two">' +
+          '<div><span class="plan-sub">My core values</span><p>' + txt(val("planCore")) + "</p></div>" +
+          '<div><span class="plan-sub">Where I will flex</span><p>' + txt(val("planFlex")) + "</p></div></div></div>" +
+        '<div class="plan-sec"><span class="plan-k">4. Actions to support EDI</span><div class="timeline">' +
+          col("This week", "calendar-check", cols["This week"]) + col("This term", "calendar", cols["This term"]) + col("This year", "flag", cols["This year"]) +
+          "</div>" + undated +
+          '<div class="plan-cols two"><div><span class="plan-sub">SDG I will contribute to</span>' + sdgChip(state.planSdg) + "</div>" +
+          '<div><span class="plan-sub">How I will measure my progress</span><p>' + txt(val("progress")) + "</p></div></div></div>";
+    }
+    function exportText() {
+      function lines(keys) {
+        var items = keys.map(val).filter(Boolean);
+        return items.length ? items.map(function (v, k) { return (k + 1) + ". " + v; }).join("\n") : "(not answered)";
+      }
+      var acts = [1, 2, 3].map(function (i) { var a = val("action" + i); return a ? a + (state["tf" + i] ? " (" + state["tf" + i] + ")" : "") : ""; }).filter(Boolean);
+      return "MY ACTION PLAN\n" + ICH.dateStamp() + "\n\n" +
+        "1. LEARNINGS\n" +
+        "Learnings - Cultural Intelligence:\n" + lines(["ci1", "ci2", "ci3"]) + "\n\n" +
+        "Learnings - EDI:\n" + lines(["edi1", "edi2"]) + "\n\n" +
+        "SDG connection:\n" + (sdgLabel(state.sdg1) || "(not chosen)") + "\n\n" +
+        "2. CORE AND FLEX MODEL\n" +
+        "Core values:\n" + lines(["core1", "core2"]) + "\n" +
+        "Flexibility areas:\n" + lines(["flex1", "flex2"]) + "\n\n" +
+        "Relation to SDGs:\n" + (val("relation") || "(not answered)") + "\n\n" +
+        "3. ACTION PLAN - PART 1\n" +
+        "My core values:\n" + (val("planCore") || "(not answered)") + "\n" +
+        "Where I will flex:\n" + (val("planFlex") || "(not answered)") + "\n\n" +
+        "4. ACTION PLAN - PART 2\n" +
+        "Actions to support EDI:\n" + (acts.length ? acts.map(function (a, k) { return (k + 1) + ". " + a; }).join("\n") : "(not answered)") + "\n\n" +
+        "SDG I will contribute to:\n" + (sdgLabel(state.planSdg) || "(not chosen)") + "\n\n" +
+        "Progress measures:\n" + (val("progress") || "(not answered)") + "\n";
+    }
+
+    var outStatus = document.getElementById("outStatus");
+    document.getElementById("download").addEventListener("click", function () {
+      ICH.download("action_plan_responses.txt", exportText());
+      outStatus.textContent = "Download started";
+    });
+    document.getElementById("copy").addEventListener("click", function () {
+      ICH.copy(exportText()).then(function (ok) { outStatus.textContent = ok ? "Copied to clipboard" : "Copy did not work here. Use Download instead."; });
+    });
+
+    var clearArea = document.getElementById("clearArea");
+    clearArea.addEventListener("click", function (e) {
+      var btn = e.target.closest("button"); if (!btn) return;
+      if (btn.id === "clear") {
+        clearArea.innerHTML = '<span>Clear everything you entered in this activity?</span>' +
+          '<button class="btn btn-secondary btn-sm" type="button" id="clearYes">Yes, clear</button>' +
+          '<button class="btn btn-quiet btn-sm" type="button" id="clearNo">Keep my answers</button>';
+        document.getElementById("clearNo").focus();
+      } else if (btn.id === "clearYes") {
+        state = {};
+        store.remove("state");
+        document.querySelectorAll("[data-key]").forEach(function (el) { if (el.type === "radio") el.checked = false; else el.value = ""; });
+        paint(); renderPlan();
+        resetClear();
+        ICH.announce("Your answers have been cleared");
+        flow.go(0);
+      } else if (btn.id === "clearNo") {
+        resetClear();
+        document.getElementById("clear").focus();
+      }
+    });
+    function resetClear() { clearArea.innerHTML = '<button class="btn btn-quiet btn-sm" type="button" id="clear">Clear my answers</button>'; }
+
+    // ---------- Flow ----------
+    bind();
+    var flow = ICH.flow({
+      steps: {
+        welcome: { next: "Start" },
+        values: { enter: carryOver },
+        plan: { enter: renderPlan }
+      }
+    });
+    paint();
+  })();
+  </script>
 </body>
 </html>

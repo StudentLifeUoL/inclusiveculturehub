@@ -1,240 +1,469 @@
 <!doctype html>
 <html lang="en-GB">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Reflective activity: equality and equity</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Equality and Equity</title>
+  <link rel="preload" href="../assets/fonts/bricolage-grotesque-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../assets/fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/ich.css">
   <style>
-    :root {
-      --brand: #e41f1a;
-      --brand-dark: #b31310;
-      --bg: #faf9f7;
-      --panel: #f5f2ef;
-      --text: #14110f;
-      --muted: #6b6a68;
-      --border: #e6e0da;
-      --focus: #ffd7d4;
+    /* Writing steps */
+    .question { display: grid; gap: 6px; padding-bottom: 4px; }
+    .question .lede { font-family: var(--font-display); font-size: clamp(1.2rem, 1rem + 1vw, 1.5rem); font-weight: 600; line-height: 1.3; letter-spacing: -.01em; text-wrap: pretty; }
+    .title-row { display: flex; gap: 12px; align-items: center; }
+    .field-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; align-items: baseline; }
+    .wc { font-size: var(--step-0); color: var(--ink-3); font-variant-numeric: tabular-nums; }
+    .textarea.tall { min-height: 160px; }
+
+    /* Read-only reference to an earlier answer */
+    .ref {
+      display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: start;
+      padding: 12px 14px; border-radius: var(--radius); background: var(--tint);
     }
-    html, body { height: 100%; margin: 0; }
-    body {
-      color: var(--text);
-      font: 17px/1.65 Georgia, "Times New Roman", Times, serif;
-      background: radial-gradient(80% 50% at 50% -10%, #fff, var(--bg));
+    .ref .sheet-k { font-size: .74rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+    .ref .ref-v { grid-column: 1; font-size: .96rem; color: var(--ink); white-space: pre-wrap; overflow-wrap: anywhere; max-height: 9.5em; overflow: auto; }
+    .ref .ref-v.empty { color: var(--ink-3); font-style: italic; }
+    .ref .btn { grid-row: 1 / span 2; grid-column: 2; align-self: start; }
+    .refs { display: grid; gap: 10px; }
+    .refs-in { padding: 0 12px 12px; }
+    @media (min-width: 640px) { .refs.two { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+    /* Compare: reaching the shelf */
+    .stage-card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+    .stage-card .seg { padding: 14px 14px 0; }
+    .stage-card .seg legend { margin-bottom: 8px; }
+    .shelf-svg { display: block; width: 100%; height: auto; max-height: 230px; }
+    .shelf-svg .mv { transition: transform .7s var(--ease), opacity .5s var(--ease); transform-box: view-box; }
+    .shelf-svg .arm { transition: transform .7s var(--ease); transform-box: fill-box; transform-origin: 50% 100%; }
+    /* Two shared rows (who, status) so the three columns always line up */
+    .badges {
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px 6px;
+      padding: 10px 10px 4px; text-align: center;
     }
-    .masthead { max-width: 980px; margin: 0 auto; padding: 20px 24px 0; }
-    .rule { height: 6px; background: var(--brand); border-radius: 3px; }
-    .container {
-      max-width: 980px;
-      margin: 18px auto;
-      padding: clamp(18px, 2.4vw, 28px);
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      box-shadow: 0 10px 30px rgba(20,17,15,.05);
+    .badge { display: contents; }
+    .badge .who { grid-row: 1; align-self: end; min-width: 0; font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
+    .badge .st { grid-row: 2; align-self: start; justify-self: center; min-width: 0; display: inline-flex; align-items: center; gap: 5px; font-size: .86rem; font-weight: 700; line-height: 1.25; }
+    .badge .st svg { width: 15px; height: 15px; flex: none; }
+    @media (max-width: 559px) {
+      .badge .st { flex-direction: column; gap: 3px; font-size: .82rem; }
     }
-    h1 {
-      margin: 0 0 12px;
-      font-weight: 700;
-      letter-spacing: .01em;
-      font-size: clamp(1.2rem, 1rem + 1.2vw, 2rem);
-      color: var(--brand);
+    .badge[data-ok="true"] .st { color: var(--leaf-ink); }
+    .badge[data-ok="false"] .st { color: var(--brand-ink); }
+    .caption { padding: 8px 16px 16px; font-size: .97rem; color: var(--ink-2); border-top: 1px solid var(--line); margin-top: 8px; padding-top: 12px; }
+    .caption strong { color: var(--ink); }
+
+    .defs { display: grid; gap: 10px; }
+    @media (min-width: 680px) { .defs { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    .def {
+      display: grid; gap: 4px; align-content: start;
+      padding: 12px 14px; border-radius: var(--radius); border: 1.5px solid var(--line); background: var(--paper);
+      transition: border-color .3s var(--ease), box-shadow .3s var(--ease);
     }
-    .intro { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 18px; }
-    .lede { font-size: clamp(1.1rem, .9rem + .9vw, 1.6rem); line-height: 1.5; margin: 0; color: var(--text); }
-    .lede strong { color: var(--brand-dark); }
-    .grid { display: grid; gap: 16px; }
-    @media (min-width: 760px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
-    label { font-weight: 700; display: block; margin: 10px 0 8px; }
-    textarea {
-      width: 100%;
-      min-height: 140px;
-      resize: vertical;
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: #fff;
-      color: var(--text);
-      outline: none;
-      line-height: 1.65;
-      box-shadow: inset 0 1px 2px rgba(20,17,15,.04);
-      transition: border-color .15s ease, box-shadow .15s ease;
-    }
-    textarea:focus { border-color: var(--brand); box-shadow: 0 0 0 4px var(--focus); }
-    .field { position: relative; }
-    .counter { position: absolute; right: 10px; bottom: 8px; font-size: .85rem; color: var(--muted); background: rgba(255,255,255,.95); padding: 0 8px; border-radius: 8px; border: 1px solid var(--border); }
-    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 8px; align-items: center; }
-    button { appearance: none; border: 1px solid var(--brand); background: var(--brand); color: #fff; padding: 10px 16px; border-radius: 12px; cursor: pointer; font-weight: 700; transition: transform .06s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease; }
-    button:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(20,17,15,.12); background: var(--brand-dark); border-color: var(--brand-dark); }
-    button:active { transform: translateY(0); }
-    button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
-    .btn-danger { background: #fff; color: var(--brand); border-color: var(--border); }
-    .btn-danger:hover { color: #fff; background: var(--brand-dark); border-color: var(--brand-dark); }
-    .note { color: var(--muted); font-size: .95rem; margin-top: 8px; }
-    .footer { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--border); color: var(--muted); font-size: .95rem; }
-    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-    .success { color: var(--brand-dark); font-weight: 700; }
+    .def h3 { margin: 0; font-size: .98rem; display: flex; gap: 8px; align-items: center; }
+    .def h3 svg { width: 18px; height: 18px; color: var(--accent-ink); }
+    .def p { font-size: .93rem; color: var(--ink-2); line-height: 1.45; }
+    .def[data-on="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+    @media (max-width: 679px) { .def[data-on="false"] { display: none; } .def[data-on="true"] { border-color: var(--line); box-shadow: none; } }
+    .sub { margin: 0; font-family: var(--font-display); font-size: 1.12rem; letter-spacing: -.01em; }
+
+
+    /* Save */
+    .note { display: flex; gap: 8px; align-items: flex-start; font-size: var(--step-0); color: var(--ink-3); }
+    .note svg { width: 16px; height: 16px; flex: none; margin-top: 2px; }
   </style>
 </head>
 <body>
-  <div class="masthead"><div class="rule" aria-hidden="true"></div></div>
-  <div class="container" role="form" aria-labelledby="title">
-    <h1 id="title">Reflective activity: equality and equity</h1>
-
-    <div class="intro" aria-describedby="intro-text">
-      <p id="intro-text" class="lede"><strong>Main question:</strong> In your own words, define what equality and equity mean. How do they differ from each other?</p>
-    </div>
-
-    <div class="grid grid-2">
-      <div class="field">
-        <label for="equality">Your definition of equality</label>
-        <textarea id="equality" aria-describedby="eq-hint" placeholder="Write your definition here..."></textarea>
-        <div id="eq-count" class="counter" aria-live="polite">0 words</div>
-        <p id="eq-hint" class="sr-only">Type your own definition of equality.</p>
+  <div class="app">
+    <header class="app-head">
+      <div>
+        <p class="eyebrow"><span>Reflective activity</span><span class="dot" aria-hidden="true"></span><span class="eb-2">In your own words</span></p>
+        <h1 class="app-title">Equality and equity</h1>
       </div>
+      <svg class="crowd" data-crowd aria-hidden="true"></svg>
+      <nav class="progress" aria-label="Activity progress"><ol></ol></nav>
+    </header>
 
-      <div class="field">
-        <label for="equity">Your definition of equity</label>
-        <textarea id="equity" aria-describedby="eqt-hint" placeholder="Write your definition here..."></textarea>
-        <div id="eqt-count" class="counter" aria-live="polite">0 words</div>
-        <p id="eqt-hint" class="sr-only">Type your own definition of equity.</p>
-      </div>
-    </div>
+    <main class="app-body">
+      <!-- Step 1: equality -->
+      <section class="step" data-step="equality" data-label="Equality" aria-labelledby="t1">
+        <div class="question">
+          <p class="kicker">Main question</p>
+          <p class="lede">In your own words, define what equality and equity mean. How do they differ from each other?</p>
+        </div>
+        <div class="title-row">
+          <span class="ico"><i data-icon="equal"></i></span>
+          <h2 class="step-title" id="t1">What does equality mean to you?</h2>
+        </div>
+        <div class="field">
+          <label class="label" for="equality">Your definition of equality</label>
+          <textarea class="textarea tall" id="equality" placeholder="Write your definition here. There's no right length: a sentence or two is fine."></textarea>
+          <div class="field-foot"><span class="status" id="st-equality" role="status"></span><span class="wc" id="wc-equality">0 words</span></div>
+        </div>
+      </section>
 
-    <div class="field">
-      <label for="difference">How they differ</label>
-      <textarea id="difference" aria-describedby="diff-hint" placeholder="Describe the difference in your own words..."></textarea>
-      <div id="diff-count" class="counter" aria-live="polite">0 words</div>
-      <p id="diff-hint" class="sr-only">Explain how equality and equity differ.</p>
-    </div>
+      <!-- Step 2: equity -->
+      <section class="step" data-step="equity" data-label="Equity" aria-labelledby="t2" hidden>
+        <div class="title-row">
+          <span class="ico"><i data-icon="scale"></i></span>
+          <h2 class="step-title" id="t2">And what does equity mean?</h2>
+        </div>
+        <div id="ref-equity"></div>
+        <div class="field">
+          <label class="label" for="equity">Your definition of equity</label>
+          <textarea class="textarea tall" id="equity" placeholder="Write your definition here. How is it different from equality?"></textarea>
+          <div class="field-foot"><span class="status" id="st-equity" role="status"></span><span class="wc" id="wc-equity">0 words</span></div>
+        </div>
+      </section>
 
-    <div class="toolbar" aria-label="Actions">
-      <button id="exportTxt" type="button">Download your responses</button>
-      <button id="clear" class="btn-danger" type="button">Clear</button>
-      <span id="status" class="note" role="status" aria-live="polite"></span>
-    </div>
+      <!-- Step 3: compare -->
+      <section class="step" data-step="compare" data-label="Compare" aria-labelledby="t3" hidden>
+        <div class="title-row">
+          <span class="ico"><i data-icon="library"></i></span>
+          <h2 class="step-title" id="t3">Reaching the shelf</h2>
+        </div>
+        <p class="prose">Three people want a book from the same shelf. Switch between the three approaches and watch who can reach.</p>
 
-    <p class="note">This activity stores your writing in your browser only. Nothing is sent to a server.</p>
+        <div class="stage-card">
+          <fieldset class="seg">
+            <legend class="sr-only">Choose an approach</legend>
+            <div class="seg-opts" id="modeCtl">
+              <label><input type="radio" name="mode" value="equality" checked>Equality</label>
+              <label><input type="radio" name="mode" value="equity">Equity</label>
+              <label><input type="radio" name="mode" value="barrier">Remove the barrier</label>
+            </div>
+          </fieldset>
 
-    <div class="footer"></div>
+          <svg class="shelf-svg" id="shelfSvg" viewBox="0 0 600 300" aria-hidden="true" focusable="false">
+            <rect x="0" y="0" width="600" height="300" fill="#ffffff"/>
+            <rect x="0" y="272" width="600" height="28" fill="#ece7f4"/>
+            <line x1="0" y1="272" x2="600" y2="272" stroke="#d9d4e3" stroke-width="2"/>
+            <!-- Shelf, books and brackets move together -->
+            <g class="mv" id="shelf">
+              <g id="books"></g>
+              <rect x="24" y="104" width="552" height="9" rx="2" fill="#4a4461"/>
+              <path d="M70 113h10v14z M295 113h10v14z M520 113h10v14z" fill="#4a4461"/>
+            </g>
+            <!-- Supports -->
+            <g class="mv" id="blkA"><rect x="75" y="242" width="50" height="30" rx="3" fill="#f2b134" stroke="#8a5a00" stroke-width="1.5"/></g>
+            <g class="mv" id="blkB1"><rect x="275" y="242" width="50" height="30" rx="3" fill="#f2b134" stroke="#8a5a00" stroke-width="1.5"/></g>
+            <g class="mv" id="blkB2"><rect x="275" y="212" width="50" height="30" rx="3" fill="#f2b134" stroke="#8a5a00" stroke-width="1.5"/></g>
+            <g class="mv" id="blkC"><rect x="388" y="242" width="50" height="30" rx="3" fill="#f2b134" stroke="#8a5a00" stroke-width="1.5"/></g>
+            <g class="mv" id="ramp">
+              <rect x="446" y="212" width="106" height="60" rx="3" fill="#f2b134" stroke="#8a5a00" stroke-width="1.5"/>
+              <path d="M552 212 L598 272 L552 272 Z" fill="#f2b134" stroke="#8a5a00" stroke-width="1.5" stroke-linejoin="round"/>
+            </g>
+            <!-- Person A: tall -->
+            <g class="mv" id="pA" fill="#3557c9">
+              <rect class="arm" x="113" y="92" width="10" height="68" rx="5"/>
+              <path d="M80 272V170a20 20 0 0 1 40 0V272z"/>
+              <circle cx="100" cy="128" r="17"/>
+            </g>
+            <!-- Person B: shorter -->
+            <g class="mv" id="pB" fill="#0f7a70">
+              <rect class="arm" x="311" y="160" width="10" height="46" rx="5"/>
+              <path d="M282 272V218a18 18 0 0 1 36 0V272z"/>
+              <circle cx="300" cy="182" r="15"/>
+            </g>
+            <!-- Person C: wheelchair user -->
+            <g class="mv" id="pC">
+              <rect class="arm" x="494" y="150" width="10" height="64" rx="5" fill="#7e3a96"/>
+              <path d="M471 232V210a14 14 0 0 1 28 0V232z" fill="#7e3a96"/>
+              <circle cx="485" cy="180" r="14" fill="#7e3a96"/>
+              <path d="M497 224h34a5 5 0 0 1 5 5v29" fill="none" stroke="#7e3a96" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+              <g fill="none" stroke="#1c1530" stroke-linecap="round">
+                <path d="M464 188 L468 236 H530" stroke-width="5"/>
+                <circle cx="482" cy="244" r="25" stroke-width="5"/>
+                <circle cx="482" cy="244" r="4" fill="#1c1530" stroke-width="0"/>
+                <circle cx="532" cy="263" r="8" stroke-width="4"/>
+              </g>
+            </g>
+          </svg>
 
-    <noscript><p class="note">This activity needs JavaScript for autosave and export options.</p></noscript>
+          <div class="badges" id="badges"></div>
+          <p class="caption" id="caption" aria-live="polite"></p>
+        </div>
+
+        <div class="defs" id="defs">
+          <div class="def" data-mode="equality"><h3><i data-icon="equal"></i>Equality</h3><p>Everyone gets the same resources or treatment, whatever their starting point.</p></div>
+          <div class="def" data-mode="equity"><h3><i data-icon="scale"></i>Equity</h3><p>Support is matched to what each person needs, so everyone can reach a fair outcome.</p></div>
+          <div class="def" data-mode="barrier"><h3><i data-icon="blocks"></i>Removing the barrier</h3><p>Change the system or environment so the extra support is no longer needed.</p></div>
+        </div>
+
+        <h3 class="sub">Compare with yours</h3>
+        <div class="refs two" id="ref-compare"></div>
+      </section>
+
+      <!-- Step 4: difference -->
+      <section class="step" data-step="difference" data-label="Difference" aria-labelledby="t4" hidden>
+        <div class="title-row">
+          <span class="ico"><i data-icon="equal-not"></i></span>
+          <h2 class="step-title" id="t4">How do they differ?</h2>
+        </div>
+        <details class="disclose" id="refDiffBox">
+          <summary><span class="ico sm"><i data-icon="book-open"></i></span><span>Your two definitions</span><i data-icon="chevron-down" class="chev"></i></summary>
+          <div class="refs two refs-in" id="ref-difference"></div>
+        </details>
+        <div class="field">
+          <label class="label" for="difference">How they differ</label>
+          <textarea class="textarea tall" id="difference" placeholder="Describe the difference in your own words. An example from your own life can help."></textarea>
+          <div class="field-foot"><span class="status" id="st-difference" role="status"></span><span class="wc" id="wc-difference">0 words</span></div>
+        </div>
+      </section>
+
+      <!-- Step 5: save -->
+      <section class="step" data-step="save" data-label="Save" aria-labelledby="t5" hidden>
+        <h2 class="step-title" id="t5">Your reflection</h2>
+        <div class="sheet" id="sheet"></div>
+        <div class="row">
+          <button class="btn btn-accent" type="button" id="download"><i data-icon="download"></i><span>Download your responses</span></button>
+          <button class="btn btn-secondary" type="button" id="copy"><i data-icon="copy"></i><span>Copy text</span></button>
+          <span class="status" id="outStatus" role="status"></span>
+        </div>
+        <p class="note"><i data-icon="shield-check"></i><span>This activity stores your writing in your browser only. Nothing is sent to a server.</span></p>
+        <div class="confirm" id="clearArea">
+          <button class="btn btn-quiet btn-sm" type="button" id="clear">Clear my writing</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-foot">
+      <button class="btn btn-quiet" type="button" data-nav="back"><i data-icon="arrow-left"></i><span>Back</span></button>
+      <span class="spacer"></span>
+      <span class="count" data-count></span>
+      <button class="btn btn-primary" type="button" data-nav="next"></button>
+      <p class="nudge" data-nudge role="status"></p>
+    </footer>
   </div>
 
+  <script src="../assets/ich.js"></script>
   <script>
-    (function () {
-      const els = {
-        equality: document.getElementById('equality'),
-        equity: document.getElementById('equity'),
-        difference: document.getElementById('difference'),
-        eqCount: document.getElementById('eq-count'),
-        eqtCount: document.getElementById('eqt-count'),
-        diffCount: document.getElementById('diff-count'),
-        exportTxt: document.getElementById('exportTxt'),
-        clear: document.getElementById('clear'),
-        status: document.getElementById('status')
-      };
+  (function () {
+    var store = ICH.store("page7");
+    var OLD_KEY = "reflect_eq_equality_v1";
+    var FIELDS = ["equality", "equity", "difference"];
+    var EMPTY = { equality: "", equity: "", difference: "" };
+    var state = Object.assign({}, EMPTY, store.get("state", {}));
+    var restored = false;
 
-      const STORAGE_KEY = 'reflect_eq_equality_v1';
+    function isEmpty(s) { return FIELDS.every(function (f) { return !String(s[f] || "").trim(); }); }
 
-      function wordCount(text) {
-        return (text.trim().match(/\b[\w’'-]+\b/gu) || []).length;
-      }
-
-      function updateCounts() {
-        els.eqCount.textContent = `${wordCount(els.equality.value)} words`;
-        els.eqtCount.textContent = `${wordCount(els.equity.value)} words`;
-        els.diffCount.textContent = `${wordCount(els.difference.value)} words`;
-      }
-
-      function readAll() {
-        return {
-          equality: els.equality.value.trim(),
-          equity: els.equity.value.trim(),
-          difference: els.difference.value.trim(),
-          timestamp: new Date().toISOString()
-        };
-      }
-
-      function writeAll(data) {
-        els.equality.value = data.equality || '';
-        els.equity.value = data.equity || '';
-        els.difference.value = data.difference || '';
-        updateCounts();
-      }
-
-      let saveTimer = null;
-      function autoSave() {
-        clearTimeout(saveTimer);
-        saveTimer = setTimeout(() => {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(readAll()));
-          flashStatus('Saved.');
-        }, 400);
-      }
-
-      function loadSaved() {
-        try {
-          const raw = localStorage.getItem(STORAGE_KEY);
-          if (!raw) return;
-          const data = JSON.parse(raw);
-          writeAll(data);
-          flashStatus('Loaded saved writing.');
-        } catch { }
-      }
-
-      function download(filename, text, type = 'text/plain') {
-        const blob = new Blob([text], { type });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
-      }
-
-      function flashStatus(msg, emphasise = false) {
-        els.status.textContent = msg;
-        els.status.classList.toggle('success', emphasise);
-        if (!emphasise) {
-          setTimeout(() => { if (els.status.textContent === msg) els.status.textContent = ''; }, 3000);
+    // Bring across writing saved by the previous version of this activity.
+    if (isEmpty(state)) {
+      try {
+        var raw = window.localStorage.getItem(OLD_KEY);
+        if (raw) {
+          var old = JSON.parse(raw) || {};
+          FIELDS.forEach(function (f) { if (typeof old[f] === "string") state[f] = old[f]; });
+          if (!isEmpty(state)) { store.set("state", state); restored = true; }
         }
+      } catch (e) {}
+    }
+
+    function save() { store.set("state", state); }
+
+    // ---------- Writing fields ----------
+    var timers = {};
+    function wcText(n) { return n + (n === 1 ? " word" : " words"); }
+    FIELDS.forEach(function (f) {
+      var ta = document.getElementById(f);
+      var wc = document.getElementById("wc-" + f);
+      var st = document.getElementById("st-" + f);
+      ta.value = state[f] || "";
+      wc.textContent = wcText(ICH.wordCount(ta.value));
+      ta.addEventListener("input", function () {
+        state[f] = ta.value;
+        wc.textContent = wcText(ICH.wordCount(ta.value));
+        var nudge = document.querySelector("[data-nudge]");
+        if (nudge) nudge.textContent = "";
+        clearTimeout(timers[f]);
+        timers[f] = setTimeout(function () { save(); st.textContent = "Saved in this browser"; }, 500);
+      });
+    });
+    if (restored) document.getElementById("st-equality").textContent = "We've restored the writing you saved earlier.";
+
+    var LABELS = { equality: "Your definition of equality", equity: "Your definition of equity", difference: "How they differ" };
+    function refCard(f) {
+      var v = String(state[f] || "").trim();
+      return '<div class="ref"><span class="sheet-k">' + LABELS[f] + "</span>" +
+        '<span class="ref-v' + (v ? "" : " empty") + '">' + ICH.esc(v || "Not written yet") + "</span>" +
+        '<button type="button" class="btn btn-quiet btn-sm" data-edit="' + f + '">' + ICH.icon("pencil") + "<span>Edit</span></button></div>";
+    }
+    document.querySelector(".app-body").addEventListener("click", function (e) {
+      var b = e.target.closest("[data-edit]");
+      if (!b) return;
+      var f = b.getAttribute("data-edit");
+      flow.go(f);
+      var ta = document.getElementById(f);
+      try { ta.focus({ preventScroll: true }); } catch (err) { ta.focus(); }
+    });
+
+    // ---------- Reaching the shelf ----------
+    var BOOK_W = [14, 18, 12, 16, 20, 13, 17, 15, 19, 12, 16, 14];
+    var BOOK_H = [36, 42, 32, 40, 34, 44, 38, 30, 41, 35, 39, 33];
+    var BOOK_C = ["#d2232a", "#3557c9", "#f2b134", "#0f7a70", "#7e3a96", "#e9879b", "#3f8f3a", "#1c1530"];
+    (function drawBooks() {
+      var x = 34, k = 0, html = "";
+      while (x < 560) {
+        var w = BOOK_W[k % BOOK_W.length], h = BOOK_H[(k * 5) % BOOK_H.length];
+        if (x + w > 566) break;
+        html += '<rect x="' + x + '" y="' + (104 - h) + '" width="' + w + '" height="' + h + '" rx="2" fill="' + BOOK_C[(k * 3) % BOOK_C.length] + '"/>';
+        x += w + 3 + (k % 5 === 4 ? 10 : 0);
+        k++;
       }
-
-      [els.equality, els.equity, els.difference].forEach(el => {
-        el.addEventListener('input', () => { updateCounts(); autoSave(); });
-      });
-
-      els.exportTxt.addEventListener('click', () => {
-        const data = readAll();
-        const text =
-`Reflective activity: equality and equity
-Saved: ${new Date().toLocaleString()}
-
-Your definition of equality:
-${data.equality}
-
-Your definition of equity:
-${data.equity}
-
-How they differ:
-${data.difference}
-`;
-        download('reflection-equality-equity.txt', text);
-      });
-
-      els.clear.addEventListener('click', () => {
-        if (confirm('Clear all writing from this browser on this device?')) {
-          [els.equality, els.equity, els.difference].forEach(el => el.value = '');
-          localStorage.removeItem(STORAGE_KEY);
-          updateCounts();
-          flashStatus('Cleared.');
-        }
-      });
-
-      updateCounts();
-      loadSaved();
+      document.getElementById("books").innerHTML = html;
     })();
+
+    // Geometry: shoulder height, highest reach and arm length for each person (before any lift).
+    var PEOPLE = {
+      A: { shoulder: 160, reach: 92, arm: 68, who: "Tall person" },
+      B: { shoulder: 206, reach: 160, arm: 46, who: "Shorter person" },
+      C: { shoulder: 214, reach: 150, arm: 64, who: "Wheelchair user" }
+    };
+    var SHELF_TOP = { high: 104, low: 174 };
+    var MODES = {
+      equality: {
+        shelf: "high", lift: { A: 30, B: 30, C: 0 }, show: { blkA: 1, blkB1: 1, blkB2: 0, blkC: 1, ramp: 0 },
+        status: { A: "Reaches, didn't need it", B: "Can't reach", C: "Can't use a block" },
+        caption: "<strong>Equality:</strong> everyone gets the same block. The tall person didn't need it, the shorter person still can't quite reach, and the wheelchair user can't use a block at all."
+      },
+      equity: {
+        shelf: "high", lift: { A: 0, B: 60, C: 60 }, show: { blkA: 0, blkB1: 1, blkB2: 1, blkC: 0, ramp: 1 },
+        status: { A: "Reaches unaided", B: "Reaches with two blocks", C: "Reaches by the ramp" },
+        caption: "<strong>Equity:</strong> support is matched to need. The tall person needs nothing, the shorter person gets two blocks, and the wheelchair user gets a ramp up to a platform. Everyone reaches the books."
+      },
+      barrier: {
+        shelf: "low", lift: { A: 0, B: 0, C: 0 }, show: { blkA: 0, blkB1: 0, blkB2: 0, blkC: 0, ramp: 0 },
+        status: { A: "Reaches", B: "Reaches", C: "Reaches" },
+        caption: "<strong>Removing the barrier:</strong> the shelf is rebuilt at a height everyone can reach, so nobody needs extra support."
+      }
+    };
+    var mode = "equality";
+
+    function setMode(m) {
+      mode = m;
+      var cfg = MODES[m];
+      var top = SHELF_TOP[cfg.shelf];
+      document.getElementById("shelf").style.transform = "translateY(" + (top - SHELF_TOP.high) + "px)";
+      Object.keys(cfg.show).forEach(function (id) {
+        var el = document.getElementById(id);
+        el.style.opacity = cfg.show[id] ? "1" : "0";
+        el.style.transform = cfg.show[id] ? "none" : "translateY(18px)";
+      });
+      var badges = "";
+      Object.keys(PEOPLE).forEach(function (k) {
+        var p = PEOPLE[k], lift = cfg.lift[k];
+        var best = p.reach - lift;                 // highest point the hand can get to
+        var ok = best <= top;                      // can the hand get up to the books?
+        var target = top - 18;                     // where a hand rests on a book
+        var hand = ok ? Math.min(Math.max(best, target), p.shoulder - lift - 14) : best;
+        var len = (p.shoulder - lift) - hand;
+        var g = document.getElementById("p" + k);
+        g.style.transform = "translateY(" + (-lift) + "px)";
+        g.querySelector(".arm").style.transform = "scaleY(" + (len / p.arm).toFixed(3) + ")";
+        badges += '<div class="badge" data-ok="' + ok + '"><span class="who">' + p.who + "</span>" +
+          '<span class="st">' + ICH.icon(ok ? "circle-check" : "circle-x") + "<span>" + cfg.status[k] + "</span></span></div>";
+      });
+      document.getElementById("badges").innerHTML = badges;
+      document.getElementById("caption").innerHTML = cfg.caption;
+      document.querySelectorAll("#defs .def").forEach(function (d) { d.setAttribute("data-on", d.getAttribute("data-mode") === m ? "true" : "false"); });
+    }
+    document.getElementById("modeCtl").addEventListener("change", function (e) {
+      if (e.target.name === "mode") setMode(e.target.value);
+    });
+
+    // ---------- Save ----------
+    function item(k, v) {
+      v = String(v || "").trim();
+      return '<div class="sheet-item"><span class="sheet-k">' + k + '</span><span class="sheet-v' + (v ? "" : " empty") + '">' + ICH.esc(v || "Not written yet") + "</span></div>";
+    }
+    function renderSheet() {
+      document.getElementById("sheet").innerHTML =
+        "<h3>Equality and equity, in your words</h3>" +
+        item(LABELS.equality, state.equality) + item(LABELS.equity, state.equity) + item(LABELS.difference, state.difference);
+    }
+    function exportText() {
+      return "Reflective activity: equality and equity\nSaved: " + ICH.dateStamp() + "\n\n" +
+        "Your definition of equality:\n" + (state.equality.trim() || "(not written)") + "\n\n" +
+        "Your definition of equity:\n" + (state.equity.trim() || "(not written)") + "\n\n" +
+        "How they differ:\n" + (state.difference.trim() || "(not written)") + "\n";
+    }
+    var outStatus = document.getElementById("outStatus");
+    document.getElementById("download").addEventListener("click", function () {
+      ICH.download("reflection-equality-equity.txt", exportText());
+      outStatus.textContent = "Download started";
+    });
+    document.getElementById("copy").addEventListener("click", function () {
+      ICH.copy(exportText()).then(function (ok) { outStatus.textContent = ok ? "Copied to clipboard" : "Copy did not work here. Use Download instead."; });
+    });
+
+    var clearArea = document.getElementById("clearArea");
+    function resetClear() { clearArea.innerHTML = '<button class="btn btn-quiet btn-sm" type="button" id="clear">Clear my writing</button>'; }
+    clearArea.addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      if (b.id === "clear") {
+        clearArea.innerHTML = "<span>Clear all your writing from this browser on this device?</span>" +
+          '<button class="btn btn-secondary btn-sm" type="button" id="clearYes">Yes, clear</button>' +
+          '<button class="btn btn-quiet btn-sm" type="button" id="clearNo">Keep my writing</button>';
+        document.getElementById("clearNo").focus();
+      } else if (b.id === "clearYes") {
+        state = Object.assign({}, EMPTY);
+        store.remove("state");
+        try { window.localStorage.removeItem(OLD_KEY); } catch (err) {}
+        FIELDS.forEach(function (f) {
+          document.getElementById(f).value = "";
+          document.getElementById("wc-" + f).textContent = wcText(0);
+          document.getElementById("st-" + f).textContent = "";
+        });
+        renderSheet(); resetClear();
+        ICH.announce("Your writing has been cleared");
+        flow.go(0);
+      } else if (b.id === "clearNo") {
+        resetClear();
+        document.getElementById("clear").focus();
+      }
+    });
+
+    // ---------- Flow ----------
+    // A kind nudge the first time someone moves on without writing, then let them through.
+    var nudged = {};
+    function gentle(f) {
+      return function () {
+        if (!String(state[f] || "").trim() && !nudged[f]) {
+          nudged[f] = true;
+          var n = document.querySelector("[data-nudge]");
+          if (n) n.textContent = "Try writing a sentence first. You can still continue.";
+          return;
+        }
+        flow.next();
+      };
+    }
+
+    var flow = ICH.flow({
+      steps: {
+        equality: { onNext: gentle("equality") },
+        equity: {
+          enter: function () { document.getElementById("ref-equity").innerHTML = refCard("equality"); },
+          onNext: gentle("equity")
+        },
+        compare: {
+          enter: function () {
+            setMode(mode);
+            document.getElementById("ref-compare").innerHTML = refCard("equality") + refCard("equity");
+          }
+        },
+        difference: {
+          enter: function () {
+            document.getElementById("ref-difference").innerHTML = refCard("equality") + refCard("equity");
+            document.getElementById("refDiffBox").open = window.innerWidth >= 640;
+          },
+          onNext: gentle("difference")
+        },
+        save: { enter: renderSheet, next: "Start again" }
+      }
+    });
+    setMode("equality");
+  })();
   </script>
 </body>
 </html>

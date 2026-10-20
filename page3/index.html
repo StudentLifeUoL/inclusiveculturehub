@@ -1,56 +1,456 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en-GB">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UN SDGs Reflection Activity</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reflecting on the UN SDGs</title>
+  <link rel="preload" href="../assets/fonts/bricolage-grotesque-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../assets/fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/ich.css">
+  <style>
+    body { --accent: #8a5a00; --accent-ink: #8a5a00; --accent-tint: var(--gold-tint); --card: #fdfbf6; --card-line: #e8e1d3; }
+
+    /* ---------- Postcard (shared by every step) ---------- */
+    .postcard {
+      position: relative;
+      background: var(--card);
+      border: 1px solid var(--card-line);
+      border-radius: 6px;
+      box-shadow: 0 1px 2px rgb(28 21 48 / .06), 0 12px 26px rgb(28 21 48 / .08);
+    }
+    .stamp-wrap { position: relative; width: 88px; height: 104px; flex: none; }
+    .stamp-svg { display: block; width: 88px; height: 104px; filter: drop-shadow(0 1px 1.5px rgb(28 21 48 / .28)); }
+    .postmark { position: absolute; left: -104px; bottom: 6px; width: 132px; max-width: none; height: 64px; color: var(--ink-3); opacity: .8; transform: rotate(-7deg); pointer-events: none; }
+    .postmark text { font-family: var(--font-body); font-weight: 700; fill: currentColor; }
+    .kicker-gold { font-size: .74rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--gold-ink); }
+
+    /* Step 1: the question as a postcard */
+    .q-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px; align-items: start; padding: 20px 22px 24px; }
+    .q-card blockquote { margin: 6px 0 0; font-family: var(--font-display); font-size: clamp(1.3rem, 1rem + 1.4vw, 1.75rem); font-weight: 650; line-height: 1.18; letter-spacing: -.02em; text-wrap: balance; color: var(--ink); }
+    .q-card .stamp-wrap { margin: 2px 4px 0 38px; }
+    .q-card .postmark .waves { display: none; }
+    @media (min-width: 700px) { .q-card { transform: rotate(-.8deg); margin: 4px 6px 6px; } }
+    @media (max-width: 459px) {
+      .q-card { grid-template-columns: minmax(0, 1fr); }
+      .q-card .stamp-wrap { display: none; }
+    }
+    .howto { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 700px) { .howto { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; } }
+    .howto li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: start; font-size: .95rem; color: var(--ink-2); }
+    .place-field { max-width: 420px; }
+    .place-input { position: relative; }
+    .place-input svg { position: absolute; left: 12px; top: 50%; width: 18px; height: 18px; transform: translateY(-50%); color: var(--ink-3); pointer-events: none; }
+    .place-input .input { padding-left: 38px; }
+
+    /* Step 2: SDG tiles */
+    .goals { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    @media (min-width: 700px) { .goals { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+    .goal {
+      appearance: none; position: relative; display: grid; align-content: space-between; gap: 6px;
+      min-height: 96px; padding: 10px 10px 11px; border: 0; border-radius: 10px;
+      background: var(--c); color: var(--t); text-align: left; cursor: pointer;
+      transition: transform .2s var(--ease), box-shadow .2s var(--ease), opacity .2s var(--ease);
+    }
+    .goal:hover { transform: translateY(-2px); }
+    .goal .n { font-family: var(--font-display); font-size: 1.75rem; font-weight: 750; line-height: .9; letter-spacing: -.03em; }
+    .goal .nm { font-size: .74rem; font-weight: 700; line-height: 1.15; overflow-wrap: anywhere; hyphens: auto; }
+    .goal .badge {
+      position: absolute; top: 7px; right: 7px; width: 24px; height: 24px; border-radius: 50%;
+      background: #fff; color: var(--ink); display: grid; place-items: center;
+      transform: scale(0); transition: transform .25s var(--ease);
+    }
+    .goal .badge svg { width: 15px; height: 15px; stroke-width: 3; }
+    .goal[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--panel), 0 0 0 5px var(--ink); }
+    .goal[aria-pressed="true"] .badge { transform: scale(1); }
+    .goal[aria-disabled="true"] { opacity: .35; cursor: not-allowed; }
+    .goal[aria-disabled="true"]:hover { transform: none; }
+    .goal:focus-visible { outline-offset: 6px; }
+    .goal-count {
+      display: grid; align-content: center; gap: 2px; min-height: 96px; padding: 10px;
+      border: 1.5px dashed var(--line-strong); border-radius: 10px; font-size: .86rem; color: var(--ink-2);
+    }
+    .goal-count strong { font-family: var(--font-display); font-size: 1.35rem; color: var(--ink); line-height: 1.05; font-variant-numeric: tabular-nums; }
+
+    /* Step 3: writing side and address side */
+    .pc-write { display: grid; grid-template-columns: minmax(0, 1fr); }
+    .pc-msg { padding: 16px 18px 18px; display: grid; gap: 6px; min-width: 0; }
+    .pc-side { display: flex; gap: 14px; align-items: flex-start; justify-content: space-between; padding: 16px 18px 14px; border-bottom: 1.5px dashed var(--card-line); min-width: 0; }
+    .pc-side .stamp-wrap { transform: scale(.8); transform-origin: top right; margin-bottom: -20px; }
+    .pc-side .postmark { display: none; }
+    .pc-addr { display: grid; gap: 4px; min-width: 0; }
+    .pc-place { font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; line-height: 1.15; letter-spacing: -.01em; overflow-wrap: anywhere; }
+    .pc-place.empty { color: var(--ink-3); font-weight: 500; }
+    .pc-goals { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+    .pc-goal { display: inline-flex; align-items: center; gap: 6px; font-size: .74rem; font-weight: 700; color: var(--ink-2); }
+    .pc-goal::before { content: ""; width: 9px; height: 9px; border-radius: 2px; background: var(--c); }
+    .pc-lines { display: none; }
+    @media (min-width: 680px) {
+      .pc-write { grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr); }
+      .pc-side { order: 2; flex-direction: column; align-items: stretch; border-bottom: 0; border-left: 1.5px dashed var(--card-line); padding: 18px 20px 20px; gap: 18px; }
+      .pc-side .stamp-wrap { align-self: flex-end; order: -1; transform: none; margin: 0 0 4px; }
+      .pc-side .postmark { display: block; }
+      .pc-lines { display: grid; gap: 22px; margin-top: 4px; }
+      .pc-lines span { height: 1.5px; background: var(--card-line); }
+    }
+    .pc-label { font-size: .74rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--gold-ink); }
+    .pc-text {
+      width: 100%; min-height: 236px; resize: vertical; display: block;
+      border: 0; padding: 4px 2px 0; margin: 0;
+      font: inherit; font-size: 1rem; line-height: 28px; color: var(--ink);
+      background-color: transparent;
+      background-image: repeating-linear-gradient(to bottom, transparent 0 27px, var(--card-line) 27px 28px);
+      background-position: 0 4px; background-attachment: local;
+    }
+    .pc-text::placeholder { color: #7b7690; opacity: 1; }
+    .pc-text:focus { outline: none; }
+    .pc-write:focus-within { box-shadow: 0 0 0 3px rgb(53 87 201 / .4), 0 12px 26px rgb(28 21 48 / .08); border-color: var(--ink); }
+    .write-meta { display: grid; gap: 4px; }
+    .prompts { margin: 0; padding: 0 0 0 1.1em; display: grid; gap: 6px; }
+    .disclose .disclose-body { padding-left: 16px; }
+
+    /* Step 4: preview and sending */
+    .pc-preview { display: grid; grid-template-columns: minmax(0, 1fr); }
+    .pc-preview .pc-body { padding: 18px 20px 20px; display: grid; gap: 8px; min-width: 0; }
+    .pc-preview .pc-copy { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.65; color: var(--ink); }
+    .pc-preview .pc-copy.empty { color: var(--ink-3); font-style: italic; }
+    @media (min-width: 680px) {
+      .pc-preview { grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr); }
+    }
+    .mail-card { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px 14px; align-items: start; }
+    .mail-card .mail-body { display: grid; gap: 10px; min-width: 0; }
+    .addr {
+      display: inline-block; font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; letter-spacing: -.01em;
+      user-select: all; -webkit-user-select: all; overflow-wrap: anywhere; color: var(--ink);
+    }
+    .mail-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .mail-body .status { min-height: 0; }
+    a.btn { color: var(--ink); }
+  </style>
 </head>
-<body class="bg-gray-100 p-6 font-sans">
-  <div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-md">
-    <h1 class="text-3xl font-bold text-green-700 mb-4">🌍 Reflecting on the UN SDGs</h1>
-    <p class="text-gray-700 mb-4">
-      The Sustainable Development Goals (SDGs) aim to tackle the world's most urgent environmental, political, and economic challenges. In this reflective activity, we'd like you to consider:
-    </p>
+<body>
+  <div class="app">
+    <header class="app-head">
+      <div>
+        <p class="eyebrow"><span>Reflective writing</span><span class="dot" aria-hidden="true"></span><span>5 to 10 minutes</span></p>
+        <h1 class="app-title">Reflecting on the UN SDGs</h1>
+      </div>
+      <svg class="crowd" data-crowd aria-hidden="true"></svg>
+      <nav class="progress" aria-label="Activity progress"><ol></ol></nav>
+    </header>
 
-    <blockquote class="border-l-4 border-green-500 pl-4 italic text-gray-600 mb-6">
-      "What would achieving the UN SDGs look like in your part of the world?"
-    </blockquote>
+    <main class="app-body">
+      <!-- Step 1 -->
+      <section class="step" data-step="question" data-label="Question" aria-labelledby="t1">
+        <h2 class="step-title" id="t1">Imagine it is 2030 and the goals have been met</h2>
+        <p class="prose">The Sustainable Development Goals (SDGs) aim to tackle the world’s most urgent environmental, political and economic challenges. In this reflective activity, we’d like you to consider:</p>
+        <div class="postcard q-card">
+          <div>
+            <p class="kicker-gold">The question</p>
+            <blockquote>What would achieving the UN SDGs look like in your part of the world?</blockquote>
+          </div>
+          <div class="stamp-wrap" data-stamp></div>
+        </div>
+        <ul class="howto">
+          <li><span class="ico sm"><i data-icon="clock"></i></span><span>Take 5 to 10 minutes to reflect deeply on the changes you’d expect to see in your community or region.</span></li>
+          <li><span class="ico sm"><i data-icon="pen-line"></i></span><span>Write your thoughts as a postcard from 2030. Aim for 150 to 300 words.</span></li>
+          <li><span class="ico sm"><i data-icon="mail"></i></span><span>Download your response and, if you like, email it to your instructor for feedback.</span></li>
+        </ul>
+        <div class="field place-field">
+          <label class="label" for="place">Where are you writing from?</label>
+          <span class="hint" id="placeHint">Your town, city or region. Optional.</span>
+          <div class="place-input">
+            <i data-icon="map-pin"></i>
+            <input class="input" id="place" type="text" maxlength="60" autocomplete="address-level2" aria-describedby="placeHint" placeholder="e.g. Lagos, Leeds or Kerala">
+          </div>
+        </div>
+      </section>
 
-    <h2 class="text-xl font-semibold text-gray-800 mb-2">📝 Instructions:</h2>
-    <ul class="list-disc list-inside text-gray-700 mb-6">
-      <li>Take 5–10 minutes to reflect deeply on the changes you'd expect to see in your community or region.</li>
-      <li>Write your thoughts in the box below. Aim for 150–300 words.</li>
-      <li>Once done, you can download your response as a .txt file and optionally email it to your instructor for feedback.</li>
-    </ul>
+      <!-- Step 2 -->
+      <section class="step" data-step="goals" data-label="Goals" aria-labelledby="t2" hidden>
+        <h2 class="step-title" id="t2">Which goals matter most where you live?</h2>
+        <p class="prose">Choose up to three. They will appear on the stamp of your postcard, so you can keep them in mind as you write.</p>
+        <div class="goals" id="goals" role="group" aria-label="The 17 Sustainable Development Goals"></div>
+        <p class="status" id="goalNote" role="status"></p>
+      </section>
 
-    <textarea id="reflectionInput" rows="10" class="w-full p-3 border border-gray-300 rounded mb-4" placeholder="Start typing your reflection here..."></textarea>
+      <!-- Step 3 -->
+      <section class="step" data-step="write" data-label="Write" aria-labelledby="t3" hidden>
+        <h2 class="step-title" id="t3">Write your postcard from 2030</h2>
+        <div class="postcard pc-write">
+          <div class="pc-side">
+            <div class="pc-addr">
+              <span class="pc-label">Greetings from</span>
+              <span class="pc-place" data-place></span>
+              <span class="pc-goals" data-goals></span>
+              <span class="pc-lines" aria-hidden="true"><span></span><span></span><span></span></span>
+            </div>
+            <div class="stamp-wrap" data-stamp></div>
+          </div>
+          <div class="pc-msg">
+            <label class="pc-label" for="message">Your message</label>
+            <textarea class="pc-text" id="message" rows="8" aria-describedby="meterText" placeholder="Dear future me, it’s 2030 and where I live..."></textarea>
+          </div>
+        </div>
+        <div class="write-meta">
+          <div class="meter" id="meter"><div class="meter-track"><span class="meter-zone"></span><span class="meter-fill"></span></div><span class="meter-text" id="meterText"></span></div>
+          <p class="status" id="saveStatus" role="status"></p>
+        </div>
+        <details class="disclose">
+          <summary><span class="ico sm"><i data-icon="lightbulb"></i></span>Need a nudge?<i data-icon="chevron-down" class="chev"></i></summary>
+          <div class="disclose-body">
+            <ul class="prompts">
+              <li>What has changed in your community by 2030?</li>
+              <li>Who benefits, and who might still be left behind?</li>
+              <li>What did people, organisations or government do to get there?</li>
+              <li>What part did you play?</li>
+            </ul>
+          </div>
+        </details>
+      </section>
 
-    <div class="flex gap-4">
-      <button onclick="downloadReflection()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">📥 Download Response</button>
-      
-    </div>
+      <!-- Step 4 -->
+      <section class="step" data-step="send" data-label="Send" aria-labelledby="t4" hidden>
+        <h2 class="step-title" id="t4">Your postcard is ready</h2>
+        <div class="postcard pc-preview" aria-label="Preview of your postcard">
+          <div class="pc-body">
+            <span class="pc-label">Your message</span>
+            <p class="pc-copy" id="previewText"></p>
+          </div>
+          <div class="pc-side">
+            <div class="pc-addr">
+              <span class="pc-label">Greetings from</span>
+              <span class="pc-place" data-place></span>
+              <span class="pc-goals" data-goals></span>
+              <span class="pc-lines" aria-hidden="true"><span></span><span></span><span></span></span>
+            </div>
+            <div class="stamp-wrap" data-stamp></div>
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn btn-accent" type="button" id="download"><i data-icon="download"></i><span>Download my response</span></button>
+          <button class="btn btn-secondary" type="button" id="copy"><i data-icon="copy"></i><span>Copy text</span></button>
+          <span class="status" id="outStatus" role="status"></span>
+        </div>
+        <div class="card mail-card">
+          <span class="ico"><i data-icon="mail"></i></span>
+          <div class="mail-body">
+            <p>Download and email your response to:</p>
+            <span class="addr" id="addr">sdg@london.ac.uk</span>
+            <div class="mail-actions">
+              <button class="btn btn-secondary btn-sm" type="button" id="copyAddr"><i data-icon="copy"></i><span>Copy address</span></button>
+              <a class="btn btn-quiet btn-sm" id="mailto" href="mailto:sdg@london.ac.uk"><i data-icon="send"></i><span>Open your email app</span></a>
+            </div>
+            <p class="hint">The email link opens your email app if one is set up on this device. If nothing happens, copy the address and attach your downloaded file instead.</p>
+            <p class="status" id="mailStatus" role="status"></p>
+          </div>
+        </div>
+        <div class="confirm" id="clearArea">
+          <button class="btn btn-quiet btn-sm" type="button" id="clear">Clear my answers</button>
+        </div>
+      </section>
+    </main>
 
-    <p class="text-sm text-gray-500 mt-4"> <code>Download and email your response to: sdg@london.ac.uk</code></p>
+    <footer class="app-foot">
+      <button class="btn btn-quiet" type="button" data-nav="back"><i data-icon="arrow-left"></i><span>Back</span></button>
+      <span class="spacer"></span>
+      <span class="count" data-count></span>
+      <button class="btn btn-primary" type="button" data-nav="next"></button>
+      <p class="nudge" data-nudge role="status"></p>
+    </footer>
   </div>
 
+  <script src="../assets/ich.js"></script>
   <script>
-    function downloadReflection() {
-      const text = document.getElementById('reflectionInput').value;
-      const blob = new Blob([text], { type: 'text/plain' });
-      const anchor = document.createElement('a');
-      anchor.href = URL.createObjectURL(blob);
-      anchor.download = 'UN_SDG_Reflection.txt';
-      anchor.click();
+  (function () {
+    var store = ICH.store("page3");
+    var EMAIL = "sdg@london.ac.uk";
+    var QUESTION = "What would achieving the UN SDGs look like in your part of the world?";
+
+    // Official short names and colours. t = the text colour with the better contrast on that colour.
+    var SDGS = [
+      [1, "No Poverty", "#E5243B", "#fff"], [2, "Zero Hunger", "#DDA63A", "#1c1530"],
+      [3, "Good Health and Well-being", "#4C9F38", "#1c1530"], [4, "Quality Education", "#C5192D", "#fff"],
+      [5, "Gender Equality", "#FF3A21", "#1c1530"], [6, "Clean Water and Sanitation", "#26BDE2", "#1c1530"],
+      [7, "Affordable and Clean Energy", "#FCC30B", "#1c1530"], [8, "Decent Work and Economic Growth", "#A21942", "#fff"],
+      [9, "Industry, Innovation and Infrastructure", "#FD6925", "#1c1530"], [10, "Reduced Inequalities", "#DD1367", "#fff"],
+      [11, "Sustainable Cities and Communities", "#FD9D24", "#1c1530"], [12, "Responsible Consumption and Production", "#BF8B2E", "#1c1530"],
+      [13, "Climate Action", "#3F7E44", "#fff"], [14, "Life Below Water", "#0A97D9", "#1c1530"],
+      [15, "Life on Land", "#56C02B", "#1c1530"], [16, "Peace, Justice and Strong Institutions", "#00689D", "#fff"],
+      [17, "Partnerships for the Goals", "#19486A", "#fff"]
+    ];
+    var MAX = 3;
+
+    var state = Object.assign({ place: "", goals: [], text: "" }, store.get("state", {}));
+    function save() { store.set("state", state); }
+    function sdg(n) { return SDGS[n - 1]; }
+
+    // ---------- Stamp and postmark ----------
+    var uid = 0;
+    function stampSVG() {
+      var W = 88, H = 104, pad = 7, strip = 17;
+      var iw = W - pad * 2, ih = H - pad * 2 - strip;
+      var out = '<svg class="stamp-svg" viewBox="0 0 88 104" aria-hidden="true"><rect width="88" height="104" fill="#ffffff"/>';
+      var goals = state.goals.slice().sort(function (a, b) { return a - b; });
+      if (!goals.length) {
+        out += '<rect x="' + pad + '" y="' + pad + '" width="' + iw + '" height="' + ih + '" fill="#8a5a00"/>' +
+          '<circle cx="44" cy="' + (pad + ih / 2) + '" r="20" fill="none" stroke="#f2b134" stroke-width="2.5"/>' +
+          '<path d="M24 ' + (pad + ih / 2) + 'h40M44 ' + (pad + ih / 2 - 20) + 'c-9 10-9 30 0 40c9-10 9-30 0-40" fill="none" stroke="#f2b134" stroke-width="2"/>';
+      } else {
+        var bw = iw / goals.length;
+        goals.forEach(function (n, k) {
+          var g = sdg(n);
+          var x = pad + k * bw;
+          out += '<rect x="' + x + '" y="' + pad + '" width="' + (bw + .5) + '" height="' + ih + '" fill="' + g[2] + '"/>' +
+            '<text x="' + (x + bw / 2) + '" y="' + (pad + ih / 2 + 8) + '" text-anchor="middle" fill="' + g[3] + '" font-family="Bricolage Grotesque, sans-serif" font-weight="750" font-size="' + (goals.length === 3 ? 20 : 26) + '">' + n + "</text>";
+        });
+      }
+      out += '<text x="44" y="' + (H - pad - 4.5) + '" text-anchor="middle" fill="#1c1530" font-family="Atkinson Hyperlegible Next, sans-serif" font-weight="700" font-size="9" letter-spacing="1.4">SDGs 2030</text>';
+      // perforations
+      for (var x = 4; x <= W; x += 8) out += '<circle cx="' + x + '" cy="0" r="3" fill="#fdfbf6"/><circle cx="' + x + '" cy="' + H + '" r="3" fill="#fdfbf6"/>';
+      for (var y = 4; y <= H; y += 8) out += '<circle cx="0" cy="' + y + '" r="3" fill="#fdfbf6"/><circle cx="' + W + '" cy="' + y + '" r="3" fill="#fdfbf6"/>';
+      return out + "</svg>";
+    }
+    function postmarkSVG() {
+      var id = "pm" + (++uid);
+      var place = (state.place.trim() || "Your part of the world").toUpperCase();
+      if (place.length > 22) place = place.slice(0, 21) + ".";
+      return '<svg class="postmark" viewBox="0 0 132 64" aria-hidden="true">' +
+        '<path class="waves" d="M2 22c8-5 14 5 22 0s14 5 22 0M2 32c8-5 14 5 22 0s14 5 22 0M2 42c8-5 14 5 22 0s14 5 22 0" fill="none" stroke="currentColor" stroke-width="1.6"/>' +
+        '<circle cx="98" cy="32" r="29" fill="none" stroke="currentColor" stroke-width="1.6"/>' +
+        '<circle cx="98" cy="32" r="18" fill="none" stroke="currentColor" stroke-width="1.2"/>' +
+        '<path id="' + id + '" d="M 98 32 m -23.5 0 a 23.5 23.5 0 1 1 47 0 a 23.5 23.5 0 1 1 -47 0" fill="none"/>' +
+        '<text font-size="6.4" letter-spacing=".6"><textPath href="#' + id + '" startOffset="0">' + ICH.esc(place) + " · 2030 ·</textPath></text>" +
+        '<text x="98" y="36" text-anchor="middle" font-size="11">2030</text></svg>';
+    }
+    function paintPostcards() {
+      document.querySelectorAll("[data-stamp]").forEach(function (w) { w.innerHTML = stampSVG() + postmarkSVG(); });
+      document.querySelectorAll("[data-place]").forEach(function (el) {
+        var p = state.place.trim();
+        el.textContent = p || "Your part of the world";
+        el.classList.toggle("empty", !p);
+      });
+      document.querySelectorAll("[data-goals]").forEach(function (el) {
+        el.innerHTML = state.goals.slice().sort(function (a, b) { return a - b; }).map(function (n) {
+          var g = sdg(n);
+          return '<span class="pc-goal" style="--c:' + g[2] + '">SDG ' + n + " " + ICH.esc(g[1]) + "</span>";
+        }).join("");
+      });
     }
 
-    function emailReflection() {
-      const text = document.getElementById('reflectionInput').value;
-      const subject = encodeURIComponent("My UN SDGs Reflection");
-      const body = encodeURIComponent(text);
-      const mailtoLink = `mailto:sdg@london.ac.uk?subject=${subject}&body=${body}`;
-      window.location.href = mailtoLink;
+    // ---------- Step 1 ----------
+    var place = document.getElementById("place");
+    place.value = state.place;
+    place.addEventListener("input", function () { state.place = place.value; save(); paintPostcards(); });
+
+    // ---------- Step 2 ----------
+    var goalsEl = document.getElementById("goals");
+    var goalNote = document.getElementById("goalNote");
+    goalsEl.innerHTML = SDGS.map(function (g) {
+      return '<button type="button" class="goal" data-n="' + g[0] + '" aria-pressed="false" style="--c:' + g[2] + ";--t:" + g[3] + '">' +
+        '<span class="n">' + g[0] + '</span><span class="nm">' + g[1] + "</span>" +
+        '<span class="badge" aria-hidden="true">' + ICH.icon("check") + "</span></button>";
+    }).join("") + '<div class="goal-count" aria-hidden="true"><strong id="goalCount">0 of 3</strong><span>chosen. Optional.</span></div>';
+    function paintGoals() {
+      var full = state.goals.length >= MAX;
+      goalsEl.querySelectorAll(".goal").forEach(function (b) {
+        var on = state.goals.indexOf(+b.dataset.n) > -1;
+        b.setAttribute("aria-pressed", on ? "true" : "false");
+        b.setAttribute("aria-disabled", full && !on ? "true" : "false");
+      });
+      document.getElementById("goalCount").textContent = state.goals.length + " of " + MAX;
     }
+    goalsEl.addEventListener("click", function (e) {
+      var b = e.target.closest(".goal"); if (!b) return;
+      var n = +b.dataset.n, i = state.goals.indexOf(n);
+      if (i > -1) state.goals.splice(i, 1);
+      else if (state.goals.length >= MAX) { goalNote.textContent = "Three chosen. Deselect one to change your choice."; return; }
+      else state.goals.push(n);
+      goalNote.textContent = state.goals.length >= MAX ? "Three chosen. Deselect one to change your choice." :
+        (i > -1 ? "Removed SDG " + n + "." : "Added SDG " + n + ": " + sdg(n)[1] + ".");
+      save(); paintGoals(); paintPostcards();
+    });
+
+    // ---------- Step 3 ----------
+    var ta = document.getElementById("message");
+    var meterEl = document.getElementById("meter");
+    var saveStatus = document.getElementById("saveStatus");
+    var saveTimer;
+    ta.value = state.text;
+    function updateMeter() { ICH.meter(meterEl, ICH.wordCount(ta.value), 150, 300); }
+    ta.addEventListener("input", function () {
+      state.text = ta.value; updateMeter();
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(function () { save(); saveStatus.textContent = "Saved in this browser"; }, 500);
+    });
+
+    // ---------- Step 4 ----------
+    function goalsText() {
+      return state.goals.slice().sort(function (a, b) { return a - b; }).map(function (n) { return "SDG " + n + " " + sdg(n)[1]; }).join("; ");
+    }
+    function exportText() {
+      return "Reflecting on the UN SDGs: my postcard from 2030\n" + ICH.dateStamp() + "\n\n" +
+        "Question: " + QUESTION + "\n" +
+        "Writing from: " + (state.place.trim() || "not given") + "\n" +
+        "Goals that matter most here: " + (goalsText() || "none chosen") + "\n\n" +
+        "My reflection (" + ICH.wordCount(state.text) + " words):\n" + (state.text.trim() || "(not written)") + "\n\n" +
+        "Download and email your response to: " + EMAIL + "\n";
+    }
+    function renderPreview() {
+      var t = state.text.trim();
+      var p = document.getElementById("previewText");
+      p.textContent = t || "Your message is empty. Go back to the previous step to write it.";
+      p.classList.toggle("empty", !t);
+      document.getElementById("t4").textContent = t ? "Your postcard is ready" : "Your postcard is waiting for a message";
+      var body = encodeURIComponent(exportText());
+      document.getElementById("mailto").setAttribute("href", "mailto:" + EMAIL + "?subject=" + encodeURIComponent("My UN SDGs Reflection") + "&body=" + body);
+    }
+    var outStatus = document.getElementById("outStatus");
+    document.getElementById("download").addEventListener("click", function () {
+      ICH.download("UN_SDG_Reflection.txt", exportText());
+      outStatus.textContent = "Download started";
+    });
+    document.getElementById("copy").addEventListener("click", function () {
+      ICH.copy(exportText()).then(function (ok) { outStatus.textContent = ok ? "Copied to clipboard" : "Copy did not work here. Use Download instead."; });
+    });
+    var mailStatus = document.getElementById("mailStatus");
+    document.getElementById("copyAddr").addEventListener("click", function () {
+      ICH.copy(EMAIL).then(function (ok) { mailStatus.textContent = ok ? "Address copied" : "Copy did not work here. Select the address above instead."; });
+    });
+
+    var clearArea = document.getElementById("clearArea");
+    clearArea.addEventListener("click", function (e) {
+      var btn = e.target.closest("button"); if (!btn) return;
+      if (btn.id === "clear") {
+        clearArea.innerHTML = '<span>Clear everything you entered in this activity?</span>' +
+          '<button class="btn btn-secondary btn-sm" type="button" id="clearYes">Yes, clear</button>' +
+          '<button class="btn btn-quiet btn-sm" type="button" id="clearNo">Keep my answers</button>';
+        document.getElementById("clearNo").focus();
+      } else if (btn.id === "clearYes") {
+        state = { place: "", goals: [], text: "" };
+        store.remove("state");
+        place.value = ""; ta.value = "";
+        paintGoals(); paintPostcards(); updateMeter(); renderPreview();
+        resetClear();
+        ICH.announce("Your answers have been cleared");
+        flow.go(0);
+      } else if (btn.id === "clearNo") {
+        resetClear();
+        document.getElementById("clear").focus();
+      }
+    });
+    function resetClear() { clearArea.innerHTML = '<button class="btn btn-quiet btn-sm" type="button" id="clear">Clear my answers</button>'; }
+
+    // ---------- Flow ----------
+    var flow = ICH.flow({
+      steps: {
+        question: { next: "Choose goals" },
+        goals: { next: "Start writing", enter: function () { goalNote.textContent = ""; } },
+        write: { next: "Finish postcard", enter: function () { paintPostcards(); updateMeter(); } },
+        send: { enter: function () { paintPostcards(); renderPreview(); } }
+      }
+    });
+    paintGoals(); paintPostcards(); updateMeter();
+  })();
   </script>
 </body>
 </html>

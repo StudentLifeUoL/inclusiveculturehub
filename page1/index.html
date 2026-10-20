@@ -1,159 +1,570 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en-GB">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>The Inequality Ladder</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preload" href="../assets/fonts/bricolage-grotesque-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../assets/fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/ich.css">
+  <style>
+    body { --accent: var(--plum); --accent-ink: var(--plum); --accent-tint: var(--plum-tint); }
+
+    /* ---------- Identity draw ---------- */
+    .draw { display: grid; gap: 22px; align-items: center; }
+    @media (min-width: 680px) { .draw { grid-template-columns: minmax(0, 1fr) 260px; } }
+    .draw-copy { display: grid; gap: 14px; align-content: start; }
+    .table { position: relative; height: 230px; display: grid; place-items: center; }
+    .deck { position: relative; width: 150px; height: 200px; }
+    .card-back {
+      position: absolute; inset: 0; border-radius: 14px;
+      background:
+        radial-gradient(circle at 50% 42%, rgb(255 255 255 / .16) 0 26px, transparent 27px),
+        repeating-linear-gradient(45deg, rgb(255 255 255 / .07) 0 8px, transparent 8px 16px),
+        var(--plum);
+      border: 3px solid #fff; box-shadow: var(--shadow);
+      transform: rotate(var(--r)) translateX(var(--x));
+      transition: transform .5s var(--ease);
+    }
+    .card-back::after {
+      content: "?"; position: absolute; left: 0; right: 0; top: 66px; text-align: center;
+      font: 700 34px/1 var(--font-display); color: #fff;
+    }
+    .deck.shuffle .card-back { animation: shuffle .7s var(--ease) both; animation-delay: calc(var(--i) * 40ms); }
+    @keyframes shuffle {
+      0% { transform: rotate(var(--r)) translateX(var(--x)); }
+      45% { transform: rotate(calc(var(--r) * -1.6)) translateX(calc(var(--x) * -2.2)) translateY(-8px); }
+      100% { transform: rotate(0deg) translateX(0); }
+    }
+
+    .id-card {
+      width: min(100%, 260px); border-radius: 16px; overflow: hidden; background: var(--paper);
+      border: 1px solid var(--line); box-shadow: var(--shadow);
+      animation: flip-in .55s var(--ease) both;
+    }
+    @keyframes flip-in { from { transform: perspective(700px) rotateY(80deg); opacity: 0; } to { transform: none; opacity: 1; } }
+    .id-top { background: var(--plum-tint); display: grid; place-items: center; padding: 16px 0 0; }
+    .id-top svg { width: 92px; height: 92px; display: block; }
+    .id-body { padding: 14px 16px 16px; display: grid; gap: 8px; }
+    .id-place { font-size: .74rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--plum); }
+    .id-name { font-family: var(--font-display); font-weight: 700; font-size: 1.12rem; line-height: 1.2; letter-spacing: -.01em; }
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    /* ---------- Life stages ---------- */
+    .stage { display: grid; gap: 20px; align-items: start; }
+    @media (min-width: 720px) { .stage { grid-template-columns: minmax(0, 1fr) 236px; gap: 28px; } }
+    .stage-main { display: grid; gap: 14px; min-width: 0; }
+    .who { display: flex; gap: 10px; align-items: center; font-size: .9rem; color: var(--ink-3); }
+    .who svg { width: 28px; height: 28px; flex: none; }
+    .stage-head { display: flex; gap: 14px; align-items: center; }
+
+    .paths { display: grid; gap: 10px; }
+    .path {
+      appearance: none; width: 100%; text-align: left; cursor: pointer;
+      display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; align-items: center;
+      padding: 14px 16px; border-radius: var(--radius); border: 1.5px solid var(--line);
+      background: var(--paper); color: var(--ink); font-weight: 700; line-height: 1.35;
+      transition: border-color .2s var(--ease), box-shadow .2s var(--ease), background .2s var(--ease), opacity .2s var(--ease);
+    }
+    .path:hover { border-color: var(--line-strong); box-shadow: var(--shadow); }
+    .path .state { display: inline-flex; align-items: center; gap: 6px; font-size: .78rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-3); white-space: nowrap; }
+    .path .state svg { width: 16px; height: 16px; }
+    .path .why { grid-column: 1 / -1; font-weight: 400; font-size: .93rem; color: var(--ink-2); }
+    .path[data-state="blocked"] {
+      cursor: default; border-style: dashed; border-color: var(--line-strong);
+      background: repeating-linear-gradient(-45deg, #faf9fc 0 10px, #f1eef6 10px 20px);
+    }
+    .path[data-state="blocked"] .state { color: var(--brand-ink); }
+    .path[data-state="blocked"] .label-text { color: var(--ink-2); }
+    .path[data-state="blocked"]:hover { box-shadow: none; }
+    .path.nope { animation: nope .4s var(--ease); }
+    @keyframes nope { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+    .path[data-state="chosen"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+    .path[data-state="chosen"] .state { color: var(--ink); }
+    .path[data-state="passed"] { opacity: .55; cursor: default; }
+    .path[data-state="passed"]:hover { box-shadow: none; border-color: var(--line); }
+
+    .outcome { display: grid; gap: 8px; padding: 16px 18px; border-radius: var(--radius); background: var(--ink); color: #fff; }
+    .outcome .o-head { display: flex; gap: 10px; align-items: center; font-family: var(--font-display); font-weight: 700; font-size: 1.08rem; }
+    .outcome .o-head svg { width: 22px; height: 22px; flex: none; }
+    .outcome p { color: rgb(255 255 255 / .88); }
+    .outcome .impact { font-size: .93rem; color: #fff; }
+    .outcome .impact b { color: var(--gold); font-weight: 700; }
+    .lvl-3 { color: #7fd6c9; }
+    .lvl-2 { color: var(--gold); }
+    .lvl-1 { color: #ff9a9a; }
+    .barrier-count { font-size: .9rem; color: var(--ink-3); display: flex; gap: 8px; align-items: center; }
+    .barrier-count svg { width: 16px; height: 16px; color: var(--brand-ink); }
+
+    /* ---------- The ladder ---------- */
+    .ladder-wrap { display: grid; gap: 8px; justify-items: center; align-content: start; }
+    @media (min-width: 720px) { .ladder-wrap { position: sticky; top: 16px; } }
+    .ladder { width: 100%; max-width: 236px; height: auto; display: block; }
+    @media (max-width: 719px) {
+      .ladder-wrap { grid-template-columns: auto minmax(0, 1fr); justify-items: start; align-items: center; gap: 4px 14px; padding: 12px 14px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); }
+      .ladder { width: 150px; }
+      .ladder-wrap .ladder-cap { align-self: center; }
+    }
+    .ladder .tok { transition: transform 1s var(--ease); }
+    .ladder .tok-you { transition-duration: .9s; }
+    .ladder-cap { font-size: .85rem; color: var(--ink-3); text-align: center; max-width: 30ch; }
+    @media (max-width: 719px) { .ladder-cap { text-align: left; } }
+    .ladder-cap strong { color: var(--ink); }
+
+    /* ---------- Summary ---------- */
+    .result-hero { display: grid; gap: 16px; align-items: center; }
+    @media (min-width: 640px) { .result-hero { grid-template-columns: auto minmax(0, 1fr); } }
+    .rung-big { display: grid; place-items: center; width: 120px; height: 120px; border-radius: 50%; background: var(--plum); color: #fff; text-align: center; line-height: 1; }
+    .rung-big b { font-family: var(--font-display); font-size: 2.6rem; font-weight: 750; display: block; }
+    .rung-big span { font-size: .8rem; opacity: .9; }
+    .race { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+    .race li { display: grid; grid-template-columns: minmax(0, 1fr) 120px 2.2em; gap: 10px; align-items: center; font-size: .92rem; }
+    @media (max-width: 459px) { .race li { grid-template-columns: minmax(0, 1fr) 70px 2.2em; } }
+    .race .nm { min-width: 0; color: var(--ink-2); }
+    .race .bar { height: 10px; border-radius: 5px; background: var(--line); overflow: hidden; }
+    .race .bar i { display: block; height: 100%; background: var(--line-strong); border-radius: 5px; }
+    .race .sc { font-variant-numeric: tabular-nums; text-align: right; font-weight: 700; }
+    .race li.me .nm { color: var(--ink); font-weight: 700; }
+    .race li.me .bar i { background: var(--plum); }
+    .lists { display: grid; gap: 14px; }
+    @media (min-width: 640px) { .lists { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .mini { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+    .mini li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; font-size: .93rem; color: var(--ink-2); }
+    .mini li svg { width: 18px; height: 18px; margin-top: 2px; }
+    .mini .lvl-3 { color: var(--teal); }
+    .mini .lvl-2 { color: var(--gold-ink); }
+    .mini .lvl-1 { color: var(--brand-ink); }
+    .mini .k { display: block; font-size: .74rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+    .card h3 { margin: 0 0 10px; font-family: var(--font-display); font-size: 1.05rem; letter-spacing: -.01em; }
+  </style>
 </head>
-<body class="bg-gray-100 font-sans p-6">
-  <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-md p-6">
-    <h1 class="text-3xl font-bold text-purple-700 mb-4">🎮 The Inequality Ladder</h1>
-    <p class="text-gray-700 mb-4">Experience how identity and geography affect life opportunities. Your avatar will be randomly assigned a profile from the fictional world. At each life stage, you'll face challenges or opportunities. Reflect on how equality and equity shape real lives.</p>
-
-    <div id="step1" class="space-y-4">
-      <button onclick="assignIdentity()" class="bg-purple-600 text-white px-4 py-2 rounded">Start the Experience</button>
-    </div>
-
-    <div id="identityCard" class="hidden mt-6 p-4 bg-purple-50 border-l-4 border-purple-500">
-      <p class="font-semibold text-purple-800">Your assigned identity:</p>
-      <p id="identityText" class="text-gray-800 mt-2"></p>
-      <button onclick="startJourney()" class="mt-4 bg-green-600 text-white px-4 py-2 rounded">Continue</button>
-    </div>
-
-    <div id="journey" class="hidden mt-6 space-y-8">
-      <div id="stage"></div>
-      <p id="outcome" class="text-purple-700 font-semibold"></p>
-      <div class="flex justify-end" id="nextBtnWrapper"></div>
-    </div>
-
-    <div id="resultSection" class="hidden mt-6 p-4 bg-yellow-50 border-l-4 border-yellow-400">
-      <h2 class="text-xl font-bold text-yellow-700">🧾 Your Life Summary</h2>
-      <ul id="resultsList" class="list-disc pl-5 text-gray-800 mb-4"></ul>
-      <p id="finalSummary" class="text-gray-700 italic"></p>
-      <div class="mt-4">
-        <button onclick="restartActivity()" class="bg-blue-600 text-white px-4 py-2 rounded">🔁 Try Another Identity</button>
+<body>
+  <div class="app">
+    <header class="app-head">
+      <div>
+        <p class="eyebrow"><span>Simulation</span><span class="dot" aria-hidden="true"></span><span>Life chances</span></p>
+        <h1 class="app-title">The Inequality Ladder</h1>
       </div>
-    </div>
+      <svg class="crowd" data-crowd aria-hidden="true"></svg>
+      <nav class="progress" aria-label="Activity progress"><ol></ol></nav>
+    </header>
+
+    <main class="app-body">
+      <section class="step" data-step="identity" data-label="Identity" aria-labelledby="t0">
+        <div class="draw">
+          <div class="draw-copy">
+            <h2 class="step-title" id="t0">You don’t choose where you start</h2>
+            <p class="lede">Experience how identity and geography affect life opportunities. You’ll be given a profile from a fictional world, then face four life stages.</p>
+            <p class="prose">At each stage, reach for the path you’d want. Some paths will be closed to you, and you’ll see why. Seven other people, born on the same day as you, will climb alongside you.</p>
+            <div class="row" id="drawRow">
+              <button class="btn btn-accent" type="button" id="drawBtn"><i data-icon="shuffle"></i><span>Draw my identity</span></button>
+            </div>
+            <p class="small muted">The people and places are fictional. The barriers are based on patterns found in many parts of the world.</p>
+          </div>
+          <div class="table" id="table" aria-live="polite">
+            <div class="deck" id="deck" aria-hidden="true"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="step" data-step="edu" data-label="Education" hidden></section>
+      <section class="step" data-step="work" data-label="Work" hidden></section>
+      <section class="step" data-step="health" data-label="Health" hidden></section>
+      <section class="step" data-step="voice" data-label="Voice" hidden></section>
+
+      <section class="step" data-step="summary" data-label="Your life" aria-labelledby="t5" hidden>
+        <h2 class="step-title" id="t5">Your life summary</h2>
+        <div class="result-hero">
+          <div class="rung-big" aria-hidden="true"><div><b id="bigScore">0</b><span>of 12 rungs</span></div></div>
+          <div class="stack">
+            <p class="lede" id="bandText"></p>
+            <p class="prose" id="identityLine"></p>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Everyone born on the same day</h3>
+          <ol class="race" id="race"></ol>
+          <p class="small muted" style="margin-top:10px">Scores show where each person ended up when they took the best path open to them.</p>
+        </div>
+        <div class="lists">
+          <div class="card"><h3>What shaped your life</h3><ul class="mini" id="impacts"></ul></div>
+          <div class="card"><h3>Barriers you met</h3><ul class="mini" id="barriers"></ul></div>
+        </div>
+        <div class="field">
+          <label class="label" for="reflect">Equality gives everyone the same ladder. Equity asks what each person needs to climb it. For this person, which barrier would you remove first, and who has the power to remove it?</label>
+          <textarea class="textarea" id="reflect" rows="4" placeholder="Write a few sentences (optional)"></textarea>
+        </div>
+        <div class="row">
+          <button class="btn btn-secondary btn-sm" type="button" id="download"><i data-icon="download"></i><span>Download summary</span></button>
+          <button class="btn btn-quiet btn-sm" type="button" id="copy"><i data-icon="copy"></i><span>Copy</span></button>
+          <span class="status" id="outStatus" role="status"></span>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-foot">
+      <button class="btn btn-quiet" type="button" data-nav="back"><i data-icon="arrow-left"></i><span>Back</span></button>
+      <span class="spacer"></span>
+      <span class="count" data-count></span>
+      <button class="btn btn-primary" type="button" data-nav="next"></button>
+      <p class="nudge" data-nudge role="status"></p>
+    </footer>
   </div>
 
+  <script src="../assets/ich.js"></script>
   <script>
-    const identities = [
-      "Girl from rural Mardania, lower caste background",
-      "Disabled refugee woman from Xirelia",
-      "Indigenous boy from Lanovar",
-      "Young Black woman from urban Norfax",
-      "Male university student from Eldoria",
-      "Transgender youth from Viremont",
-      "Afro-Caribbean girl from Selvaria",
-      "Boy from nomadic community in Zorania"
+  (function () {
+    // ---------- Content ----------
+    var STAGES = [
+      { id: "edu", title: "Education opportunity", icon: "graduation-cap", question: "What kind of education access do you have?",
+        options: [
+          { score: 3, label: "I attend a well-funded public school", outcome: "You benefit from inclusive policies and equitable funding. Your path to higher education is supported and encouraged.", impact: "High academic potential fulfilled." },
+          { score: 2, label: "I walk 5 km to a basic community school", outcome: "You face daily obstacles but have strong community support. You might succeed, but it’s an uphill battle without systemic support.", impact: "Limited academic access delays success." },
+          { score: 1, label: "I am not allowed to attend school", outcome: "Discrimination or exclusionary rules deny your right to education. Your life chances are limited from the start.", impact: "Lost access to basic education and future skills." }
+        ] },
+      { id: "work", title: "Economic opportunity", icon: "briefcase", question: "How do you experience access to employment?",
+        options: [
+          { score: 3, label: "I can freely choose and pursue a career path", outcome: "Equal pay laws and anti-discrimination protections support your career goals.", impact: "Able to build a stable and respected career." },
+          { score: 2, label: "I work in informal sectors with limited rights", outcome: "You earn an income, but without contracts, healthcare or retirement support.", impact: "Economic insecurity and long-term instability." },
+          { score: 1, label: "I face consistent bias and unemployment", outcome: "Because of systemic bias or migration status, job offers are rare and often exploitative.", impact: "Chronic underemployment limits your livelihood." }
+        ] },
+      { id: "health", title: "Health equity", icon: "stethoscope", question: "How accessible is healthcare for you?",
+        options: [
+          { score: 3, label: "I access public healthcare services easily", outcome: "You receive timely treatment and preventive care as a right.", impact: "Healthy life expectancy with minimal health risks." },
+          { score: 2, label: "I rely on overcrowded clinics or travel far", outcome: "Limited infrastructure affects the quality and timeliness of the care you receive.", impact: "Delayed treatment worsens common conditions." },
+          { score: 1, label: "I cannot afford or reach health services", outcome: "Health problems go untreated because of cost or discrimination, deepening inequality.", impact: "Unaddressed illnesses limit quality of life." }
+        ] },
+      { id: "voice", title: "Political voice and representation", icon: "vote", question: "Do you feel represented and heard in politics?",
+        options: [
+          { score: 3, label: "I vote and engage in activism freely", outcome: "Your voice shapes policies, and you feel a sense of agency.", impact: "You influence your community’s future." },
+          { score: 2, label: "I vote, but rarely see leaders like me", outcome: "You engage, but feel underrepresented and disillusioned.", impact: "Limited impact causes civic disengagement." },
+          { score: 1, label: "I am not allowed or afraid to speak up", outcome: "Political suppression or marginalisation silences your perspective.", impact: "Systemic silence reinforces injustice." }
+        ] }
     ];
 
-    const stages = [
-      {
-        title: "🎓 Education Opportunity",
-        question: "What kind of education access do you have?",
-        options: [
-          { label: "I attend a well-funded public school", outcome: "✅ You benefit from inclusive policies and equitable funding. Your path to higher education is supported and encouraged.", impact: "High academic potential fulfilled.", score: 3 },
-          { label: "I walk 5km to a basic community school", outcome: "🟨 You face daily obstacles but have strong community support. You might succeed, but it's an uphill battle without systemic support.", impact: "Limited academic access delays success.", score: 2 },
-          { label: "I am not allowed to attend school", outcome: "🟥 Due to cultural, gender, or caste discrimination, your right to education is denied. Your life chances are limited from the start.", impact: "Lost access to basic education and future skills.", score: 1 }
-        ]
-      },
-      {
-        title: "💼 Economic Opportunity",
-        question: "How do you experience access to employment?",
-        options: [
-          { label: "I can freely choose and pursue a career path", outcome: "✅ Equal pay laws and anti-discrimination protections support your career goals.", impact: "Able to build a stable and respected career.", score: 3 },
-          { label: "I work in informal sectors with limited rights", outcome: "🟨 You earn income, but without contracts, healthcare, or retirement support.", impact: "Economic insecurity and long-term instability.", score: 2 },
-          { label: "I face consistent bias and unemployment", outcome: "🟥 Due to systemic bias or migration status, job offers are rare and often exploitative.", impact: "Chronic underemployment limits your livelihood.", score: 1 }
-        ]
-      },
-      {
-        title: "🏥 Health Equity",
-        question: "How accessible is healthcare for you?",
-        options: [
-          { label: "I access public healthcare services easily", outcome: "✅ You receive timely treatment and preventive care as a right.", impact: "Healthy life expectancy with minimal health risks.", score: 3 },
-          { label: "I rely on overcrowded clinics or travel far", outcome: "🟨 Limited infrastructure affects the quality and timeliness of care you receive.", impact: "Delayed treatment worsens common conditions.", score: 2 },
-          { label: "I cannot afford or reach health services", outcome: "🟥 Health problems go untreated due to cost or discrimination, worsening inequality.", impact: "Unaddressed illnesses limit quality of life.", score: 1 }
-        ]
-      },
-      {
-        title: "🗳️ Political Voice & Representation",
-        question: "Do you feel represented and heard in politics?",
-        options: [
-          { label: "I vote and engage in activism freely", outcome: "✅ Your voice shapes policies, and you feel a sense of agency.", impact: "You influence your community's future.", score: 3 },
-          { label: "I vote, but rarely see leaders like me", outcome: "🟨 You engage, but feel underrepresented and disillusioned.", impact: "Limited impact causes civic disengagement.", score: 2 },
-          { label: "I am not allowed or afraid to speak up", outcome: "🟥 Political suppression or marginalisation silences your perspective.", impact: "Systemic silence reinforces injustice.", score: 1 }
-        ]
+    // For each person: the best path open at each stage, and why better paths are closed.
+    var PEOPLE = [
+      { id: "mardania", name: "Girl from rural Mardania, lower caste background", place: "Mardania", tags: ["Rural", "Lower caste", "Girl"], colour: "#f2b134", fig: "child",
+        edu: { 3: "Mardania funds schools through local taxes, so rural districts like yours get the least. There is no well-funded school within reach." },
+        work: { 3: "Employers still screen applicants by family name, which reveals caste, and there are few formal jobs in rural areas." },
+        health: { 3: "The nearest public hospital is a day’s travel away, and the local clinic charges fees your family struggles to pay." },
+        voice: { 3: "Village councils are run by dominant-caste elders, and women from your community who speak up face reprisals.", 2: "Your name was left off the electoral roll, and no one at the registration office would help you correct it." } },
+      { id: "xirelia", name: "Disabled refugee woman from Xirelia", place: "Xirelia", tags: ["Refugee", "Disabled", "Woman"], colour: "#3557c9", fig: "wheel",
+        edu: { 3: "You fled Xirelia as a child. The settlement school is an overcrowded classroom with no step-free access." },
+        work: { 3: "Refugees in your host country are barred from most professions.", 2: "The informal work nearby is heavy manual labour, and no employer will make adjustments for your disability." },
+        health: { 3: "Public healthcare is reserved for citizens. You rely on a charity clinic that is often full." },
+        voice: { 3: "Without citizenship you cannot vote or stand for office in your host country.", 2: "Refugees are excluded from every election, so you have no vote at all." } },
+      { id: "lanovar", name: "Indigenous boy from Lanovar", place: "Lanovar", tags: ["Indigenous", "Remote region", "Boy"], colour: "#0f7a70", fig: "child",
+        edu: { 3: "Well-funded schools are in the cities, and lessons are taught only in the national language, not your own." },
+        work: { 3: "Your community’s land rights are not recognised, and city employers rarely hire people from your region." },
+        health: { 3: "Health services are concentrated in the cities. Your nearest clinic is a long boat journey away." },
+        voice: { 3: "Indigenous people hold no seats in Lanovar’s parliament, and protests over land have been broken up by police." } },
+      { id: "norfax", name: "Young Black woman from urban Norfax", place: "Norfax", tags: ["Black", "Woman", "City"], colour: "#7e3a96", fig: "adult",
+        edu: {},
+        work: { 3: "Applicants with names like yours get far fewer interview offers for the same CV, and women are paid less than men for the same role." },
+        health: { 3: "Services in your part of the city are overstretched, and clinicians often underestimate Black women’s pain, so your concerns are dismissed." },
+        voice: {} },
+      { id: "eldoria", name: "Male university student from Eldoria", place: "Eldoria", tags: ["Man", "University student", "Majority group"], colour: "#d2232a", fig: "tall",
+        edu: {}, work: {}, health: {}, voice: {} },
+      { id: "viremont", name: "Transgender youth from Viremont", place: "Viremont", tags: ["Transgender", "Young person"], colour: "#e9879b", fig: "adult",
+        edu: { 3: "Your school refused to use your name, and the bullying pushed you to transfer to a small community school further away." },
+        work: { 3: "Your ID documents don’t match who you are, and employers in Viremont can legally refuse to hire you." },
+        health: { 3: "The public waiting list for the care you need is several years long, and some doctors refuse to treat you.", 2: "The only clinic that will see you is in another city and charges fees you cannot afford." },
+        voice: { 3: "New laws restrict public discussion of trans identities, so activism carries legal risk." } },
+      { id: "selvaria", name: "Afro-Caribbean girl from Selvaria", place: "Selvaria", tags: ["Afro-Caribbean", "Girl", "Low-income area"], colour: "#3f8f3a", fig: "child",
+        edu: { 3: "Schools in Selvaria are funded by local property taxes, so the school in your neighbourhood has outdated books and too few teachers." },
+        work: { 3: "Careers advisers steered you away from university, and most jobs in your area are short-term contracts." },
+        health: {},
+        voice: { 3: "You can vote, but few politicians campaign in your neighbourhood and almost none share your background." } },
+      { id: "zorania", name: "Boy from a nomadic community in Zorania", place: "Zorania", tags: ["Nomadic community", "Boy", "No fixed address"], colour: "#1c1530", fig: "child",
+        edu: { 3: "Schools in Zorania require a fixed home address to enrol, and your family moves with the seasons.", 2: "Even the community school will not register pupils who leave for part of the year." },
+        work: { 3: "Without school qualifications or a fixed address, formal employers will not consider you." },
+        health: { 3: "Clinics register patients by home address, so you can only use mobile clinics that rarely visit." },
+        voice: { 3: "You need a permanent address to register to vote in Zorania.", 2: "With no address you cannot register, so you have no vote." } }
+    ];
+
+    function bestFor(person, stageId) {
+      var blocked = person[stageId] || {};
+      return blocked[3] ? (blocked[2] ? 1 : 2) : 3;
+    }
+    function totalFor(person) {
+      return STAGES.reduce(function (sum, s) { return sum + bestFor(person, s.id); }, 0);
+    }
+
+    // ---------- Figures (same visual language as the header crowd) ----------
+    function figure(kind, colour) {
+      var c = colour;
+      var shapes = {
+        child: '<circle cx="50" cy="40" r="11" fill="' + c + '"/><path d="M34 92v-22a16 16 0 0 1 32 0v22z" fill="' + c + '"/>',
+        adult: '<circle cx="50" cy="28" r="12" fill="' + c + '"/><path d="M30 92v-34a20 20 0 0 1 40 0v34z" fill="' + c + '"/>',
+        tall: '<circle cx="50" cy="20" r="12" fill="' + c + '"/><path d="M30 92v-42a20 20 0 0 1 40 0v42z" fill="' + c + '"/>',
+        wheel: '<circle cx="46" cy="30" r="11" fill="' + c + '"/><path d="M30 70v-14a16 16 0 0 1 32 0v14z" fill="' + c + '"/><circle cx="50" cy="74" r="15" fill="none" stroke="' + c + '" stroke-width="5"/><path d="M62 70h12v18" fill="none" stroke="' + c + '" stroke-width="5" stroke-linecap="round"/>'
+      };
+      return '<svg viewBox="0 0 100 96" aria-hidden="true">' + shapes[kind] + "</svg>";
+    }
+
+    // ---------- State ----------
+    var me = null, lastId = null;
+    var picks = {};      // stageId -> chosen score
+    var tried = {};      // stageId -> { score: true } for blocked paths the learner reached for
+    var others = [];     // the seven other people in lane order
+    var store = ICH.store("page1");
+
+    // ---------- Deck ----------
+    var deck = document.getElementById("deck");
+    var table = document.getElementById("table");
+    function renderDeck() {
+      var html = "";
+      for (var i = 0; i < 8; i++) {
+        var r = (i - 3.5) * 4, x = (i - 3.5) * 5;
+        html += '<div class="card-back" style="--r:' + r + "deg;--x:" + x + "px;--i:" + i + '"></div>';
       }
-    ];
-
-    let currentStage = 0;
-    let impactResults = [];
-    let totalScore = 0;
-
-    function assignIdentity() {
-      const index = Math.floor(Math.random() * identities.length);
-      document.getElementById("identityText").innerText = identities[index];
-      document.getElementById("step1").classList.add("hidden");
-      document.getElementById("identityCard").classList.remove("hidden");
+      deck.innerHTML = html;
     }
-
-    function startJourney() {
-      document.getElementById("identityCard").classList.add("hidden");
-      document.getElementById("journey").classList.remove("hidden");
-      loadStage();
+    function showIdentity() {
+      table.innerHTML =
+        '<div class="id-card"><div class="id-top">' + figure(me.fig, me.colour) + '</div><div class="id-body">' +
+        '<span class="id-place">From ' + me.place + "</span>" +
+        '<span class="id-name">' + me.name + "</span>" +
+        '<span class="tags">' + me.tags.map(function (t) { return '<span class="tag">' + t + "</span>"; }).join("") + "</span>" +
+        "</div></div>";
+      document.getElementById("drawRow").innerHTML =
+        '<p class="callout">' + ICH.icon("info") + "<span>This is who you are for the rest of the activity. Choose <strong>Begin your life</strong> to start.</span></p>";
+      ICH.announce("Your identity: " + me.name);
+      reveal(table.querySelector(".id-card"));
     }
-
-    function loadStage() {
-      const stage = stages[currentStage];
-      const stageDiv = document.getElementById("stage");
-      let buttonsHTML = '';
-      stage.options.forEach(opt => {
-        buttonsHTML += `<button onclick=\"showOutcome('${opt.outcome.replace(/'/g, "\\'")}', '${opt.impact.replace(/'/g, "\\'")}', ${opt.score})\" class=\"w-full bg-blue-100 hover:bg-blue-200 p-3 mb-2 rounded\">${opt.label}</button>`;
-      });
-      stageDiv.innerHTML = `<h2 class='text-xl font-bold text-gray-800'>${stage.title}</h2>
-        <p class='text-gray-700 mb-4'>${stage.question}</p>
-        ${buttonsHTML}`;
-      document.getElementById("outcome").innerText = "";
-      document.getElementById("nextBtnWrapper").innerHTML = "";
+    function draw() {
+      var pool = PEOPLE.filter(function (p) { return p.id !== lastId; });
+      me = pool[Math.floor(Math.random() * pool.length)];
+      lastId = me.id;
+      others = PEOPLE.filter(function (p) { return p !== me; });
+      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      document.getElementById("drawBtn").disabled = true;
+      if (reduce) { showIdentity(); flow.refresh(); return; }
+      deck.classList.add("shuffle");
+      setTimeout(function () { showIdentity(); flow.refresh(); }, 820);
     }
+    document.getElementById("drawBtn").addEventListener("click", draw);
 
-    function showOutcome(message, impact, score) {
-      document.getElementById("outcome").innerText = message;
-      impactResults.push(impact);
-      totalScore += score;
-      document.getElementById("nextBtnWrapper").innerHTML = `<button onclick='nextStage()' class='mt-4 bg-green-600 text-white px-4 py-2 rounded'>Next</button>`;
-    }
-
-    function nextStage() {
-      currentStage++;
-      if (currentStage < stages.length) {
-        loadStage();
-      } else {
-        document.getElementById("journey").classList.add("hidden");
-        document.getElementById("resultsList").innerHTML = impactResults.map(item => `<li>${item}</li>`).join('');
-
-        let summary = "";
-        if (totalScore >= 11) {
-          summary = "🎉 You had access to opportunities that placed you ahead of most people in the world. You lived a secure, respected, and empowered life.";
-        } else if (totalScore >= 7) {
-          summary = "⚖️ Your journey was average. You had some opportunities but also faced barriers that prevented you from fully thriving.";
-        } else {
-          summary = "💔 Inequity held you back. In a more just world, your talents could have made you a renowned scientist, artist, or leader.";
+    // ---------- Ladder (eight lanes, twelve rungs) ----------
+    var RUNG = 14, BASE = 186, TOP = BASE - 12 * RUNG;
+    function laneX(i) { return 22 + i * 27; }
+    function ladderSVG() {
+      var s = '<svg class="ladder" viewBox="0 0 236 212" role="img" aria-label="Ladder showing how far you and seven others have climbed">';
+      for (var i = 0; i < 8; i++) {
+        var x = laneX(i), mine = i === 0;
+        var rail = mine ? "#7e3a96" : "#d9d4e3";
+        s += '<line x1="' + (x - 8) + '" y1="' + (TOP - 6) + '" x2="' + (x - 8) + '" y2="' + (BASE + 6) + '" stroke="' + rail + '" stroke-width="2"/>';
+        s += '<line x1="' + (x + 8) + '" y1="' + (TOP - 6) + '" x2="' + (x + 8) + '" y2="' + (BASE + 6) + '" stroke="' + rail + '" stroke-width="2"/>';
+        for (var k = 1; k <= 12; k++) {
+          s += '<line x1="' + (x - 8) + '" y1="' + (BASE - k * RUNG) + '" x2="' + (x + 8) + '" y2="' + (BASE - k * RUNG) + '" stroke="' + rail + '" stroke-width="' + (mine ? 1.6 : 1.2) + '"/>';
         }
-        document.getElementById("finalSummary").innerText = summary;
-        document.getElementById("resultSection").classList.remove("hidden");
       }
+      for (var j = 7; j >= 0; j--) {
+        var cx = laneX(j);
+        if (j === 0) {
+          s += '<g class="tok tok-you" data-lane="0"><circle cx="' + cx + '" cy="' + BASE + '" r="8" fill="#7e3a96" stroke="#fff" stroke-width="2.5"/></g>';
+        } else {
+          s += '<g class="tok" data-lane="' + j + '"><circle cx="' + cx + '" cy="' + BASE + '" r="6" fill="#8a84a0" stroke="#fff" stroke-width="2"/></g>';
+        }
+      }
+      s += '<text x="' + laneX(0) + '" y="207" text-anchor="middle" font-size="10" font-weight="700" fill="#7e3a96" font-family="Atkinson Hyperlegible Next, Verdana, sans-serif">YOU</text>';
+      s += "</svg>";
+      return s;
+    }
+    function climbed(person, uptoIndex) {
+      var sum = 0;
+      for (var i = 0; i <= uptoIndex; i++) sum += bestFor(person, STAGES[i].id);
+      return sum;
+    }
+    function myClimb(uptoIndex) {
+      var sum = 0;
+      for (var i = 0; i <= uptoIndex; i++) sum += picks[STAGES[i].id] || 0;
+      return sum;
+    }
+    function setLadder(wrap, stageIndex, includeCurrent) {
+      var svg = wrap.querySelector(".ladder");
+      var upto = includeCurrent ? stageIndex : stageIndex - 1;
+      var mine = myClimb(upto);
+      svg.querySelectorAll(".tok").forEach(function (g) {
+        var lane = +g.dataset.lane;
+        var h = lane === 0 ? mine : (upto >= 0 ? climbed(others[lane - 1], upto) : 0);
+        g.style.transform = "translateY(" + (-h * RUNG) + "px)";
+      });
+      var cap = wrap.querySelector(".ladder-cap");
+      var maxOther = 0;
+      others.forEach(function (o) { maxOther = Math.max(maxOther, upto >= 0 ? climbed(o, upto) : 0); });
+      cap.innerHTML = upto < 0
+        ? "You and seven others born on the same day. <strong>Everyone starts on the bottom rung.</strong>"
+        : "You are on rung <strong>" + mine + "</strong>. The highest climber so far is on rung <strong>" + maxOther + "</strong>.";
     }
 
-    function restartActivity() {
-      currentStage = 0;
-      impactResults = [];
-      totalScore = 0;
-      document.getElementById("resultSection").classList.add("hidden");
-      document.getElementById("step1").classList.remove("hidden");
+    // ---------- Stage steps ----------
+    // Scroll inside the frame only (never the Rise page) so `el` sits above the action bar,
+    // without pushing `keepTop` above the top edge.
+    function reveal(el, keepTop) {
+      var foot = document.querySelector(".app-foot");
+      if (!el || !foot) return;
+      var delta = el.getBoundingClientRect().bottom - foot.getBoundingClientRect().top + 12;
+      if (keepTop) delta = Math.min(delta, keepTop.getBoundingClientRect().top - 12);
+      if (delta <= 0) return;
+      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      try { window.scrollBy({ top: delta, behavior: reduce ? "auto" : "smooth" }); } catch (err) { window.scrollBy(0, delta); }
     }
+
+    function stageIcon(score) {
+      return score === 3 ? ICH.icon("circle-check", { cls: "lvl-3" }) : score === 2 ? ICH.icon("circle-alert", { cls: "lvl-2" }) : ICH.icon("circle-x", { cls: "lvl-1" });
+    }
+    function renderStage(index) {
+      var st = STAGES[index];
+      var sec = document.querySelector('.step[data-step="' + st.id + '"]');
+      var blocked = me[st.id] || {};
+      var chosen = picks[st.id];
+      var html =
+        '<div class="stage"><div class="stage-main">' +
+        '<p class="who">' + figure(me.fig, me.colour) + "<span>" + me.name + "</span></p>" +
+        '<div class="stage-head"><span class="ico">' + ICH.icon(st.icon) + '</span><h2 class="step-title" id="t-' + st.id + '">' + st.title + "</h2></div>" +
+        '<p class="lede">' + st.question + "</p>" +
+        (chosen ? "" : '<p class="prose">Choose the path you’d want. It might not be open to you.</p>') +
+        '<div class="paths" role="group" aria-labelledby="t-' + st.id + '">';
+      st.options.forEach(function (o) {
+        var isBlocked = !!blocked[o.score] && (tried[st.id] || {})[o.score];
+        var state = chosen ? (chosen === o.score ? "chosen" : (isBlocked ? "blocked" : "passed")) : (isBlocked ? "blocked" : "open");
+        var badge = state === "blocked" ? ICH.icon("lock") + "Closed to you" : state === "chosen" ? ICH.icon("check") + "Your path" : "";
+        html += '<button type="button" class="path" data-score="' + o.score + '" data-state="' + state + '"' +
+          (state === "blocked" || state === "passed" || state === "chosen" ? ' aria-disabled="true"' : "") + ">" +
+          '<span class="label-text">' + o.label + '</span><span class="state">' + badge + "</span>" +
+          (state === "blocked" ? '<span class="why">' + blocked[o.score] + "</span>" : "") +
+          "</button>";
+      });
+      html += "</div>";
+      if (chosen) {
+        var opt = st.options.filter(function (o) { return o.score === chosen; })[0];
+        var nBlocked = Object.keys(blocked).length;
+        html += '<div class="outcome" role="status"><p class="o-head">' + stageIcon(chosen) + "<span>" + opt.label + "</span></p><p>" + opt.outcome + '</p><p class="impact"><b>Impact:</b> ' + opt.impact + "</p></div>";
+        html += '<p class="barrier-count">' + (nBlocked ? ICH.icon("lock") + "<span>" + nBlocked + (nBlocked === 1 ? " path was" : " paths were") + " closed to you at this stage.</span>" : ICH.icon("lock-open") + "<span>No barriers stood in your way at this stage.</span>") + "</p>";
+      }
+      html += '</div><div class="ladder-wrap">' + ladderSVG() + '<p class="ladder-cap"></p></div></div>';
+      sec.innerHTML = html;
+      sec.setAttribute("aria-labelledby", "t-" + st.id);
+      var wrap = sec.querySelector(".ladder-wrap");
+      // Draw at the previous height first, then animate up once a path is chosen.
+      setLadder(wrap, index, false);
+      if (chosen) requestAnimationFrame(function () { requestAnimationFrame(function () { setLadder(wrap, index, true); }); });
+    }
+
+    document.querySelector(".app-body").addEventListener("click", function (e) {
+      var b = e.target.closest(".path");
+      if (!b) return;
+      var sec = b.closest(".step");
+      var index = STAGES.map(function (s) { return s.id; }).indexOf(sec.dataset.step);
+      var st = STAGES[index];
+      if (picks[st.id] || b.dataset.state !== "open") return;
+      var score = +b.dataset.score;
+      var reason = (me[st.id] || {})[score];
+      if (reason) {
+        tried[st.id] = tried[st.id] || {};
+        tried[st.id][score] = true;
+        renderStage(index);
+        var again = sec.querySelector('.path[data-score="' + score + '"]');
+        again.classList.add("nope");
+        again.focus({ preventScroll: true });
+        ICH.announce("Closed to you. " + reason);
+        return;
+      }
+      picks[st.id] = score;
+      // Record the closed paths above the one taken, so the summary lists every barrier.
+      tried[st.id] = tried[st.id] || {};
+      Object.keys(me[st.id] || {}).forEach(function (k) { tried[st.id][k] = true; });
+      renderStage(index);
+      var out = sec.querySelector(".outcome");
+      if (out) ICH.announce(out.textContent);
+      var chosenBtn = sec.querySelector('.path[data-state="chosen"]');
+      if (chosenBtn) chosenBtn.focus({ preventScroll: true });
+      flow.refresh();
+      // On narrow screens the ladder sits under the outcome, so show both climbing together.
+      var lad = sec.querySelector(".ladder-wrap");
+      var stacked = lad && out && lad.getBoundingClientRect().top > out.getBoundingClientRect().top;
+      reveal(stacked ? lad : (sec.querySelector(".barrier-count") || out), out);
+    });
+
+    // ---------- Summary ----------
+    var BANDS = [
+      { min: 11, text: "You had access to opportunities that placed you ahead of most people in the world. You lived a secure, respected and empowered life." },
+      { min: 8, text: "Your journey was average. You had some opportunities, but also faced barriers that stopped you from fully thriving." },
+      { min: 0, text: "Inequity held you back. In a more just world, your talents could have made you a renowned scientist, artist or leader." }
+    ];
+    function myTotal() { return STAGES.reduce(function (s, st) { return s + (picks[st.id] || 0); }, 0); }
+    function renderSummary() {
+      var total = myTotal();
+      document.getElementById("bigScore").textContent = total;
+      document.getElementById("bandText").textContent = BANDS.filter(function (b) { return total >= b.min; })[0].text;
+      document.getElementById("identityLine").innerHTML = "You were a <strong>" + me.name.charAt(0).toLowerCase() + me.name.slice(1) + "</strong>. Everyone in this activity had the same kinds of choices. What differed was which paths were open to them.";
+      var rows = PEOPLE.map(function (p) { return { p: p, score: p === me ? total : totalFor(p) }; })
+        .sort(function (a, b) { return b.score - a.score; });
+      document.getElementById("race").innerHTML = rows.map(function (r) {
+        var mine = r.p === me;
+        return '<li class="' + (mine ? "me" : "") + '"><span class="nm">' + (mine ? "You: " : "") + r.p.name + '</span><span class="bar" aria-hidden="true"><i style="width:' + (r.score / 12 * 100) + '%"></i></span><span class="sc">' + r.score + '<span class="sr-only"> of 12</span></span></li>';
+      }).join("");
+      document.getElementById("impacts").innerHTML = STAGES.map(function (st) {
+        var o = st.options.filter(function (x) { return x.score === picks[st.id]; })[0];
+        return "<li>" + stageIcon(o.score) + '<span><span class="k">' + st.title + "</span>" + o.impact + "</span></li>";
+      }).join("");
+      var list = [];
+      STAGES.forEach(function (st) {
+        Object.keys(me[st.id] || {}).sort().reverse().forEach(function (k) {
+          list.push("<li>" + ICH.icon("lock", { cls: "lvl-1" }) + '<span><span class="k">' + st.title + "</span>" + me[st.id][k] + "</span></li>");
+        });
+      });
+      document.getElementById("barriers").innerHTML = list.length ? list.join("") : "<li>" + ICH.icon("lock-open") + "<span>None. Every path you reached for was open. Look at the list above: that was not true for most people.</span></li>";
+      var ta = document.getElementById("reflect");
+      ta.value = store.get("reflect:" + me.id, "");
+    }
+    document.getElementById("reflect").addEventListener("input", function (e) {
+      if (me) store.set("reflect:" + me.id, e.target.value);
+    });
+    function exportText() {
+      var lines = ["The Inequality Ladder: my life summary", ICH.dateStamp(), "", "Identity: " + me.name, "Rungs climbed: " + myTotal() + " of 12", ""];
+      STAGES.forEach(function (st) {
+        var o = st.options.filter(function (x) { return x.score === picks[st.id]; })[0];
+        lines.push(st.title + ": " + o.label + ". " + o.impact);
+        Object.keys(me[st.id] || {}).forEach(function (k) { lines.push("  Closed to me: " + me[st.id][k]); });
+      });
+      lines.push("", "My reflection:", document.getElementById("reflect").value.trim() || "(not written)");
+      return lines.join("\n") + "\n";
+    }
+    var outStatus = document.getElementById("outStatus");
+    document.getElementById("download").addEventListener("click", function () { ICH.download("inequality-ladder-summary.txt", exportText()); outStatus.textContent = "Download started"; });
+    document.getElementById("copy").addEventListener("click", function () { ICH.copy(exportText()).then(function (ok) { outStatus.textContent = ok ? "Copied to clipboard" : "Copy did not work here. Use Download instead."; }); });
+
+    // ---------- Flow ----------
+    function stageHooks(i) {
+      return {
+        enter: function () { renderStage(i); },
+        ready: function () { return picks[STAGES[i].id] ? true : "Choose a path that is open to you to continue."; },
+        next: i === STAGES.length - 1 ? "See your life summary" : "Next life stage"
+      };
+    }
+    var flow = ICH.flow({
+      steps: {
+        identity: {
+          ready: function () { return me ? true : "Draw your identity to begin."; },
+          next: "Begin your life"
+        },
+        edu: stageHooks(0), work: stageHooks(1), health: stageHooks(2), voice: stageHooks(3),
+        summary: { enter: renderSummary, next: "Try another identity" }
+      },
+      onRestart: function () {
+        me = null; picks = {}; tried = {};
+        table.innerHTML = '<div class="deck" id="deck" aria-hidden="true"></div>';
+        deck = document.getElementById("deck");
+        renderDeck();
+        document.getElementById("drawRow").innerHTML = '<button class="btn btn-accent" type="button" id="drawBtn">' + ICH.icon("shuffle") + "<span>Draw my identity</span></button>";
+        document.getElementById("drawBtn").addEventListener("click", draw);
+      }
+    });
+    renderDeck();
+  })();
   </script>
 </body>
 </html>

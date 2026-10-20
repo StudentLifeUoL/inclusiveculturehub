@@ -1,116 +1,478 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en-GB">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cultivating Cultural Intelligence Activity</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cultivating Cultural Intelligence</title>
+  <link rel="preload" href="../assets/fonts/bricolage-grotesque-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../assets/fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/ich.css">
   <style>
-    body { margin: 0; padding: 0; font-family: sans-serif; background: #f0f2f5; }
-    .container { max-width: 700px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    h2 { font-size: 1.5rem; margin-bottom: 0.5rem; text-align: center; }
-    .intro { font-size: 0.9rem; color: #666; text-align: center; margin-bottom: 1.5rem; }
-    .scenario { background: #e8f4fd; border-left: 4px solid #4a90e2; padding: 12px; border-radius: 6px; margin-bottom: 20px; }
-    .step { display: none; }
-    .step.active { display: block; }
-    .inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .inputs input, .inputs textarea { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; }
-    .buttons { display: flex; justify-content: space-between; margin-top: 20px; }
-    .btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; }
-    .btn-primary { background: #4a90e2; color: #fff; }
-    .btn-secondary { background: #e0e0e0; color: #333; }
-    .btn-download { background: #2ecc71; color: #fff; width: 100%; }
-    label { font-weight: 600; margin-top: 8px; }
+    body { --accent: var(--leaf-ink); --accent-ink: var(--leaf-ink); --accent-tint: var(--leaf-tint); }
+
+    .split { display: grid; gap: 20px; align-items: start; }
+    @media (min-width: 720px) { .split { grid-template-columns: minmax(0, 1fr) minmax(0, 300px); gap: 28px; } }
+    .split > * { min-width: 0; }
+
+    /* Scenario: a video call */
+    .scene { display: grid; gap: 18px; align-items: center; }
+    @media (min-width: 720px) { .scene { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 26px; } }
+    .call { background: var(--ink); border-radius: 14px; padding: 8px; display: grid; gap: 8px; }
+    .call-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+    .tile { position: relative; aspect-ratio: 4 / 3; border-radius: 9px; background: #2a2142; overflow: hidden; }
+    .tile svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .tile.speaking { box-shadow: inset 0 0 0 3px var(--gold); }
+    .tile .nm {
+      position: absolute; left: 6px; bottom: 6px; max-width: calc(100% - 44px);
+      padding: 2px 7px; border-radius: 6px; background: rgb(12 8 24 / .62); color: #fff;
+      font-size: .72rem; font-weight: 700; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .tile .mi {
+      position: absolute; right: 6px; bottom: 6px; width: 24px; height: 24px; border-radius: 50%;
+      display: grid; place-items: center; background: rgb(12 8 24 / .62); color: #fff;
+    }
+    .tile .mi svg { position: static; width: 13px; height: 13px; }
+    .tile .mi.off { background: var(--brand); }
+    @media (max-width: 559px) { .tile .lg { display: none; } }
+    .bars { position: absolute; right: 8px; bottom: 9px; display: flex; gap: 2px; align-items: flex-end; height: 18px; }
+    .bars i { width: 3px; height: 100%; border-radius: 2px; background: var(--gold); transform-origin: bottom; animation: talk 0.9s ease-in-out infinite; }
+    .bars i:nth-child(2) { animation-delay: -.3s; } .bars i:nth-child(3) { animation-delay: -.6s; } .bars i:nth-child(4) { animation-delay: -.15s; }
+    @keyframes talk { 0%, 100% { transform: scaleY(.3); } 50% { transform: scaleY(1); } }
+    @media (prefers-reduced-motion: reduce) { .bars i { animation: none; transform: scaleY(.7); } }
+    .tile.notes { background: #fbf6e9; color: var(--ink); padding: 10px 11px; display: grid; align-content: start; gap: 6px; }
+    .tile.notes .nt { display: flex; gap: 6px; align-items: center; font-size: .78rem; font-weight: 700; }
+    .tile.notes .nt svg { position: static; width: 14px; height: 14px; color: var(--gold-ink); }
+    .tile.notes .ln { height: 5px; border-radius: 3px; background: #e7dcc0; }
+    .tile.notes .nm { background: rgb(28 21 48 / .82); }
+    .call-bar { display: flex; justify-content: center; gap: 8px; padding: 2px 0 4px; }
+    .call-bar span { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: #33284f; color: #fff; }
+    .call-bar span svg { width: 15px; height: 15px; }
+    .call-bar span.raise { background: var(--gold); color: var(--ink); }
+    .scenario { display: grid; gap: 8px; }
+    .scenario p:not(.kicker) { font-size: 1.02rem; line-height: 1.6; }
+
+    /* Core and flex diagram */
+    .cf { display: grid; gap: 14px; justify-items: center; }
+    .cf-circle { position: relative; width: min(100%, 290px); aspect-ratio: 1; }
+    .cf-ring { position: absolute; inset: 0; border-radius: 50%; border: 2px dashed var(--accent-ink); background: var(--accent-tint); }
+    .cf-flex-lbl { position: absolute; top: 4.2%; left: 50%; transform: translateX(-50%); font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-ink); }
+    .cf-dot {
+      position: absolute; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%;
+      display: grid; place-items: center; font-weight: 700; font-size: .85rem; font-variant-numeric: tabular-nums;
+      background: var(--paper); color: var(--accent-ink); border: 2px dashed var(--accent-ink);
+      transition: background .3s var(--ease), color .3s var(--ease);
+    }
+    .cf-dot.on { background: var(--accent); color: #fff; border-style: solid; }
+    .cf-dot.d1 { left: 13.6%; top: 29%; } .cf-dot.d2 { left: 86.4%; top: 29%; } .cf-dot.d3 { left: 50%; top: 92%; }
+    .cf-core {
+      position: absolute; inset: 16%; border-radius: 50%; background: var(--accent); color: #fff;
+      display: grid; align-content: center; justify-items: center; gap: 5px; padding: 9%; text-align: center;
+    }
+    .cf-core-lbl { font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; opacity: .9; }
+    .cf-vals { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
+    .cf-val { padding: 1px 7px; border-radius: 999px; background: rgb(12 8 24 / .18); border: 1px solid rgb(255 255 255 / .45); font-size: .72rem; font-weight: 700; line-height: 1.3; max-width: 100%; overflow-wrap: anywhere; }
+    .cf-empty { font-size: .8rem; font-style: italic; opacity: .9; }
+    .cf-legend { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; width: 100%; }
+    .cf-legend li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: start; font-size: .94rem; }
+    .num {
+      width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; flex: none;
+      font-size: .8rem; font-weight: 700; background: var(--accent); color: #fff; font-variant-numeric: tabular-nums;
+    }
+    .num.empty { background: var(--paper); color: var(--accent-ink); border: 2px dashed var(--accent-ink); }
+    .cf-legend .empty-t { color: var(--ink-3); font-style: italic; }
+    .cf-blocks { display: none; width: 100%; gap: 8px; }
+    .cf-b { border-radius: var(--radius); padding: 12px 14px; display: grid; gap: 8px; }
+    .cf-b.core { background: var(--accent); color: #fff; }
+    .cf-b.core .kicker { color: #fff; opacity: .9; }
+    .cf-b.core .cf-vals { justify-content: flex-start; }
+    .cf-b.flexb { border: 2px dashed var(--accent-ink); background: var(--accent-tint); }
+    .cf-b.flexb .kicker { color: var(--accent-ink); }
+    @media (max-width: 559px) {
+      .cf-circle, .cf-legend { display: none; }
+      .cf-blocks { display: grid; }
+    }
+
+    /* Values */
+    .bank .chip[aria-disabled="true"] { opacity: .45; cursor: not-allowed; }
+    .add-own .row { flex-wrap: nowrap; }
+    .add-own .input { flex: 1 1 auto; }
+    .count-line { font-size: var(--step-0); color: var(--ink-3); font-weight: 700; }
+
+    /* Flex fields */
+    .flex-fields { display: grid; gap: 10px; }
+    .flex-field { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: start; }
+    .flex-field .num { margin-top: 10px; }
+    .flex-field .textarea { min-height: 64px; }
+
+    /* Plan cards */
+    .plan-grid { display: grid; gap: 12px; }
+    @media (min-width: 700px) { .plan-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    .plan-card { display: grid; gap: 8px; align-content: start; padding: 14px; border-radius: var(--radius); background: var(--paper); border: 1px solid var(--line); }
+    .plan-card .ph { display: flex; gap: 10px; align-items: center; }
+    .plan-card .ph .label { font-family: var(--font-display); font-size: 1.05rem; letter-spacing: -.01em; }
+    .plan-card .ico { background: var(--c-tint); color: var(--c); }
+    .plan-card .textarea { min-height: 96px; }
+    @media (min-width: 700px) { .plan-card .hint { min-height: 2.9em; } }
+
+    /* Summary */
+    .plan-sheet .sheet-item { grid-template-columns: auto minmax(0, 1fr); column-gap: 10px; }
+    .plan-sheet .sheet-item .ico { grid-row: span 2; background: var(--c-tint); color: var(--c); }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Cultivating Cultural Intelligence</h2>
-    <p class="intro">A guided, multi-step reflection on leading diverse virtual teams. You’ll be able to download your responses at the end.</p>
-    <form id="activityForm">
-      <!-- Intro Step -->
-      <div class="step active" id="step0">
-        <h3>Welcome!</h3>
-        <p>In this activity, you’ll reflect on how to lead a virtual team across cultures, focusing on core values, flexibility, and an action plan. At the end, you can download your personalised responses.</p>
-        <div class="scenario">
-          <strong>Scenario:</strong> You are a young group leader collaborating virtually with peers from the UK, Japan and Brazil. During a meeting, your Japanese teammate is expressive and enthusiastic, while your Brazilian colleague is quiet and reflective. You value fast-paced, direct conversation but wish to respect everyone’s style. How can you lead effectively?
-        </div>
-        <div class="buttons">
-          <button type="button" class="btn btn-secondary" disabled>Back</button>
-          <button type="button" class="btn btn-primary" onclick="nextStep(1)">Start</button>
-        </div>
+  <div class="app">
+    <header class="app-head">
+      <div>
+        <p class="eyebrow"><span>Scenario</span><span class="dot" aria-hidden="true"></span><span class="eb-2">Leading virtual teams</span></p>
+        <h1 class="app-title">Cultivating cultural intelligence</h1>
       </div>
-      <!-- Step 1 -->
-      <div class="step" id="step1">
-        <h3>Step 1: Core Values</h3>
-        <p>Write up to five non-negotiable leadership values.<br><em>(Examples: Respect, Clarity, Inclusion, Efficiency)</em></p>
-        <div class="inputs">
-          <input type="text" name="core1" placeholder="1. Core value">
-          <input type="text" name="core2" placeholder="2. Core value">
-          <input type="text" name="core3" placeholder="3. Core value">
-          <input type="text" name="core4" placeholder="4. Core value">
-          <input type="text" name="core5" placeholder="5. Core value">
+      <svg class="crowd" data-crowd aria-hidden="true"></svg>
+      <nav class="progress" aria-label="Activity progress"><ol></ol></nav>
+    </header>
+
+    <main class="app-body">
+      <!-- Step 1: scenario -->
+      <section class="step" data-step="scenario" data-label="Scenario" aria-labelledby="t1">
+        <p class="lede">A guided, multi-step reflection on leading diverse virtual teams. You’ll be able to download your responses at the end.</p>
+        <h2 class="step-title" id="t1">One meeting, three styles</h2>
+        <div class="scene">
+          <div class="call" aria-hidden="true">
+            <div class="call-grid">
+              <div class="tile" id="tYou"><span class="nm">You · UK</span><span class="mi"><i data-icon="mic"></i></span></div>
+              <div class="tile speaking" id="tJp"><span class="nm"><span class="lg">Teammate · </span>Japan</span><span class="bars"><i></i><i></i><i></i><i></i></span></div>
+              <div class="tile" id="tBr"><span class="nm"><span class="lg">Colleague · </span>Brazil</span><span class="mi off"><i data-icon="mic-off"></i></span></div>
+              <div class="tile notes">
+                <span class="nt"><i data-icon="sticky-note"></i>Agenda</span>
+                <span class="ln" style="width:86%"></span><span class="ln" style="width:64%"></span><span class="ln" style="width:74%"></span>
+                <span class="nm">Shared notes</span>
+              </div>
+            </div>
+            <div class="call-bar"><span><i data-icon="mic"></i></span><span><i data-icon="video"></i></span><span><i data-icon="messages-square"></i></span><span class="raise"><i data-icon="hand"></i></span></div>
+          </div>
+          <div class="scenario">
+            <p class="kicker">Scenario</p>
+            <p>You are a young group leader collaborating virtually with peers from the UK, Japan and Brazil. During a meeting, your Japanese teammate is expressive and enthusiastic, while your Brazilian colleague is quiet and reflective. You value fast-paced, direct conversation but wish to respect everyone’s style. How can you lead effectively?</p>
+          </div>
         </div>
-        <div class="buttons">
-          <button type="button" class="btn btn-secondary" onclick="prevStep(0)">Back</button>
-          <button type="button" class="btn btn-primary" onclick="nextStep(2)">Next</button>
+        <div class="callout"><i data-icon="eye"></i><p><strong>Pause and notice.</strong> Did either colleague’s behaviour surprise you? Cultural patterns describe tendencies across groups. They never tell you what an individual will do.</p></div>
+      </section>
+
+      <!-- Step 2: core values -->
+      <section class="step" data-step="core" data-label="Core values" aria-labelledby="t2" hidden>
+        <h2 class="step-title" id="t2">What are your non-negotiables?</h2>
+        <p class="prose">Choose up to five non-negotiable leadership values. These form your core: what stays the same whoever you’re leading.</p>
+        <div class="split">
+          <div class="stack">
+            <div class="chips bank" id="valueBank" role="group" aria-label="Leadership values"></div>
+            <div class="field add-own">
+              <label class="label" for="ownValue">Add your own value</label>
+              <div class="row">
+                <input class="input" id="ownValue" type="text" maxlength="24" placeholder="e.g. Integrity">
+                <button class="btn btn-secondary btn-sm" type="button" id="addValue"><i data-icon="plus"></i><span>Add</span></button>
+              </div>
+            </div>
+            <p class="count-line" id="coreCount" role="status"></p>
+          </div>
+          <div class="cf" data-cf="core"></div>
         </div>
-      </div>
-      <!-- Step 2 -->
-      <div class="step" id="step2">
-        <h3>Step 2: Flexibility</h3>
-        <p>Note three ways you'll adapt your style.<br><em>(Examples: Slowing down the pace, allowing more silence, encouraging different forms of participation)</em></p>
-        <div class="inputs" style="grid-template-columns: 1fr;">
-          <textarea name="flex1" rows="2" placeholder="1. Flexibility idea"></textarea>
-          <textarea name="flex2" rows="2" placeholder="2. Flexibility idea"></textarea>
-          <textarea name="flex3" rows="2" placeholder="3. Flexibility idea"></textarea>
+      </section>
+
+      <!-- Step 3: flexibility -->
+      <section class="step" data-step="flex" data-label="Flexibility" aria-labelledby="t3" hidden>
+        <h2 class="step-title" id="t3">Where will you flex?</h2>
+        <p class="prose">Note three ways you’ll adapt your style. Tap a suggestion to drop it into the next empty box, or write your own.</p>
+        <div class="split">
+          <div class="stack">
+            <div class="chips" id="flexIdeas" role="group" aria-label="Suggestions"></div>
+            <p class="status" id="flexStatus" role="status"></p>
+            <div class="flex-fields">
+              <div class="flex-field"><span class="num" data-n="1">1</span><div class="field"><label class="sr-only" for="flex1">Flexibility idea 1</label><textarea class="textarea" id="flex1" rows="2" placeholder="1. Flexibility idea"></textarea></div></div>
+              <div class="flex-field"><span class="num" data-n="2">2</span><div class="field"><label class="sr-only" for="flex2">Flexibility idea 2</label><textarea class="textarea" id="flex2" rows="2" placeholder="2. Flexibility idea"></textarea></div></div>
+              <div class="flex-field"><span class="num" data-n="3">3</span><div class="field"><label class="sr-only" for="flex3">Flexibility idea 3</label><textarea class="textarea" id="flex3" rows="2" placeholder="3. Flexibility idea"></textarea></div></div>
+            </div>
+          </div>
+          <div class="cf" data-cf="flex"></div>
         </div>
-        <div class="buttons">
-          <button type="button" class="btn btn-secondary" onclick="prevStep(1)">Back</button>
-          <button type="button" class="btn btn-primary" onclick="nextStep(3)">Next</button>
+      </section>
+
+      <!-- Step 4: action plan -->
+      <section class="step" data-step="plan" data-label="Action plan" aria-labelledby="t4" hidden>
+        <h2 class="step-title" id="t4">Your action plan</h2>
+        <p class="prose">Define what you’ll start, what you’ll stop and how you’ll measure success.</p>
+        <div class="plan-grid">
+          <div class="plan-card" style="--c: var(--leaf-ink); --c-tint: var(--leaf-tint);">
+            <div class="ph"><span class="ico sm"><i data-icon="play"></i></span><label class="label" for="start">Start doing</label></div>
+            <p class="hint">A new habit for your next meeting.</p>
+            <textarea class="textarea" id="start" rows="3" placeholder="E.g. Invite quiet members by name."></textarea>
+          </div>
+          <div class="plan-card" style="--c: var(--brand-ink); --c-tint: var(--brand-tint);">
+            <div class="ph"><span class="ico sm"><i data-icon="circle-slash"></i></span><label class="label" for="stop">Stop doing</label></div>
+            <p class="hint">A habit that shuts others out.</p>
+            <textarea class="textarea" id="stop" rows="3" placeholder="E.g. Interrupting pauses."></textarea>
+          </div>
+          <div class="plan-card" style="--c: var(--blue); --c-tint: var(--blue-tint);">
+            <div class="ph"><span class="ico sm"><i data-icon="target"></i></span><label class="label" for="measure">Success measures</label></div>
+            <p class="hint">How you’ll know it’s working.</p>
+            <textarea class="textarea" id="measure" rows="3" placeholder="E.g. Each person speaks once."></textarea>
+          </div>
         </div>
-      </div>
-      <!-- Step 3 -->
-      <div class="step" id="step3">
-        <h3>Step 3: Action Plan</h3>
-        <p>Define what you'll start, stop and how to measure success.</p>
-        <div class="inputs" style="grid-template-columns: 1fr;">
-          <label for="start">Start Doing</label>
-          <textarea name="start" rows="2" placeholder="E.g. Invite quiet members by name."></textarea>
-          <label for="stop">Stop Doing</label>
-          <textarea name="stop" rows="2" placeholder="E.g. Interrupting pauses."></textarea>
-          <label for="measure">Success Measures</label>
-          <textarea name="measure" rows="2" placeholder="E.g. Each person speaks once."></textarea>
+        <p class="status" id="planStatus" role="status"></p>
+      </section>
+
+      <!-- Step 5: summary -->
+      <section class="step" data-step="summary" data-label="Your plan" aria-labelledby="t5" hidden>
+        <h2 class="step-title" id="t5">Your leadership plan</h2>
+        <div class="split">
+          <div class="sheet plan-sheet" id="planSheet"></div>
+          <div class="cf" data-cf="summary"></div>
         </div>
-        <div class="buttons">
-          <button type="button" class="btn btn-secondary" onclick="prevStep(2)">Back</button>
-          <button type="button" class="btn btn-download" onclick="downloadResponses()">Download Responses</button>
+        <div class="row">
+          <button class="btn btn-accent" type="button" id="download"><i data-icon="download"></i><span>Download responses</span></button>
+          <button class="btn btn-secondary" type="button" id="copy"><i data-icon="copy"></i><span>Copy text</span></button>
+          <span class="status" id="outStatus" role="status"></span>
         </div>
-      </div>
-    </form>
+        <div class="confirm" id="clearArea">
+          <button class="btn btn-quiet btn-sm" type="button" id="clear">Clear my answers</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-foot">
+      <button class="btn btn-quiet" type="button" data-nav="back"><i data-icon="arrow-left"></i><span>Back</span></button>
+      <span class="spacer"></span>
+      <span class="count" data-count></span>
+      <button class="btn btn-primary" type="button" data-nav="next"></button>
+      <p class="nudge" data-nudge role="status"></p>
+    </footer>
   </div>
 
+  <script src="../assets/ich.js"></script>
   <script>
-    function showStep(n) {
-      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-      document.getElementById('step' + n).classList.add('active');
-      window.scrollTo(0,0);
+  (function () {
+    var store = ICH.store("page4");
+    var VALUES = ["Respect", "Clarity", "Inclusion", "Efficiency", "Fairness", "Curiosity", "Honesty", "Empathy", "Accountability", "Openness", "Patience", "Collaboration"];
+    var IDEAS = ["Slow down the pace", "Allow more silence", "Invite written input before or during meetings", "Rotate who speaks first", "Use the chat for questions", "Check understanding by name"];
+    var BLANK = { core1: "", core2: "", core3: "", core4: "", core5: "", custom: [], flex1: "", flex2: "", flex3: "", start: "", stop: "", measure: "" };
+    var state = Object.assign({}, BLANK, store.get("state", {}));
+    if (!Array.isArray(state.custom)) state.custom = [];
+
+    function save() { store.set("state", state); }
+    function values() { return [1, 2, 3, 4, 5].map(function (i) { return state["core" + i]; }).filter(function (v) { return v && v.trim(); }); }
+    function setValues(list) { for (var i = 1; i <= 5; i++) state["core" + i] = list[i - 1] || ""; }
+    function flexes() { return [1, 2, 3].map(function (i) { return String(state["flex" + i] || "").trim(); }); }
+    function same(a, b) { return a.trim().toLowerCase() === b.trim().toLowerCase(); }
+
+    // ---------- Scenario figures ----------
+    function figure(colour, extra) {
+      return '<svg viewBox="0 0 160 120" aria-hidden="true">' +
+        '<path d="M46 120V102a34 30 0 0 1 68 0V120z" fill="' + colour + '"/>' +
+        '<circle cx="80" cy="52" r="17" fill="' + colour + '"/>' + (extra || "") + "</svg>";
     }
-    function nextStep(n) { showStep(n); }
-    function prevStep(n) { showStep(n); }
-    function downloadResponses() {
-      const form = document.getElementById('activityForm');
-      const data = new FormData(form);
-      let out = 'CULTURAL INTELLIGENCE ACTIVITY RESPONSES\n\n';
-      out += 'Core Values:\n'; for(let i=1;i<=5;i++){let v=data.get('core'+i); if(v) out += i+'. '+v+'\n';}
-      out += '\nFlexibility:\n'; for(let i=1;i<=3;i++){let v=data.get('flex'+i); if(v) out += '- '+v+'\n';}
-      out += '\nStart: '+(data.get('start')||'')+'\n';
-      out += 'Stop: '+(data.get('stop')||'')+'\n';
-      out += 'Measures: '+(data.get('measure')||'')+'\n';
-      const blob = new Blob([out], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = 'responses.txt'; a.click();
-      URL.revokeObjectURL(url);
+    document.getElementById("tYou").insertAdjacentHTML("afterbegin", figure("#0f7a70"));
+    document.getElementById("tJp").insertAdjacentHTML("afterbegin", figure("#f2b134",
+      '<rect x="104" y="12" width="44" height="26" rx="9" fill="#ffffff"/><path d="M108 36l-6 9 13-7z" fill="#ffffff"/>' +
+      '<circle cx="116" cy="25" r="3" fill="#1c1530"/><circle cx="126" cy="25" r="3" fill="#1c1530"/><circle cx="136" cy="25" r="3" fill="#1c1530"/>' +
+      '<path d="M52 40l-8-4M50 52h-9M52 64l-8 4" stroke="#f2b134" stroke-width="3" stroke-linecap="round" fill="none"/>'));
+    document.getElementById("tBr").insertAdjacentHTML("afterbegin", figure("#7e3a96",
+      '<circle cx="103" cy="38" r="3" fill="#c9c3d8"/><circle cx="110" cy="29" r="4.5" fill="#c9c3d8"/>' +
+      '<ellipse cx="130" cy="18" rx="20" ry="12" fill="#c9c3d8"/>' +
+      '<circle cx="122" cy="18" r="2.2" fill="#2a2142"/><circle cx="130" cy="18" r="2.2" fill="#2a2142"/><circle cx="138" cy="18" r="2.2" fill="#2a2142"/>'));
+
+    // ---------- Core and flex diagram ----------
+    function cfHTML(withLegend) {
+      var vals = values(), fx = flexes();
+      var valChips = vals.length
+        ? '<span class="cf-vals">' + vals.map(function (v) { return '<span class="cf-val">' + ICH.esc(v) + "</span>"; }).join("") + "</span>"
+        : '<span class="cf-empty">Your values appear here</span>';
+      var label = "Core and flex diagram. Core values: " + (vals.join(", ") || "none yet") +
+        ". Flex: " + (fx.filter(Boolean).join("; ") || "none yet") + ".";
+      var circle = '<div class="cf-circle" role="img" aria-label="' + ICH.esc(label) + '">' +
+        '<div class="cf-ring"></div><span class="cf-flex-lbl">Flex</span>' +
+        [0, 1, 2].map(function (i) { return '<span class="cf-dot d' + (i + 1) + (fx[i] ? " on" : "") + '">' + (i + 1) + "</span>"; }).join("") +
+        '<div class="cf-core"><span class="cf-core-lbl">Core</span>' + valChips + "</div></div>";
+      var legend = withLegend
+        ? '<ol class="cf-legend" aria-label="Flex">' + fx.map(function (f, i) {
+            return '<li><span class="num' + (f ? "" : " empty") + '">' + (i + 1) + "</span><span" + (f ? "" : ' class="empty-t"') + ">" + ICH.esc(f || "Not written yet") + "</span></li>";
+          }).join("") + "</ol>"
+        : "";
+      var blocks = '<div class="cf-blocks">' +
+        '<div class="cf-b core"><span class="kicker">Core</span>' + (vals.length ? valChips : '<span class="cf-empty">Your values appear here</span>') + "</div>" +
+        '<div class="cf-b flexb"><span class="kicker">Flex</span><ol class="cf-legend" style="display:grid">' + fx.map(function (f, i) {
+          return '<li><span class="num' + (f ? "" : " empty") + '">' + (i + 1) + "</span><span" + (f ? "" : ' class="empty-t"') + ">" + ICH.esc(f || "Not written yet") + "</span></li>";
+        }).join("") + "</ol></div></div>";
+      return circle + legend + blocks;
     }
+    function paintCF() {
+      document.querySelectorAll("[data-cf]").forEach(function (el) {
+        if (el.closest(".step").hidden) return;
+        el.innerHTML = cfHTML(el.getAttribute("data-cf") !== "core");
+      });
+    }
+
+    // ---------- Core values ----------
+    var bank = document.getElementById("valueBank");
+    var coreCount = document.getElementById("coreCount");
+    function paintBank() {
+      var vals = values();
+      var all = VALUES.concat(state.custom.filter(function (c) { return !VALUES.some(function (v) { return same(v, c); }); }));
+      var full = vals.length >= 5;
+      bank.innerHTML = all.map(function (v) {
+        var on = vals.some(function (x) { return same(x, v); });
+        return '<button type="button" class="chip" data-v="' + ICH.esc(v) + '" aria-pressed="' + on + '"' + (!on && full ? ' aria-disabled="true"' : "") + ">" +
+          (on ? ICH.icon("check") : "") + "<span>" + ICH.esc(v) + "</span></button>";
+      }).join("");
+      coreCount.textContent = vals.length + " of 5 chosen" + (full ? ". Remove one to choose another." : "");
+    }
+    function toggleValue(v) {
+      var vals = values();
+      var idx = -1;
+      vals.forEach(function (x, i) { if (same(x, v)) idx = i; });
+      if (idx > -1) vals.splice(idx, 1);
+      else if (vals.length < 5) vals.push(v);
+      else return false;
+      setValues(vals); save(); paintBank(); paintCF(); flow.refresh();
+      return true;
+    }
+    bank.addEventListener("click", function (e) {
+      var b = e.target.closest(".chip"); if (!b) return;
+      if (b.getAttribute("aria-disabled") === "true") { ICH.announce("You've chosen five values. Remove one to choose another."); return; }
+      toggleValue(b.getAttribute("data-v"));
+      var again = bank.querySelector('[data-v="' + CSS.escape(b.getAttribute("data-v")) + '"]');
+      if (again) again.focus();
+    });
+    var ownValue = document.getElementById("ownValue");
+    function addOwn() {
+      var v = ownValue.value.trim().replace(/\s+/g, " ");
+      if (!v) { ownValue.focus(); return; }
+      var exists = VALUES.concat(state.custom).some(function (x) { return same(x, v); });
+      if (!exists) state.custom.push(v);
+      if (!values().some(function (x) { return same(x, v); })) {
+        if (values().length >= 5) { save(); paintBank(); coreCount.textContent = "You've already chosen five. Remove one to add " + v + "."; return; }
+        toggleValue(v);
+      }
+      ownValue.value = "";
+      ICH.announce(v + " added to your core values");
+    }
+    document.getElementById("addValue").addEventListener("click", addOwn);
+    ownValue.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); addOwn(); } });
+
+    // ---------- Flexibility ----------
+    var ideasEl = document.getElementById("flexIdeas");
+    var flexStatus = document.getElementById("flexStatus");
+    function paintIdeas() {
+      var fx = flexes();
+      ideasEl.innerHTML = IDEAS.map(function (t) {
+        var on = fx.some(function (f) { return f && same(f, t); });
+        return '<button type="button" class="chip" data-t="' + ICH.esc(t) + '" aria-pressed="' + on + '">' + ICH.icon(on ? "check" : "plus") + "<span>" + t + "</span></button>";
+      }).join("");
+      document.querySelectorAll(".flex-field .num").forEach(function (n, i) { n.classList.toggle("empty", !fx[i]); });
+    }
+    ideasEl.addEventListener("click", function (e) {
+      var b = e.target.closest(".chip"); if (!b) return;
+      var t = b.getAttribute("data-t");
+      var fx = flexes();
+      var at = -1;
+      fx.forEach(function (f, i) { if (f && same(f, t)) at = i; });
+      if (at > -1) {
+        state["flex" + (at + 1)] = "";
+        document.getElementById("flex" + (at + 1)).value = "";
+        flexStatus.textContent = "Removed from box " + (at + 1) + ".";
+      } else {
+        var empty = fx.indexOf("");
+        if (empty === -1) { flexStatus.textContent = "All three boxes are full. Clear one to add another idea."; return; }
+        state["flex" + (empty + 1)] = t;
+        document.getElementById("flex" + (empty + 1)).value = t;
+        flexStatus.textContent = "Added to box " + (empty + 1) + ".";
+      }
+      save(); paintIdeas(); paintCF();
+      var again = ideasEl.querySelector('[data-t="' + CSS.escape(t) + '"]');
+      if (again) again.focus();
+    });
+
+    // ---------- Text fields with autosave ----------
+    var timer;
+    ["flex1", "flex2", "flex3", "start", "stop", "measure"].forEach(function (id) {
+      var el = document.getElementById(id);
+      el.value = state[id] || "";
+      el.addEventListener("input", function () {
+        state[id] = el.value;
+        if (id.indexOf("flex") === 0) { paintIdeas(); paintCF(); }
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+          save();
+          var st = document.getElementById(id.indexOf("flex") === 0 ? "flexStatus" : "planStatus");
+          st.textContent = "Saved in this browser";
+        }, 500);
+      });
+    });
+
+    // ---------- Summary ----------
+    var PLAN = [
+      { id: "start", k: "Start doing", icon: "play", c: "var(--leaf-ink)", t: "var(--leaf-tint)" },
+      { id: "stop", k: "Stop doing", icon: "circle-slash", c: "var(--brand-ink)", t: "var(--brand-tint)" },
+      { id: "measure", k: "Success measures", icon: "target", c: "var(--blue)", t: "var(--blue-tint)" }
+    ];
+    function renderSheet() {
+      document.getElementById("planSheet").innerHTML = "<h3>Start, stop, measure</h3>" + PLAN.map(function (p) {
+        var v = String(state[p.id] || "").trim();
+        return '<div class="sheet-item" style="--c:' + p.c + "; --c-tint:" + p.t + '"><span class="ico sm">' + ICH.icon(p.icon) + '</span>' +
+          '<span class="sheet-k">' + p.k + '</span><span class="sheet-v' + (v ? "" : " empty") + '">' + ICH.esc(v || "Not written yet") + "</span></div>";
+      }).join("");
+    }
+    function exportText() {
+      var out = "CULTURAL INTELLIGENCE ACTIVITY RESPONSES\nSaved: " + ICH.dateStamp() + "\n\nCore Values:\n";
+      var vals = values();
+      out += vals.length ? vals.map(function (v, i) { return (i + 1) + ". " + v; }).join("\n") : "(none chosen)";
+      out += "\n\nFlexibility:\n";
+      var fx = flexes().filter(Boolean);
+      out += fx.length ? fx.map(function (f) { return "- " + f; }).join("\n") : "(none written)";
+      out += "\n\nStart: " + (state.start.trim() || "") + "\nStop: " + (state.stop.trim() || "") + "\nMeasures: " + (state.measure.trim() || "") + "\n";
+      return out;
+    }
+    var outStatus = document.getElementById("outStatus");
+    document.getElementById("download").addEventListener("click", function () {
+      ICH.download("cultural-intelligence-responses.txt", exportText());
+      outStatus.textContent = "Download started";
+    });
+    document.getElementById("copy").addEventListener("click", function () {
+      ICH.copy(exportText()).then(function (ok) { outStatus.textContent = ok ? "Copied to clipboard" : "Copy did not work here. Use Download instead."; });
+    });
+
+    var clearArea = document.getElementById("clearArea");
+    function resetClear() { clearArea.innerHTML = '<button class="btn btn-quiet btn-sm" type="button" id="clear">Clear my answers</button>'; }
+    clearArea.addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      if (b.id === "clear") {
+        clearArea.innerHTML = "<span>Clear everything you entered in this activity?</span>" +
+          '<button class="btn btn-secondary btn-sm" type="button" id="clearYes">Yes, clear</button>' +
+          '<button class="btn btn-quiet btn-sm" type="button" id="clearNo">Keep my answers</button>';
+        document.getElementById("clearNo").focus();
+      } else if (b.id === "clearYes") {
+        state = Object.assign({}, BLANK, { custom: [] });
+        store.remove("state");
+        ["flex1", "flex2", "flex3", "start", "stop", "measure"].forEach(function (id) { document.getElementById(id).value = ""; });
+        paintBank(); paintIdeas(); resetClear();
+        ICH.announce("Your answers have been cleared");
+        flow.go(0);
+      } else if (b.id === "clearNo") {
+        resetClear();
+        document.getElementById("clear").focus();
+      }
+    });
+
+    // ---------- Flow ----------
+    var flow = ICH.flow({
+      steps: {
+        scenario: { next: "Start" },
+        core: {
+          enter: function () { paintBank(); paintCF(); },
+          ready: function () { return values().length ? true : "Choose at least one value to continue."; }
+        },
+        flex: { enter: function () { paintIdeas(); paintCF(); } },
+        summary: { enter: function () { renderSheet(); paintCF(); }, next: "Start again" }
+      }
+    });
+  })();
   </script>
 </body>
 </html>
