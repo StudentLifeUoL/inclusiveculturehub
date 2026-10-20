@@ -206,7 +206,7 @@
       <button class="btn btn-quiet" type="button" data-nav="back"><i data-icon="arrow-left"></i><span>Back</span></button>
       <span class="spacer"></span>
       <span class="count" data-count></span>
-      <button class="btn btn-primary" type="button" data-nav="next"></button>
+      <button class="btn btn-primary" type="button" data-nav="next"><span>Continue</span></button>
       <p class="nudge" data-nudge role="status"></p>
     </footer>
   </div>
@@ -491,7 +491,7 @@
     // ---------- Summary ----------
     var BANDS = [
       { min: 11, text: "You had access to opportunities that placed you ahead of most people in the world. You lived a secure, respected and empowered life." },
-      { min: 8, text: "Your journey was average. You had some opportunities, but also faced barriers that stopped you from fully thriving." },
+      { min: 7, text: "Your journey was average. You had some opportunities, but also faced barriers that stopped you from fully thriving." },
       { min: 0, text: "Inequity held you back. In a more just world, your talents could have made you a renowned scientist, artist or leader." }
     ];
     function myTotal() { return STAGES.reduce(function (s, st) { return s + (picks[st.id] || 0); }, 0); }

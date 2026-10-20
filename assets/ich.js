@@ -437,7 +437,47 @@
     };
   }
 
+  // ---------- Segmented controls ----------
+  // Mirror each radio's checked and focused state onto its <label>, so the control
+  // still shows its selection in browsers without the CSS :has() selector.
+  function syncSeg(group) {
+    group.querySelectorAll("label").forEach(function (l) {
+      var i = l.querySelector("input");
+      l.classList.toggle("on", !!(i && i.checked));
+    });
+  }
+  function syncAllSegs(root) {
+    (root || document).querySelectorAll(".seg-opts").forEach(syncSeg);
+  }
+  document.addEventListener("change", function (e) {
+    var g = e.target && e.target.closest && e.target.closest(".seg-opts");
+    if (g) syncSeg(g);
+  });
+  document.addEventListener("focusin", function (e) {
+    var l = e.target && e.target.closest && e.target.closest(".seg-opts label");
+    if (!l) return;
+    var visible = true;
+    try { visible = e.target.matches(":focus-visible"); } catch (err) {}
+    l.classList.toggle("has-focus", visible);
+  });
+  document.addEventListener("focusout", function (e) {
+    var l = e.target && e.target.closest && e.target.closest(".seg-opts label");
+    if (l) l.classList.remove("has-focus");
+  });
+  if (window.MutationObserver) {
+    new MutationObserver(function (records) {
+      records.forEach(function (r) {
+        Array.prototype.forEach.call(r.addedNodes, function (n) {
+          if (n.nodeType !== 1) return;
+          if (n.matches(".seg-opts")) syncSeg(n); else syncAllSegs(n);
+        });
+      });
+    }).observe(document.documentElement, { childList: true, subtree: true });
+  }
+  document.addEventListener("DOMContentLoaded", function () { syncAllSegs(); });
+
   window.ICH = {
+    syncSeg: syncAllSegs,
     icon: icon,
     hydrateIcons: hydrateIcons,
     esc: esc,
